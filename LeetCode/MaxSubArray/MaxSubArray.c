@@ -29,10 +29,13 @@ int maxSubArray(int* nums, int numsSize){
 	}
 
 	int i = 0, j = 0;
-	int max = ~0;
+	int max = ~0; /* 注意，没有说nums是正数，所以不能初始化为0 */
 	int sum = 0;
 
-
+	/* max 默认最小就是数组的第一个元素作为初始化值，
+	 * 其他的值都不合适，因为后面的sum都可能小于任何值，所以用第一个元素作为初始值
+	 * 特别针对只有一个元素且是很小负数的数组
+	 */
 	max = nums[0];
 	for(i = 0; i < numsSize; i++){
 		sum = 0;
