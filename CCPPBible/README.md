@@ -1,3 +1,3 @@
 # interview
-C和C++程序员面试秘笈
+C Program interview code
 
