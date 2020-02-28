@@ -20,7 +20,6 @@
 
  gcc MaxSubArray.c -g -o a.exe
 
-
  */
 
 int maxSubArray(int* nums, int numsSize){
@@ -52,6 +51,64 @@ int maxSubArray(int* nums, int numsSize){
 }
 
 
+#define MAX(x,y) (x) > (y) ? (x) : (y)
+
+int getSubMaxSum(int* nums, int left, int right){
+
+	int leftMax = 0, rightMax = 0, cross = 0;
+	int leftsum = 0, rightsum = 0, sum = 0;
+	int max = ~0;
+	int mid = (left + right) / 2;
+	int i = 0;
+	
+	/*递归结束条件*/
+	if(left == right){
+		return nums[left];
+	}
+
+	/* 左半边的子数组最大和*/
+	leftMax = getSubMaxSum(nums, left, mid);
+
+	/* 右半边的子数组最大和*/
+	rightMax = getSubMaxSum(nums, mid + 1, right);
+
+	/*
+	 * 当前数组的子数组最大和
+	 * 注意因为是连续的子数组，所以从中间向两边发散，
+	 * 可以得到从中间向两边发散的连续子数组
+	 * 然后左右两边max相加，得到子数组最大值
+	 * 从中间想两边发散寻找子数组是非常巧妙的方式
+	 */
+	leftsum = nums[mid];
+	sum = 0;
+	for(i = mid; i >= left; i--){
+		sum += nums[i];
+		leftsum = MAX(leftsum, sum);
+	}
+	
+	rightsum = nums[mid+1];
+	sum = 0;
+	for(i = mid + 1; i <= right; i++){
+		sum += nums[i];
+		rightsum = MAX(rightsum, sum);
+	}
+
+	cross = leftsum + rightsum;
+
+	max = MAX(leftMax, rightMax);
+	max = MAX(max, cross);
+
+	return max;
+
+}
+
+
+int maxSubArray2(int* nums, int numsSize){
+	int max = getSubMaxSum(nums, 0, numsSize - 1);
+
+	return max;
+}
+
 
 void testmaxSubArray(void){
 
@@ -73,6 +130,20 @@ void testmaxSubArray(void){
 	 max = maxSubArray(nums3, 1);
 
 	 printf("testmaxSubArray max  = %d\n", max);	 
+
+
+	 max = maxSubArray2(nums1, 9);
+
+	 printf("testmaxSubArray max  = %d\n", max);
+
+	 max = maxSubArray2(nums2, 1);
+
+	 printf("testmaxSubArray max  = %d\n", max);
+
+	 max = maxSubArray2(nums3, 1);
+
+	 printf("testmaxSubArray max  = %d\n", max);	 
+
 	  
 	 return; 
  
