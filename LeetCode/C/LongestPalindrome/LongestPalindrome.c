@@ -22,6 +22,19 @@
 #include <stdbool.h>
 #include <string.h>
 
+#ifdef DEBUG
+#define LOG(fmt, args...) fprintf(stdout, fmt, ##args)
+#define BREAKER(a, b, c) breaker(a, b, c)
+#else
+#define LOG(fmt,...)
+#define BREAKER(a, b, c)
+#endif
+
+#define TRUE        1
+#define FALSE       0
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) > (b) ? (b) : (a))
 
 bool isPalindromeStr(char * head, char * tail){
 	bool ret = true;
@@ -111,6 +124,63 @@ out:
 }
 
 
+int expend(char * s, int left, int right){
+	int n = strlen(s);
+	int len = 0;
+
+	while(left >=0 && right < n && s[left] == s[right]){
+		left--;
+		right++;
+	}
+
+	/*
+	 * 退出的时候，应该不满足条件，应该去掉首尾两个字符
+	 * right - left，已经去掉了首字符，-1去掉尾字符
+	 */
+	len = right - left - 1;
+	return len;
+}
+
+
+char * longestPalindrome2(char * s){
+
+	if(NULL == s){
+		return NULL;
+	}
+
+	int len = 0;
+	int len1 = 0, len2 = 0;
+	int subStart = 0, subEnd = 0;
+	int size = 0;
+	int i = 0;
+	char * sub = NULL;
+
+	size  = strlen(s);
+	for(i = 0; i < size; i++){
+		len1 = expend(s, i, i); /*[i, i] 为中心*/
+		len2 = expend(s, i, i+1); /*[i, i] 为中心*/
+		len = MAX(len1, len2);
+
+		if(len > subEnd - subStart + 1){
+			/*
+			 * 这里start多减去一个1，是因为在双中心的情况下，
+			 * 向前的距离要少去掉一个，因为双中心的头占了一个
+		     */
+			subStart = i - (len - 1)/ 2; 
+			subEnd = i + len / 2;
+		}	
+	}
+
+	len = subEnd - subStart + 1 + 1; /*减去start 补充1，'\0'再补充1*/
+	sub = (char *)malloc(len * sizeof(char));
+	memcpy(sub, s + subStart, len - 1); /*最后一个是'\0', 不用拷贝，单独赋值*/
+	sub[len - 1] = '\0';	/*字符串结尾*/
+
+	return sub;
+}
+
+
+
 void testlongestPalindrome(void){
 	
 	printf("\n************  testlongestPalindrome ************ \n");
@@ -120,7 +190,7 @@ void testlongestPalindrome(void){
 	char str3[100] = "";
 	char str4[100] = "ac";
 	char * s = NULL;
-
+#if 1
 	/*testcase 1*/
 	s = longestPalindrome(str);
 	if(NULL != s){
@@ -150,6 +220,39 @@ void testlongestPalindrome(void){
 	if(NULL != s){
 		printf("The longest Palindrome of %s is %s\n", str4,s);
 	}
+
+
+	/*testcase 1*/
+	s = longestPalindrome2(str);
+	if(NULL != s){
+		printf("The longest Palindrome2 of %s is %s\n", str,s);
+	}
+
+
+	/*testcase 2*/
+	s = longestPalindrome2(str1);
+	if(NULL != s){
+		printf("The longest Palindrome2 of %s is %s\n", str1,s);
+	}
+
+	/*testcase 3*/
+	s = longestPalindrome2(str2);
+	if(NULL != s){
+		printf("The longest Palindrome2 of %s is %s\n", str2,s);
+	}
+
+	/*testcase 4*/
+	s = longestPalindrome2(str3);
+	if(NULL != s){
+		printf("The longest Palindrome2 of %s is %s\n", str3,s);
+	}
+
+	/*testcase 5*/
+	s = longestPalindrome2(str4);
+	if(NULL != s){
+		printf("The longest Palindrome2 of %s is %s\n", str4,s);
+	}
+#endif
 
 	return; 
  
