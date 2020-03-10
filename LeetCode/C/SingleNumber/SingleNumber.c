@@ -39,6 +39,7 @@ int* singleNumber(int* nums, int numsSize, int* returnSize){
 		return NULL;
 	}
 
+	*returnSize = 2;
 
 	for(i = 0; i < numsSize; i++){
 		found = 0;
