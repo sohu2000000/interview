@@ -1,0 +1,382 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ALLOC_ERR	CCPPBible/src/sort/MergeSort.c	/^#define ALLOC_ERR	/;"	d	language:C	file:
+ALLOC_ERR	CCPPBible/src/string/str.h	/^#define ALLOC_ERR /;"	d	language:C++
+ALLOC_ERR	CCPPBible/src/struct/doublist.h	/^#define ALLOC_ERR /;"	d	language:C++
+ALLOC_ERR	CCPPBible/src/struct/list.h	/^#define ALLOC_ERR /;"	d	language:C++
+ALLOC_ERR	CCPPBible/src/struct/tree.h	/^#define ALLOC_ERR /;"	d	language:C++
+ALLOC_ERR	LeetCode/C/MaxSubArray/MaxSubArray.h	/^#define ALLOC_ERR /;"	d	language:C++
+ARRAR_SIZE	CCPPBible/src/struct/doublist.c	/^#define ARRAR_SIZE	/;"	d	language:C	file:
+ARRAR_SIZE	CCPPBible/src/struct/doublist.c	/^#undef ARRAR_SIZE$/;"	d	language:C	file:
+BREAKER	LeetCode/C/LongestPalindrome/LongestPalindrome.c	/^#define BREAKER(/;"	d	language:C	file:
+BREAKER	LeetCode/C/countPalindromicSubsequences/countPalindromicSubsequences.c	/^#define BREAKER(/;"	d	language:C	file:
+BREAKER	LeetCode/C/countSubstrings/countSubstrings.c	/^#define BREAKER(/;"	d	language:C	file:
+BREAKER	LeetCode/C/palindromePairs/palindromePairs.c	/^#define BREAKER(/;"	d	language:C	file:
+BREAKER	LeetCode/C/shortestPalindrome/shortestPalindrome.c	/^#define BREAKER(/;"	d	language:C	file:
+BUCKET_DEEP	CCPPBible/src/sort/BucketSort.c	/^#define BUCKET_DEEP	/;"	d	language:C	file:
+BUCKET_NUM	CCPPBible/src/sort/BucketSort.c	/^#define BUCKET_NUM	/;"	d	language:C	file:
+BubbleSort	CCPPBible/src/sort/BubbleSort.c	/^int BubbleSort(int * array, int size){$/;"	f	language:C	signature:(int * array, int size)
+BucketSort	CCPPBible/src/sort/BucketSort.c	/^int BucketSort(int * array, int size){$/;"	f	language:C	signature:(int * array, int size)
+BuildMaxHeap	CCPPBible/src/sort/HeapSort.c	/^int BuildMaxHeap(int * array, int low, int high){$/;"	f	language:C	signature:(int * array, int low, int high)
+CircularQueue	MLNX/circlequeue.c	/^} CircularQueue;$/;"	t	language:C	typeref:struct:__anon1	file:
+DIR_DOWN	LeetCode/C/GenerateMatrix/GenerateMatrix.c	/^#define DIR_DOWN	/;"	d	language:C	file:
+DIR_DOWN	LeetCode/C/SpiralOrder/SpiralOrder.c	/^#define DIR_DOWN	/;"	d	language:C	file:
+DIR_LEFT	LeetCode/C/GenerateMatrix/GenerateMatrix.c	/^#define DIR_LEFT	/;"	d	language:C	file:
+DIR_LEFT	LeetCode/C/SpiralOrder/SpiralOrder.c	/^#define DIR_LEFT	/;"	d	language:C	file:
+DIR_MAX	LeetCode/C/GenerateMatrix/GenerateMatrix.c	/^#define DIR_MAX	/;"	d	language:C	file:
+DIR_MAX	LeetCode/C/SpiralOrder/SpiralOrder.c	/^#define DIR_MAX	/;"	d	language:C	file:
+DIR_RIGHT	LeetCode/C/GenerateMatrix/GenerateMatrix.c	/^#define DIR_RIGHT /;"	d	language:C	file:
+DIR_RIGHT	LeetCode/C/SpiralOrder/SpiralOrder.c	/^#define DIR_RIGHT /;"	d	language:C	file:
+DIR_UP	LeetCode/C/GenerateMatrix/GenerateMatrix.c	/^#define DIR_UP	/;"	d	language:C	file:
+DIR_UP	LeetCode/C/SpiralOrder/SpiralOrder.c	/^#define DIR_UP	/;"	d	language:C	file:
+FALSE	LeetCode/C/LongestPalindrome/LongestPalindrome.c	/^#define FALSE /;"	d	language:C	file:
+FALSE	LeetCode/C/SingleNumber/singleNumberIII.c	/^#define FALSE /;"	d	language:C	file:
+FALSE	LeetCode/C/countPalindromicSubsequences/countPalindromicSubsequences.c	/^#define FALSE /;"	d	language:C	file:
+FALSE	LeetCode/C/countSubstrings/countSubstrings.c	/^#define FALSE /;"	d	language:C	file:
+FALSE	LeetCode/C/longestCommonSubsequence/longestCommonSubsequence.c	/^#define FALSE /;"	d	language:C	file:
+FALSE	LeetCode/C/minDistance/minDistance.c	/^#define FALSE /;"	d	language:C	file:
+FALSE	LeetCode/C/palindromePairs/palindromePairs.c	/^#define FALSE /;"	d	language:C	file:
+FALSE	LeetCode/C/shortestPalindrome/shortestPalindrome.c	/^#define FALSE /;"	d	language:C	file:
+FALSE	LeetCode/C/singleNumbers/singleNumbers.c	/^#define FALSE /;"	d	language:C	file:
+HeapSort	CCPPBible/src/sort/HeapSort.c	/^int HeapSort(int * array, int size){$/;"	f	language:C	signature:(int * array, int size)
+InitBuckets	CCPPBible/src/sort/BucketSort.c	/^void InitBuckets(void){$/;"	f	language:C	signature:(void)
+InsertSort	CCPPBible/src/sort/InsertSort.c	/^int InsertSort(int * array, int size){$/;"	f	language:C	signature:(int * array, int size)
+JosephusLoop	CCPPBible/src/struct/list.c	/^int JosephusLoop(st_dataNode * head, int * output, int len, int M){$/;"	f	language:C	signature:(st_dataNode * head, int * output, int len, int M)
+LOG	LeetCode/C/LongestPalindrome/LongestPalindrome.c	/^#define LOG(/;"	d	language:C	file:
+LOG	LeetCode/C/SingleNumber/singleNumberIII.c	/^#define LOG(/;"	d	language:C	file:
+LOG	LeetCode/C/countPalindromicSubsequences/countPalindromicSubsequences.c	/^#define LOG(/;"	d	language:C	file:
+LOG	LeetCode/C/countSubstrings/countSubstrings.c	/^#define LOG(/;"	d	language:C	file:
+LOG	LeetCode/C/longestCommonSubsequence/longestCommonSubsequence.c	/^#define LOG(/;"	d	language:C	file:
+LOG	LeetCode/C/minDistance/minDistance.c	/^#define LOG(/;"	d	language:C	file:
+LOG	LeetCode/C/palindromePairs/palindromePairs.c	/^#define LOG(/;"	d	language:C	file:
+LOG	LeetCode/C/shortestPalindrome/shortestPalindrome.c	/^#define LOG(/;"	d	language:C	file:
+LOG	LeetCode/C/singleNumbers/singleNumbers.c	/^#define LOG(/;"	d	language:C	file:
+MAX	LeetCode/C/LongestPalindrome/LongestPalindrome.c	/^#define MAX(/;"	d	language:C	file:
+MAX	LeetCode/C/MaxSubArray/MaxSubArray.c	/^#define MAX(/;"	d	language:C	file:
+MAX	LeetCode/C/SingleNumber/singleNumberIII.c	/^#define MAX(/;"	d	language:C	file:
+MAX	LeetCode/C/countPalindromicSubsequences/countPalindromicSubsequences.c	/^#define MAX(/;"	d	language:C	file:
+MAX	LeetCode/C/countSubstrings/countSubstrings.c	/^#define MAX(/;"	d	language:C	file:
+MAX	LeetCode/C/longestCommonSubsequence/longestCommonSubsequence.c	/^#define MAX(/;"	d	language:C	file:
+MAX	LeetCode/C/minDistance/minDistance.c	/^#define MAX(/;"	d	language:C	file:
+MAX	LeetCode/C/palindromePairs/palindromePairs.c	/^#define MAX(/;"	d	language:C	file:
+MAX	LeetCode/C/shortestPalindrome/shortestPalindrome.c	/^#define MAX(/;"	d	language:C	file:
+MAX	LeetCode/C/singleNumbers/singleNumbers.c	/^#define MAX(/;"	d	language:C	file:
+MIN	LeetCode/C/LongestPalindrome/LongestPalindrome.c	/^#define MIN(/;"	d	language:C	file:
+MIN	LeetCode/C/SingleNumber/singleNumberIII.c	/^#define MIN(/;"	d	language:C	file:
+MIN	LeetCode/C/countPalindromicSubsequences/countPalindromicSubsequences.c	/^#define MIN(/;"	d	language:C	file:
+MIN	LeetCode/C/countSubstrings/countSubstrings.c	/^#define MIN(/;"	d	language:C	file:
+MIN	LeetCode/C/longestCommonSubsequence/longestCommonSubsequence.c	/^#define MIN(/;"	d	language:C	file:
+MIN	LeetCode/C/minDistance/minDistance.c	/^#define MIN(/;"	d	language:C	file:
+MIN	LeetCode/C/palindromePairs/palindromePairs.c	/^#define MIN(/;"	d	language:C	file:
+MIN	LeetCode/C/shortestPalindrome/shortestPalindrome.c	/^#define MIN(/;"	d	language:C	file:
+MIN	LeetCode/C/singleNumbers/singleNumbers.c	/^#define MIN(/;"	d	language:C	file:
+MergeImpl	CCPPBible/src/sort/MergeSort.c	/^int MergeImpl(int * array, int * temp,  int lstart, int lend, int rstart, int rend){$/;"	f	language:C	signature:(int * array, int * temp, int lstart, int lend, int rstart, int rend)
+MergeSort	CCPPBible/src/sort/MergeSort.c	/^int MergeSort(int * array, int size){$/;"	f	language:C	signature:(int * array, int size)
+MergeSortImpl	CCPPBible/src/sort/MergeSort.c	/^int MergeSortImpl(int * array, int * temp,  int low, int high){$/;"	f	language:C	signature:(int * array, int * temp, int low, int high)
+MergeSortedList	CCPPBible/src/struct/list.c	/^int MergeSortedList(st_dataNode ** phead, st_dataNode * head2){$/;"	f	language:C	signature:(st_dataNode ** phead, st_dataNode * head2)
+PARAM_ERR	CCPPBible/src/sort/BubbleSort.c	/^#define PARAM_ERR	/;"	d	language:C	file:
+PARAM_ERR	CCPPBible/src/sort/BucketSort.c	/^#define PARAM_ERR	/;"	d	language:C	file:
+PARAM_ERR	CCPPBible/src/sort/HeapSort.c	/^#define PARAM_ERR	/;"	d	language:C	file:
+PARAM_ERR	CCPPBible/src/sort/InsertSort.c	/^#define PARAM_ERR	/;"	d	language:C	file:
+PARAM_ERR	CCPPBible/src/sort/MergeSort.c	/^#define PARAM_ERR	/;"	d	language:C	file:
+PARAM_ERR	CCPPBible/src/sort/QuickSort.c	/^#define PARAM_ERR	/;"	d	language:C	file:
+PARAM_ERR	CCPPBible/src/sort/SelectSort.c	/^#define PARAM_ERR	/;"	d	language:C	file:
+PARAM_ERR	CCPPBible/src/sort/ShellSort.c	/^#define PARAM_ERR	/;"	d	language:C	file:
+PARAM_ERR	CCPPBible/src/string/str.h	/^#define PARAM_ERR	/;"	d	language:C++
+PARAM_ERR	CCPPBible/src/struct/doublist.h	/^#define PARAM_ERR	/;"	d	language:C++
+PARAM_ERR	CCPPBible/src/struct/list.h	/^#define PARAM_ERR	/;"	d	language:C++
+PARAM_ERR	CCPPBible/src/struct/tree.h	/^#define PARAM_ERR	/;"	d	language:C++
+PARAM_ERR	LeetCode/C/MaxSubArray/MaxSubArray.h	/^#define PARAM_ERR	/;"	d	language:C++
+QuickSort	CCPPBible/src/sort/QuickSort.c	/^int QuickSort(int * array, int low, int high){$/;"	f	language:C	signature:(int * array, int low, int high)
+SIZE	LeetCode/C/countSubstrings/countSubstrings.c	/^#define SIZE	/;"	d	language:C	file:
+SIZE	LeetCode/C/palindromePairs/palindromePairs.c	/^#define SIZE /;"	d	language:C	file:
+SIZE	MLNX/circlequeue.c	/^#define SIZE /;"	d	language:C	file:
+SUCCESS	CCPPBible/src/sort/BubbleSort.c	/^#define SUCCESS	/;"	d	language:C	file:
+SUCCESS	CCPPBible/src/sort/BucketSort.c	/^#define SUCCESS	/;"	d	language:C	file:
+SUCCESS	CCPPBible/src/sort/HeapSort.c	/^#define SUCCESS	/;"	d	language:C	file:
+SUCCESS	CCPPBible/src/sort/InsertSort.c	/^#define SUCCESS	/;"	d	language:C	file:
+SUCCESS	CCPPBible/src/sort/MergeSort.c	/^#define SUCCESS	/;"	d	language:C	file:
+SUCCESS	CCPPBible/src/sort/QuickSort.c	/^#define SUCCESS	/;"	d	language:C	file:
+SUCCESS	CCPPBible/src/sort/SelectSort.c	/^#define SUCCESS	/;"	d	language:C	file:
+SUCCESS	CCPPBible/src/sort/ShellSort.c	/^#define SUCCESS	/;"	d	language:C	file:
+SUCCESS	CCPPBible/src/string/str.h	/^#define SUCCESS	/;"	d	language:C++
+SUCCESS	CCPPBible/src/struct/doublist.h	/^#define SUCCESS	/;"	d	language:C++
+SUCCESS	CCPPBible/src/struct/list.h	/^#define SUCCESS	/;"	d	language:C++
+SUCCESS	CCPPBible/src/struct/tree.h	/^#define SUCCESS	/;"	d	language:C++
+SUCCESS	LeetCode/C/MaxSubArray/MaxSubArray.h	/^#define SUCCESS	/;"	d	language:C++
+Scatter	CCPPBible/src/sort/BucketSort.c	/^int Scatter(int * array, int size, int digit){$/;"	f	language:C	signature:(int * array, int size, int digit)
+SearchBSTreeNode	CCPPBible/src/struct/tree.c	/^st_trNode * SearchBSTreeNode(st_trNode * root, int data){$/;"	f	language:C	signature:(st_trNode * root, int data)
+SelectSort	CCPPBible/src/sort/SelectSort.c	/^int SelectSort(int * array, int size){$/;"	f	language:C	signature:(int * array, int size)
+ShellSort	CCPPBible/src/sort/ShellSort.c	/^int ShellSort(int * array, int size){$/;"	f	language:C	signature:(int * array, int size)
+TRUE	LeetCode/C/LongestPalindrome/LongestPalindrome.c	/^#define TRUE /;"	d	language:C	file:
+TRUE	LeetCode/C/SingleNumber/singleNumberIII.c	/^#define TRUE /;"	d	language:C	file:
+TRUE	LeetCode/C/countPalindromicSubsequences/countPalindromicSubsequences.c	/^#define TRUE /;"	d	language:C	file:
+TRUE	LeetCode/C/countSubstrings/countSubstrings.c	/^#define TRUE /;"	d	language:C	file:
+TRUE	LeetCode/C/longestCommonSubsequence/longestCommonSubsequence.c	/^#define TRUE /;"	d	language:C	file:
+TRUE	LeetCode/C/minDistance/minDistance.c	/^#define TRUE /;"	d	language:C	file:
+TRUE	LeetCode/C/palindromePairs/palindromePairs.c	/^#define TRUE /;"	d	language:C	file:
+TRUE	LeetCode/C/shortestPalindrome/shortestPalindrome.c	/^#define TRUE /;"	d	language:C	file:
+TRUE	LeetCode/C/singleNumbers/singleNumbers.c	/^#define TRUE /;"	d	language:C	file:
+TraverseTreeInOrder	CCPPBible/src/struct/tree.c	/^int TraverseTreeInOrder(st_trNode * root){$/;"	f	language:C	signature:(st_trNode * root)
+TraverseTreeInOrderUnrec	CCPPBible/src/struct/tree.c	/^int TraverseTreeInOrderUnrec(st_trNode * root){$/;"	f	language:C	signature:(st_trNode * root)
+TraverseTreeLevelOrder	CCPPBible/src/struct/tree.c	/^int TraverseTreeLevelOrder(st_trNode * root, st_queue * queue){$/;"	f	language:C	signature:(st_trNode * root, st_queue * queue)
+TraverseTreePostOrder	CCPPBible/src/struct/tree.c	/^int TraverseTreePostOrder(st_trNode * root){$/;"	f	language:C	signature:(st_trNode * root)
+TraverseTreePostOrderUnrec	CCPPBible/src/struct/tree.c	/^int TraverseTreePostOrderUnrec(st_trNode * root){$/;"	f	language:C	signature:(st_trNode * root)
+TraverseTreePreOrder	CCPPBible/src/struct/tree.c	/^int TraverseTreePreOrder(st_trNode * root){$/;"	f	language:C	signature:(st_trNode * root)
+TraverseTreePreOrderUnrec	CCPPBible/src/struct/tree.c	/^int TraverseTreePreOrderUnrec(st_trNode * root){$/;"	f	language:C	signature:(st_trNode * root)
+__DOUBLIST_H__	CCPPBible/src/struct/doublist.h	/^#define __DOUBLIST_H__$/;"	d	language:C++
+__LIST_H__	CCPPBible/src/struct/list.h	/^#define __LIST_H__$/;"	d	language:C++
+__MAXSUBARRAY_H__	LeetCode/C/MaxSubArray/MaxSubArray.h	/^#define __MAXSUBARRAY_H__$/;"	d	language:C++
+__QUEUE_H__	CCPPBible/src/struct/queue.h	/^#define __QUEUE_H__$/;"	d	language:C++
+__STACK_H__	CCPPBible/src/struct/stack.h	/^#define __STACK_H__$/;"	d	language:C++
+__STR_H__	CCPPBible/src/string/str.h	/^#define __STR_H__$/;"	d	language:C++
+__TREE_H__	CCPPBible/src/struct/tree.h	/^#define __TREE_H__$/;"	d	language:C++
+addBigInt	CCPPBible/src/string/str.c	/^int addBigInt(char * str1, char * str2, char * rst){$/;"	f	language:C	signature:(char * str1, char * str2, char * rst)
+arr	MLNX/circlequeue.c	/^    int arr[SIZE];$/;"	m	language:C	struct:__anon1	file:
+binMetric	CCPPBible/src/string/str.c	/^static char binMetric[16] = { \\$/;"	v	language:C	file:
+btn	CCPPBible/src/struct/stack.h	/^	st_dataNode * btn; \/* head *\/$/;"	m	language:C++	struct:stack
+bucket	CCPPBible/src/sort/BucketSort.c	/^typedef struct bucket{$/;"	s	language:C	file:
+commonStr	CCPPBible/src/string/str.c	/^char * commonStr(const char * str1, const char * str2){$/;"	f	language:C	signature:(const char * str1, const char * str2)
+count	CCPPBible/src/sort/BucketSort.c	/^	int count;				\/* 桶元素中有效的个数*\/$/;"	m	language:C	struct:bucket	file:
+count	MLNX/circlequeue.c	/^    int front, rear, count;$/;"	m	language:C	struct:__anon1	file:
+countPalindromicSubsequences	LeetCode/C/countPalindromicSubsequences/countPalindromicSubsequences.c	/^int countPalindromicSubsequences(char * S){$/;"	f	language:C	signature:(char * S)
+countSubstrings	LeetCode/C/countSubstrings/countSubstrings.c	/^int countSubstrings(char * s){$/;"	f	language:C	signature:(char * s)
+createDoubList	CCPPBible/src/struct/doublist.c	/^int createDoubList(st_doubNode ** phead, int * array, int size){$/;"	f	language:C	signature:(st_doubNode ** phead, int * array, int size)
+createList	CCPPBible/src/struct/list.c	/^st_dataNode* createList(st_dataNode* head, int * array, int size){$/;"	f	language:C	signature:(st_dataNode* head, int * array, int size)
+createListNode	CCPPBible/src/struct/list.c	/^st_dataNode * createListNode(int data){$/;"	f	language:C	signature:(int data)
+createQueue	CCPPBible/src/struct/queue.c	/^st_queue * createQueue(void){$/;"	f	language:C	signature:(void)
+createStack	CCPPBible/src/struct/stack.c	/^st_stack * createStack(void){$/;"	f	language:C	signature:(void)
+createTree	CCPPBible/src/struct/tree.c	/^int createTree(st_tree ** ptree){$/;"	f	language:C	signature:(st_tree ** ptree)
+createTreeNode	CCPPBible/src/struct/tree.c	/^st_trNode * createTreeNode(int data){$/;"	f	language:C	signature:(int data)
+data	CCPPBible/src/struct/doublist.h	/^	int data; \/*这里可扩展为任何数据，暂时简单就用一个 int*\/$/;"	m	language:C++	struct:doubNode
+data	CCPPBible/src/struct/list.h	/^	int data; \/*这里可扩展为任何数据，暂时简单就用一个 int*\/$/;"	m	language:C++	struct:dataNode
+data	CCPPBible/src/struct/tree.h	/^	int data;$/;"	m	language:C++	struct:trNode
+dataNode	CCPPBible/src/struct/list.h	/^typedef struct dataNode {$/;"	s	language:C++
+deQueue	CCPPBible/src/struct/queue.c	/^st_dataNode * deQueue(st_queue * queue){$/;"	f	language:C	signature:(st_queue * queue)
+dequeue	MLNX/circlequeue.c	/^void dequeue(CircularQueue* q) {$/;"	f	language:C	signature:(CircularQueue* q)
+display	MLNX/circlequeue.c	/^void display(CircularQueue* q) {$/;"	f	language:C	signature:(CircularQueue* q)
+doubNode	CCPPBible/src/struct/doublist.h	/^typedef struct doubNode {$/;"	s	language:C++
+dumpDoubList	CCPPBible/src/struct/doublist.c	/^void dumpDoubList(st_doubNode * head){$/;"	f	language:C	signature:(st_doubNode * head)
+dumpDoubListReverse	CCPPBible/src/struct/doublist.c	/^void dumpDoubListReverse(st_doubNode * head){$/;"	f	language:C	signature:(st_doubNode * head)
+dumpList	CCPPBible/src/struct/list.c	/^void dumpList(st_dataNode * head){$/;"	f	language:C	signature:(st_dataNode * head)
+dumpQueue	CCPPBible/src/struct/queue.c	/^int dumpQueue(st_queue * queue){$/;"	f	language:C	signature:(st_queue * queue)
+dumpStack	CCPPBible/src/struct/stack.c	/^int dumpStack(st_stack * stack){$/;"	f	language:C	signature:(st_stack * stack)
+dumpTree	CCPPBible/src/struct/tree.c	/^int dumpTree(st_tree * tree){$/;"	f	language:C	signature:(st_tree * tree)
+elem	CCPPBible/src/sort/BucketSort.c	/^	int elem[BUCKET_DEEP];	\/*桶元素*\/$/;"	m	language:C	struct:bucket	file:
+encodeStr	CCPPBible/src/string/str.c	/^int encodeStr(char * str){$/;"	f	language:C	signature:(char * str)
+enqueue	MLNX/circlequeue.c	/^void enqueue(CircularQueue* q, int value) {$/;"	f	language:C	signature:(CircularQueue* q, int value)
+expend	LeetCode/C/LongestPalindrome/LongestPalindrome.c	/^int expend(char * s, int left, int right){$/;"	f	language:C	signature:(char * s, int left, int right)
+expend	LeetCode/C/countSubstrings/countSubstrings.c	/^int expend(char * s, int left, int right){$/;"	f	language:C	signature:(char * s, int left, int right)
+findDoubListPos	CCPPBible/src/struct/doublist.c	/^st_doubNode * findDoubListPos(st_doubNode * head, int pos){$/;"	f	language:C	signature:(st_doubNode * head, int pos)
+findListPos	CCPPBible/src/struct/list.c	/^st_dataNode* findListPos(st_dataNode* head, int pos){$/;"	f	language:C	signature:(st_dataNode* head, int pos)
+front	MLNX/circlequeue.c	/^    int front, rear, count;$/;"	m	language:C	struct:__anon1	file:
+gBSTree	CCPPBible/src/struct/tree.h	/^st_tree * gBSTree;$/;"	v	language:C++
+gDoubHead	CCPPBible/src/struct/doublist.h	/^struct doubNode * gDoubHead;$/;"	v	language:C++	typeref:struct:doubNode
+gDoubHead1	CCPPBible/src/struct/doublist.h	/^struct doubNode * gDoubHead1;$/;"	v	language:C++	typeref:struct:doubNode
+gDoubHead2	CCPPBible/src/struct/doublist.h	/^struct doubNode * gDoubHead2;$/;"	v	language:C++	typeref:struct:doubNode
+g_buckets	CCPPBible/src/sort/BucketSort.c	/^st_bucket g_buckets[BUCKET_NUM];$/;"	v	language:C
+g_lastvalue	CCPPBible/src/struct/tree.c	/^static int g_lastvalue = 0;$/;"	v	language:C	file:
+gather	CCPPBible/src/sort/BucketSort.c	/^int gather(int * array, int size) {$/;"	f	language:C	signature:(int * array, int size)
+gbkstrlen	CCPPBible/src/string/str.c	/^int gbkstrlen(char * str){$/;"	f	language:C	signature:(char * str)
+generateMatrix	LeetCode/C/GenerateMatrix/GenerateMatrix.c	/^int** generateMatrix(int n, int* returnSize, int** returnColumnSizes){$/;"	f	language:C	signature:(int n, int* returnSize, int** returnColumnSizes)
+getDouListTail	CCPPBible/src/struct/doublist.c	/^st_doubNode * getDouListTail(st_doubNode* head){$/;"	f	language:C	signature:(st_doubNode* head)
+getDouLoopListTail	CCPPBible/src/struct/doublist.c	/^st_doubNode * getDouLoopListTail(st_doubNode* head){$/;"	f	language:C	signature:(st_doubNode* head)
+getDoubListLen	CCPPBible/src/struct/doublist.c	/^int getDoubListLen(st_doubNode * head){$/;"	f	language:C	signature:(st_doubNode * head)
+getListLen	CCPPBible/src/struct/list.c	/^int getListLen(st_dataNode* head){$/;"	f	language:C	signature:(st_dataNode* head)
+getListMidNode	CCPPBible/src/struct/list.c	/^st_dataNode * getListMidNode(st_dataNode * head){$/;"	f	language:C	signature:(st_dataNode * head)
+getListMidNode2	CCPPBible/src/struct/list.c	/^st_dataNode * getListMidNode2(st_dataNode * head){$/;"	f	language:C	signature:(st_dataNode * head)
+getMaxNum	CCPPBible/src/sort/BucketSort.c	/^int getMaxNum(int * array, int size){$/;"	f	language:C	signature:(int * array, int size)
+getMinPoS	CCPPBible/src/sort/SelectSort.c	/^int getMinPoS(int * array, int low, int high){$/;"	f	language:C	signature:(int * array, int low, int high)
+getMostLeftNode	CCPPBible/src/struct/tree.c	/^st_trNode * getMostLeftNode(st_trNode * root){$/;"	f	language:C	signature:(st_trNode * root)
+getQueueLength	CCPPBible/src/struct/queue.c	/^int getQueueLength(st_queue * queue){$/;"	f	language:C	signature:(st_queue * queue)
+getRnd	CCPPBible/src/sort/BucketSort.c	/^int getRnd(int num){$/;"	f	language:C	signature:(int num)
+getStackLength	CCPPBible/src/struct/stack.c	/^int getStackLength(st_stack * stack){$/;"	f	language:C	signature:(st_stack * stack)
+getStrMaxSuccNum	CCPPBible/src/string/str.c	/^int getStrMaxSuccNum(char * str, int * pnum0, int * pnum1){$/;"	f	language:C	signature:(char * str, int * pnum0, int * pnum1)
+getSubMaxSum	LeetCode/C/MaxSubArray/MaxSubArray.c	/^int getSubMaxSum(int* nums, int left, int right){$/;"	f	language:C	signature:(int* nums, int left, int right)
+ghead	CCPPBible/src/struct/list.h	/^struct dataNode * ghead;$/;"	v	language:C++	typeref:struct:dataNode
+ghead1	CCPPBible/src/struct/list.h	/^struct dataNode * ghead1;$/;"	v	language:C++	typeref:struct:dataNode
+ghead2	CCPPBible/src/struct/list.h	/^struct dataNode * ghead2;$/;"	v	language:C++	typeref:struct:dataNode
+gqueue	CCPPBible/src/struct/queue.h	/^st_queue * gqueue;$/;"	v	language:C++
+gstack	CCPPBible/src/struct/stack.h	/^st_stack * gstack;$/;"	v	language:C++
+head	CCPPBible/src/struct/queue.h	/^	st_dataNode * head;$/;"	m	language:C++	struct:queue
+hexMetric	CCPPBible/src/string/str.c	/^static char hexMetric[16] = { \\$/;"	v	language:C	file:
+inQueue	CCPPBible/src/struct/queue.c	/^int inQueue(st_queue * queue, int data){$/;"	f	language:C	signature:(st_queue * queue, int data)
+initMaxHeap	CCPPBible/src/sort/HeapSort.c	/^int initMaxHeap(int * array, int size){$/;"	f	language:C	signature:(int * array, int size)
+initQueue	MLNX/circlequeue.c	/^void initQueue(CircularQueue* q) {$/;"	f	language:C	signature:(CircularQueue* q)
+insertBSTNode	CCPPBible/src/struct/tree.c	/^int insertBSTNode(st_trNode ** proot, st_trNode * node){$/;"	f	language:C	signature:(st_trNode ** proot, st_trNode * node)
+insertDoubListNode	CCPPBible/src/struct/doublist.c	/^st_doubNode * insertDoubListNode(st_doubNode** phead, int pos, int data){$/;"	f	language:C	signature:(st_doubNode** phead, int pos, int data)
+insertDoubLoopSortedListNode	CCPPBible/src/struct/doublist.c	/^int insertDoubLoopSortedListNode(st_doubNode** phead, int data){$/;"	f	language:C	signature:(st_doubNode** phead, int data)
+insertListNode	CCPPBible/src/struct/list.c	/^st_dataNode * insertListNode(st_dataNode** phead, int pos, int data){$/;"	f	language:C	signature:(st_dataNode** phead, int pos, int data)
+insertSortList	CCPPBible/src/struct/list.c	/^int insertSortList(st_dataNode** phead){$/;"	f	language:C	signature:(st_dataNode** phead)
+int2BinStr	CCPPBible/src/string/str.c	/^int int2BinStr(char * str, int num){$/;"	f	language:C	signature:(char * str, int num)
+int2HexStr	CCPPBible/src/string/str.c	/^int int2HexStr(char * str, int num){$/;"	f	language:C	signature:(char * str, int num)
+int2str	CCPPBible/src/string/str.c	/^int int2str(char * str, int num){$/;"	f	language:C	signature:(char * str, int num)
+isBSTree	CCPPBible/src/struct/tree.c	/^bool isBSTree(st_trNode * root){$/;"	f	language:C	signature:(st_trNode * root)
+isPalindromeConbineStr	LeetCode/C/palindromePairs/palindromePairs.c	/^bool isPalindromeConbineStr(char * str1, char * str2){$/;"	f	language:C	signature:(char * str1, char * str2)
+isPalindromeStr	CCPPBible/src/string/str.c	/^bool isPalindromeStr(char * str){$/;"	f	language:C	signature:(char * str)
+isPalindromeStr	LeetCode/C/LongestPalindrome/LongestPalindrome.c	/^bool isPalindromeStr(char * head, char * tail){$/;"	f	language:C	signature:(char * head, char * tail)
+isPalindromeStr	LeetCode/C/shortestPalindrome/shortestPalindrome.c	/^bool isPalindromeStr(char * head, char * tail){$/;"	f	language:C	signature:(char * head, char * tail)
+isQueueEmpty	CCPPBible/src/struct/queue.c	/^bool isQueueEmpty(st_queue * q){$/;"	f	language:C	signature:(st_queue * q)
+isStackEmpty	CCPPBible/src/struct/stack.c	/^bool isStackEmpty(st_stack * stack){$/;"	f	language:C	signature:(st_stack * stack)
+is_empty	MLNX/circlequeue.c	/^int is_empty(CircularQueue* q) {$/;"	f	language:C	signature:(CircularQueue* q)
+is_full	MLNX/circlequeue.c	/^int is_full(CircularQueue* q) {$/;"	f	language:C	signature:(CircularQueue* q)
+left	CCPPBible/src/struct/tree.h	/^	struct trNode * left;$/;"	m	language:C++	struct:trNode	typeref:struct:trNode::trNode
+libstr2float	CCPPBible/src/string/str.c	/^int libstr2float(char * str, float * rst){$/;"	f	language:C	signature:(char * str, float * rst)
+libstr2int	CCPPBible/src/string/str.c	/^int libstr2int(char * str, int * rst){$/;"	f	language:C	signature:(char * str, int * rst)
+longestCommonSubsequence	LeetCode/C/longestCommonSubsequence/longestCommonSubsequence.c	/^int longestCommonSubsequence(char * text1, char * text2){$/;"	f	language:C	signature:(char * text1, char * text2)
+longestPalindrome	LeetCode/C/LongestPalindrome/LongestPalindrome.c	/^char * longestPalindrome(char * s){$/;"	f	language:C	signature:(char * s)
+longestPalindrome2	LeetCode/C/LongestPalindrome/LongestPalindrome.c	/^char * longestPalindrome2(char * s){$/;"	f	language:C	signature:(char * s)
+longestPalindromeSubstrFromHead	LeetCode/C/shortestPalindrome/shortestPalindrome.c	/^int longestPalindromeSubstrFromHead(char * s, char ** pdrear){$/;"	f	language:C	signature:(char * s, char ** pdrear)
+lowerMap	CCPPBible/src/string/str.c	/^static char lowerMap[26] = { \\$/;"	v	language:C	file:
+main	CCPPBible/src/sort/BubbleSort.c	/^int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	CCPPBible/src/sort/BucketSort.c	/^int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	CCPPBible/src/sort/HeapSort.c	/^int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	CCPPBible/src/sort/InsertSort.c	/^int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	CCPPBible/src/sort/MergeSort.c	/^int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	CCPPBible/src/sort/QuickSort.c	/^int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	CCPPBible/src/sort/SelectSort.c	/^int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	CCPPBible/src/sort/ShellSort.c	/^int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	CCPPBible/src/string/main.c	/^int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	CCPPBible/src/struct/main.c	/^int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	LeetCode/C/GenerateMatrix/GenerateMatrix.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	LeetCode/C/LongestPalindrome/LongestPalindrome.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	LeetCode/C/MaxSubArray/MaxSubArray.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	LeetCode/C/SingleNumber/SingleNumber.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	LeetCode/C/SingleNumber/singleNumberIII.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	LeetCode/C/SpiralOrder/SpiralOrder.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	LeetCode/C/countPalindromicSubsequences/countPalindromicSubsequences.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	LeetCode/C/countSubstrings/countSubstrings.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	LeetCode/C/longestCommonSubsequence/longestCommonSubsequence.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	LeetCode/C/minDistance/minDistance.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	LeetCode/C/palindromePairs/palindromePairs.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	LeetCode/C/shortestPalindrome/shortestPalindrome.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	LeetCode/C/singleNumbers/singleNumbers.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	MLNX/circlequeue.c	/^int main() {$/;"	f	language:C
+maxSubArray	LeetCode/C/MaxSubArray/MaxSubArray.c	/^int maxSubArray(int* nums, int numsSize){$/;"	f	language:C	signature:(int* nums, int numsSize)
+maxSubArray2	LeetCode/C/MaxSubArray/MaxSubArray.c	/^int maxSubArray2(int* nums, int numsSize){$/;"	f	language:C	signature:(int* nums, int numsSize)
+minDistance	LeetCode/C/minDistance/minDistance.c	/^int minDistance(char * word1, char * word2){$/;"	f	language:C	signature:(char * word1, char * word2)
+mymemcpy	CCPPBible/src/string/str.c	/^void * mymemcpy(void * dst, void * src, int size){$/;"	f	language:C	signature:(void * dst, void * src, int size)
+mystrcat	CCPPBible/src/string/str.c	/^char * mystrcat(char * str1, char * str2){$/;"	f	language:C	signature:(char * str1, char * str2)
+mystrcmp	CCPPBible/src/string/str.c	/^int mystrcmp(char * str1, char * str2){$/;"	f	language:C	signature:(char * str1, char * str2)
+mystrcpy	CCPPBible/src/string/str.c	/^int mystrcpy(char * dst, char * src){$/;"	f	language:C	signature:(char * dst, char * src)
+mystrlen	CCPPBible/src/string/str.c	/^int mystrlen(char * str){$/;"	f	language:C	signature:(char * str)
+mystrstr	CCPPBible/src/string/str.c	/^char * mystrstr(char * str, char * sub){$/;"	f	language:C	signature:(char * str, char * sub)
+next	CCPPBible/src/struct/doublist.h	/^	struct doubNode * next;$/;"	m	language:C++	struct:doubNode	typeref:struct:doubNode::doubNode
+next	CCPPBible/src/struct/list.h	/^	struct dataNode * next;$/;"	m	language:C++	struct:dataNode	typeref:struct:dataNode::dataNode
+palindromePairs	LeetCode/C/palindromePairs/palindromePairs.c	/^int** palindromePairs(char ** words, int wordsSize, int* returnSize, int** returnColumnSizes){$/;"	f	language:C	signature:(char ** words, int wordsSize, int* returnSize, int** returnColumnSizes)
+parent	CCPPBible/src/struct/tree.h	/^	struct trNode * parent;$/;"	m	language:C++	struct:trNode	typeref:struct:trNode::trNode
+popStack	CCPPBible/src/struct/stack.c	/^st_dataNode * popStack(st_stack * stack){$/;"	f	language:C	signature:(st_stack * stack)
+prev	CCPPBible/src/struct/doublist.h	/^	struct doubNode * prev;$/;"	m	language:C++	struct:doubNode	typeref:struct:doubNode::doubNode
+print_internal_state	MLNX/circlequeue.c	/^void print_internal_state(CircularQueue* q) {$/;"	f	language:C	signature:(CircularQueue* q)
+pushStack	CCPPBible/src/struct/stack.c	/^int pushStack(st_stack * stack, int data){$/;"	f	language:C	signature:(st_stack * stack, int data)
+queue	CCPPBible/src/struct/queue.h	/^typedef struct queue{$/;"	s	language:C++
+quickSortDoubList	CCPPBible/src/struct/doublist.c	/^int quickSortDoubList(st_doubNode** phead, st_doubNode ** ptail){$/;"	f	language:C	signature:(st_doubNode** phead, st_doubNode ** ptail)
+rear	MLNX/circlequeue.c	/^    int front, rear, count;$/;"	m	language:C	struct:__anon1	file:
+removeBSTreeNode	CCPPBible/src/struct/tree.c	/^int removeBSTreeNode(st_trNode ** proot, int data){$/;"	f	language:C	signature:(st_trNode ** proot, int data)
+removeDoubListNode	CCPPBible/src/struct/doublist.c	/^st_doubNode * removeDoubListNode(st_doubNode** phead, int pos){$/;"	f	language:C	signature:(st_doubNode** phead, int pos)
+removeDoubLoopListNodeByData	CCPPBible/src/struct/doublist.c	/^int removeDoubLoopListNodeByData(st_doubNode ** phead, int data){$/;"	f	language:C	signature:(st_doubNode ** phead, int data)
+removeDoubLoopListSameNode	CCPPBible/src/struct/doublist.c	/^int removeDoubLoopListSameNode(st_doubNode** phead1, st_doubNode** phead2){$/;"	f	language:C	signature:(st_doubNode** phead1, st_doubNode** phead2)
+removeListNode	CCPPBible/src/struct/list.c	/^st_dataNode * removeListNode(st_dataNode** phead, int pos){$/;"	f	language:C	signature:(st_dataNode** phead, int pos)
+removeSubString	CCPPBible/src/string/str.c	/^int removeSubString(char * str, int index, int size){$/;"	f	language:C	signature:(char * str, int index, int size)
+reverseList	CCPPBible/src/struct/list.c	/^int reverseList(st_dataNode** phead){$/;"	f	language:C	signature:(st_dataNode** phead)
+right	CCPPBible/src/struct/tree.h	/^	struct trNode * right;$/;"	m	language:C++	struct:trNode	typeref:struct:trNode::trNode
+rightShiftStr	CCPPBible/src/string/str.c	/^int rightShiftStr(char * str, int n){$/;"	f	language:C	signature:(char * str, int n)
+root	CCPPBible/src/struct/tree.h	/^	struct trNode * root;$/;"	m	language:C++	struct:tree	typeref:struct:tree::trNode
+searchDoubListNode	CCPPBible/src/struct/doublist.c	/^st_doubNode* searchDoubListNode(st_doubNode* head, int num){$/;"	f	language:C	signature:(st_doubNode* head, int num)
+searchListNode	CCPPBible/src/struct/list.c	/^st_dataNode* searchListNode(st_dataNode* head, int num){$/;"	f	language:C	signature:(st_dataNode* head, int num)
+shortestPalindrome	LeetCode/C/shortestPalindrome/shortestPalindrome.c	/^char * shortestPalindrome(char * s){$/;"	f	language:C	signature:(char * s)
+singleNumber	LeetCode/C/SingleNumber/SingleNumber.c	/^int* singleNumber(int* nums, int numsSize, int* returnSize){$/;"	f	language:C	signature:(int* nums, int numsSize, int* returnSize)
+singleNumber	LeetCode/C/SingleNumber/singleNumberIII.c	/^int singleNumber(int* nums, int numsSize){$/;"	f	language:C	signature:(int* nums, int numsSize)
+singleNumber2	LeetCode/C/SingleNumber/SingleNumber.c	/^int* singleNumber2(int* nums, int numsSize, int* returnSize){$/;"	f	language:C	signature:(int* nums, int numsSize, int* returnSize)
+singleNumbers	LeetCode/C/singleNumbers/singleNumbers.c	/^int* singleNumbers(int* nums, int numsSize, int* returnSize){$/;"	f	language:C	signature:(int* nums, int numsSize, int* returnSize)
+sortHalfStr	CCPPBible/src/string/str.c	/^int sortHalfStr(char * str){$/;"	f	language:C	signature:(char * str)
+spiralOrder	LeetCode/C/SpiralOrder/SpiralOrder.c	/^int* spiralOrder(int** matrix, int matrixSize, int* matrixColSize, int* returnSize){$/;"	f	language:C	signature:(int** matrix, int matrixSize, int* matrixColSize, int* returnSize)
+st_bucket	CCPPBible/src/sort/BucketSort.c	/^}st_bucket;$/;"	t	language:C	typeref:struct:bucket	file:
+st_dataNode	CCPPBible/src/struct/list.h	/^} st_dataNode;$/;"	t	language:C++	typeref:struct:dataNode
+st_doubNode	CCPPBible/src/struct/doublist.h	/^} st_doubNode;$/;"	t	language:C++	typeref:struct:doubNode
+st_queue	CCPPBible/src/struct/queue.h	/^} st_queue;$/;"	t	language:C++	typeref:struct:queue
+st_stack	CCPPBible/src/struct/stack.h	/^} st_stack;$/;"	t	language:C++	typeref:struct:stack
+st_trNode	CCPPBible/src/struct/tree.h	/^} st_trNode;$/;"	t	language:C++	typeref:struct:trNode
+st_tree	CCPPBible/src/struct/tree.h	/^}st_tree;$/;"	t	language:C++	typeref:struct:tree
+stack	CCPPBible/src/struct/stack.h	/^typedef struct stack{$/;"	s	language:C++
+statStr	CCPPBible/src/string/str.c	/^int statStr(char * str){$/;"	f	language:C	signature:(char * str)
+str2int	CCPPBible/src/string/str.c	/^int str2int(char * str, int * rst){$/;"	f	language:C	signature:(char * str, int * rst)
+strRemoveSpecChar	CCPPBible/src/string/str.c	/^int strRemoveSpecChar(char * str, const char c){$/;"	f	language:C	signature:(char * str, const char c)
+strReplaceAll	CCPPBible/src/string/str.c	/^int strReplaceAll(char * str, char * sub, char * replace){$/;"	f	language:C	signature:(char * str, char * sub, char * replace)
+strReversWithWord	CCPPBible/src/string/str.c	/^int strReversWithWord (char * str){$/;"	f	language:C	signature:(char * str)
+strReversWithoutSubstr	CCPPBible/src/string/str.c	/^int strReversWithoutSubstr (char * str, char * substr){$/;"	f	language:C	signature:(char * str, char * substr)
+strReversWithoutWord	CCPPBible/src/string/str.c	/^int strReversWithoutWord (char * str){$/;"	f	language:C	signature:(char * str)
+strReverse	CCPPBible/src/string/str.c	/^int strReverse(char * head, char * tail){$/;"	f	language:C	signature:(char * head, char * tail)
+tag	CCPPBible/src/struct/tree.h	/^	int tag;$/;"	m	language:C++	struct:trNode
+tail	CCPPBible/src/struct/queue.h	/^	st_dataNode * tail;	$/;"	m	language:C++	struct:queue
+testBSTree	CCPPBible/src/struct/tree.c	/^void testBSTree(void){$/;"	f	language:C	signature:(void)
+testConvertNum2Str	CCPPBible/src/string/str.c	/^void testConvertNum2Str(void){$/;"	f	language:C	signature:(void)
+testCreateDoubList	CCPPBible/src/struct/doublist.c	/^void testCreateDoubList(void){$/;"	f	language:C	signature:(void)
+testCreateList	CCPPBible/src/struct/list.c	/^void testCreateList(void){$/;"	f	language:C	signature:(void)
+testFindDoubListPos	CCPPBible/src/struct/doublist.c	/^void testFindDoubListPos(void){$/;"	f	language:C	signature:(void)
+testFindListPos	CCPPBible/src/struct/list.c	/^void testFindListPos(void){$/;"	f	language:C	signature:(void)
+testGetListMidNode	CCPPBible/src/struct/list.c	/^void testGetListMidNode(void){$/;"	f	language:C	signature:(void)
+testGetListMidNode2	CCPPBible/src/struct/list.c	/^void testGetListMidNode2(void){$/;"	f	language:C	signature:(void)
+testInsertDoubNode	CCPPBible/src/struct/doublist.c	/^void testInsertDoubNode(void){$/;"	f	language:C	signature:(void)
+testInsertNode	CCPPBible/src/struct/list.c	/^void testInsertNode(void){$/;"	f	language:C	signature:(void)
+testInsertSortList	CCPPBible/src/struct/list.c	/^void testInsertSortList(void){$/;"	f	language:C	signature:(void)
+testJosephusLoop	CCPPBible/src/struct/list.c	/^void testJosephusLoop(void){$/;"	f	language:C	signature:(void)
+testListLen	CCPPBible/src/struct/list.c	/^void testListLen(void){$/;"	f	language:C	signature:(void)
+testMergeSortedList	CCPPBible/src/struct/list.c	/^void testMergeSortedList(void){		$/;"	f	language:C	signature:(void)
+testNum2Str	CCPPBible/src/string/str.c	/^void testNum2Str(void){$/;"	f	language:C	signature:(void)
+testQueue	CCPPBible/src/struct/queue.c	/^void testQueue(void){$/;"	f	language:C	signature:(void)
+testRemoveNode	CCPPBible/src/struct/list.c	/^void testRemoveNode(void){$/;"	f	language:C	signature:(void)
+testReverse	CCPPBible/src/string/str.c	/^void testReverse(void){$/;"	f	language:C	signature:(void)
+testReverseList	CCPPBible/src/struct/list.c	/^void testReverseList(void){$/;"	f	language:C	signature:(void)
+testSearchDoubList	CCPPBible/src/struct/doublist.c	/^void testSearchDoubList(void){$/;"	f	language:C	signature:(void)
+testSearchList	CCPPBible/src/struct/list.c	/^void testSearchList(void){$/;"	f	language:C	signature:(void)
+testStack	CCPPBible/src/struct/stack.c	/^void testStack(void){$/;"	f	language:C	signature:(void)
+testWhetherLopp	CCPPBible/src/struct/list.c	/^void testWhetherLopp(void){$/;"	f	language:C	signature:(void)
+testaddBigInt	CCPPBible/src/string/str.c	/^void testaddBigInt(void){$/;"	f	language:C	signature:(void)
+testcommonStr	CCPPBible/src/string/str.c	/^void testcommonStr(void){$/;"	f	language:C	signature:(void)
+testcountPalindromicSubsequences	LeetCode/C/countPalindromicSubsequences/countPalindromicSubsequences.c	/^void testcountPalindromicSubsequences(void){$/;"	f	language:C	signature:(void)
+testcountSubstrings	LeetCode/C/countSubstrings/countSubstrings.c	/^void testcountSubstrings(void){$/;"	f	language:C	signature:(void)
+testencodeStr	CCPPBible/src/string/str.c	/^void testencodeStr(void){$/;"	f	language:C	signature:(void)
+testgbkstrlen	CCPPBible/src/string/str.c	/^void testgbkstrlen(void){$/;"	f	language:C	signature:(void)
+testgenerateMatrix	LeetCode/C/GenerateMatrix/GenerateMatrix.c	/^void testgenerateMatrix(void){$/;"	f	language:C	signature:(void)
+testgetDoubListLen	CCPPBible/src/struct/doublist.c	/^void testgetDoubListLen(void){$/;"	f	language:C	signature:(void)
+testgetStrMaxSuccNum	CCPPBible/src/string/str.c	/^void testgetStrMaxSuccNum(void){$/;"	f	language:C	signature:(void)
+testinsertDoubLoopSortedListNode	CCPPBible/src/struct/doublist.c	/^void testinsertDoubLoopSortedListNode(void){$/;"	f	language:C	signature:(void)
+testint2str	CCPPBible/src/string/str.c	/^void testint2str(void){$/;"	f	language:C	signature:(void)
+testisPalindromeStr	CCPPBible/src/string/str.c	/^void testisPalindromeStr(void){$/;"	f	language:C	signature:(void)
+testlibstr2num	CCPPBible/src/string/str.c	/^void testlibstr2num(void){$/;"	f	language:C	signature:(void)
+testlongestCommonSubsequence	LeetCode/C/longestCommonSubsequence/longestCommonSubsequence.c	/^void testlongestCommonSubsequence(void){$/;"	f	language:C	signature:(void)
+testlongestPalindrome	LeetCode/C/LongestPalindrome/LongestPalindrome.c	/^void testlongestPalindrome(void){$/;"	f	language:C	signature:(void)
+testmaxSubArray	LeetCode/C/MaxSubArray/MaxSubArray.c	/^void testmaxSubArray(void){$/;"	f	language:C	signature:(void)
+testminDistance	LeetCode/C/minDistance/minDistance.c	/^void testminDistance(void){$/;"	f	language:C	signature:(void)
+testmymemcpy	CCPPBible/src/string/str.c	/^void testmymemcpy(void){$/;"	f	language:C	signature:(void)
+testmystrcat	CCPPBible/src/string/str.c	/^void testmystrcat(void){$/;"	f	language:C	signature:(void)
+testmystrcmp	CCPPBible/src/string/str.c	/^void testmystrcmp(void){$/;"	f	language:C	signature:(void)
+testmystrcpy	CCPPBible/src/string/str.c	/^void testmystrcpy(void){$/;"	f	language:C	signature:(void)
+testmystrlen	CCPPBible/src/string/str.c	/^void testmystrlen(void){$/;"	f	language:C	signature:(void)
+testmystrstr	CCPPBible/src/string/str.c	/^void testmystrstr(void){$/;"	f	language:C	signature:(void)
+testpalindromePairs	LeetCode/C/palindromePairs/palindromePairs.c	/^void testpalindromePairs(void){$/;"	f	language:C	signature:(void)
+testquickSortDoubList	CCPPBible/src/struct/doublist.c	/^void testquickSortDoubList(void){$/;"	f	language:C	signature:(void)
+testremoveDoubListNode	CCPPBible/src/struct/doublist.c	/^void testremoveDoubListNode(void){$/;"	f	language:C	signature:(void)
+testremoveDoubLoopListSameNode	CCPPBible/src/struct/doublist.c	/^void testremoveDoubLoopListSameNode(void){$/;"	f	language:C	signature:(void)
+testremoveSubString	CCPPBible/src/string/str.c	/^void testremoveSubString(void){$/;"	f	language:C	signature:(void)
+testrightShiftStr	CCPPBible/src/string/str.c	/^void testrightShiftStr(void){$/;"	f	language:C	signature:(void)
+testshortestPalindrome	LeetCode/C/shortestPalindrome/shortestPalindrome.c	/^void testshortestPalindrome(void){$/;"	f	language:C	signature:(void)
+testsingleNumber	LeetCode/C/SingleNumber/SingleNumber.c	/^void testsingleNumber(void){$/;"	f	language:C	signature:(void)
+testsingleNumber	LeetCode/C/SingleNumber/singleNumberIII.c	/^void testsingleNumber(void){$/;"	f	language:C	signature:(void)
+testsingleNumbers	LeetCode/C/singleNumbers/singleNumbers.c	/^void testsingleNumbers(void){$/;"	f	language:C	signature:(void)
+testsortHalfStr	CCPPBible/src/string/str.c	/^void testsortHalfStr(void){$/;"	f	language:C	signature:(void)
+testspiralOrder	LeetCode/C/SpiralOrder/SpiralOrder.c	/^void testspiralOrder(void){$/;"	f	language:C	signature:(void)
+teststatStr	CCPPBible/src/string/str.c	/^void teststatStr(void){$/;"	f	language:C	signature:(void)
+teststr2int	CCPPBible/src/string/str.c	/^void teststr2int(void){$/;"	f	language:C	signature:(void)
+teststrRemoveSpecChar	CCPPBible/src/string/str.c	/^void teststrRemoveSpecChar(void){$/;"	f	language:C	signature:(void)
+teststrReplaceAll	CCPPBible/src/string/str.c	/^void teststrReplaceAll(void){$/;"	f	language:C	signature:(void)
+top	CCPPBible/src/struct/stack.h	/^	st_dataNode * top; \/* tail *\/$/;"	m	language:C++	struct:stack
+trNode	CCPPBible/src/struct/tree.h	/^typedef struct trNode {$/;"	s	language:C++
+tree	CCPPBible/src/struct/tree.h	/^typedef struct tree {$/;"	s	language:C++
+upperMap	CCPPBible/src/string/str.c	/^static char upperMap[26] = { \\$/;"	v	language:C	file:
+whetherListLoop	CCPPBible/src/struct/list.c	/^bool whetherListLoop(st_dataNode * head){$/;"	f	language:C	signature:(st_dataNode * head)
