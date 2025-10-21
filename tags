@@ -78,6 +78,8 @@ MergeImpl	CCPPBible/src/sort/MergeSort.c	/^int MergeImpl(int * array, int * temp
 MergeSort	CCPPBible/src/sort/MergeSort.c	/^int MergeSort(int * array, int size){$/;"	f	language:C	signature:(int * array, int size)
 MergeSortImpl	CCPPBible/src/sort/MergeSort.c	/^int MergeSortImpl(int * array, int * temp,  int low, int high){$/;"	f	language:C	signature:(int * array, int * temp, int low, int high)
 MergeSortedList	CCPPBible/src/struct/list.c	/^int MergeSortedList(st_dataNode ** phead, st_dataNode * head2){$/;"	f	language:C	signature:(st_dataNode ** phead, st_dataNode * head2)
+Node	MLNX/BTreeRecursiveTraversal.c	/^typedef struct Node {$/;"	s	language:C	file:
+Node	MLNX/BTreeRecursiveTraversal.c	/^} Node;$/;"	t	language:C	typeref:struct:Node	file:
 PARAM_ERR	CCPPBible/src/sort/BubbleSort.c	/^#define PARAM_ERR	/;"	d	language:C	file:
 PARAM_ERR	CCPPBible/src/sort/BucketSort.c	/^#define PARAM_ERR	/;"	d	language:C	file:
 PARAM_ERR	CCPPBible/src/sort/HeapSort.c	/^#define PARAM_ERR	/;"	d	language:C	file:
@@ -148,6 +150,7 @@ countSubstrings	LeetCode/C/countSubstrings/countSubstrings.c	/^int countSubstrin
 createDoubList	CCPPBible/src/struct/doublist.c	/^int createDoubList(st_doubNode ** phead, int * array, int size){$/;"	f	language:C	signature:(st_doubNode ** phead, int * array, int size)
 createList	CCPPBible/src/struct/list.c	/^st_dataNode* createList(st_dataNode* head, int * array, int size){$/;"	f	language:C	signature:(st_dataNode* head, int * array, int size)
 createListNode	CCPPBible/src/struct/list.c	/^st_dataNode * createListNode(int data){$/;"	f	language:C	signature:(int data)
+createNode	MLNX/BTreeRecursiveTraversal.c	/^Node* createNode(int data) {$/;"	f	language:C	signature:(int data)
 createQueue	CCPPBible/src/struct/queue.c	/^st_queue * createQueue(void){$/;"	f	language:C	signature:(void)
 createStack	CCPPBible/src/struct/stack.c	/^st_stack * createStack(void){$/;"	f	language:C	signature:(void)
 createTree	CCPPBible/src/struct/tree.c	/^int createTree(st_tree ** ptree){$/;"	f	language:C	signature:(st_tree ** ptree)
@@ -155,9 +158,11 @@ createTreeNode	CCPPBible/src/struct/tree.c	/^st_trNode * createTreeNode(int data
 data	CCPPBible/src/struct/doublist.h	/^	int data; \/*这里可扩展为任何数据，暂时简单就用一个 int*\/$/;"	m	language:C++	struct:doubNode
 data	CCPPBible/src/struct/list.h	/^	int data; \/*这里可扩展为任何数据，暂时简单就用一个 int*\/$/;"	m	language:C++	struct:dataNode
 data	CCPPBible/src/struct/tree.h	/^	int data;$/;"	m	language:C++	struct:trNode
+data	MLNX/BTreeRecursiveTraversal.c	/^    int data;$/;"	m	language:C	struct:Node	file:
 dataNode	CCPPBible/src/struct/list.h	/^typedef struct dataNode {$/;"	s	language:C++
 deQueue	CCPPBible/src/struct/queue.c	/^st_dataNode * deQueue(st_queue * queue){$/;"	f	language:C	signature:(st_queue * queue)
 dequeue	MLNX/circlequeue.c	/^void dequeue(CircularQueue* q) {$/;"	f	language:C	signature:(CircularQueue* q)
+destroyTree	MLNX/BTreeRecursiveTraversal.c	/^void destroyTree(Node* root) {$/;"	f	language:C	signature:(Node* root)
 display	MLNX/circlequeue.c	/^void display(CircularQueue* q) {$/;"	f	language:C	signature:(CircularQueue* q)
 doubNode	CCPPBible/src/struct/doublist.h	/^typedef struct doubNode {$/;"	s	language:C++
 dumpDoubList	CCPPBible/src/struct/doublist.c	/^void dumpDoubList(st_doubNode * head){$/;"	f	language:C	signature:(st_doubNode * head)
@@ -207,6 +212,7 @@ hexMetric	CCPPBible/src/string/str.c	/^static char hexMetric[16] = { \\$/;"	v	la
 inQueue	CCPPBible/src/struct/queue.c	/^int inQueue(st_queue * queue, int data){$/;"	f	language:C	signature:(st_queue * queue, int data)
 initMaxHeap	CCPPBible/src/sort/HeapSort.c	/^int initMaxHeap(int * array, int size){$/;"	f	language:C	signature:(int * array, int size)
 initQueue	MLNX/circlequeue.c	/^void initQueue(CircularQueue* q) {$/;"	f	language:C	signature:(CircularQueue* q)
+inorder	MLNX/BTreeRecursiveTraversal.c	/^void inorder(Node* root) {$/;"	f	language:C	signature:(Node* root)
 insertBSTNode	CCPPBible/src/struct/tree.c	/^int insertBSTNode(st_trNode ** proot, st_trNode * node){$/;"	f	language:C	signature:(st_trNode ** proot, st_trNode * node)
 insertDoubListNode	CCPPBible/src/struct/doublist.c	/^st_doubNode * insertDoubListNode(st_doubNode** phead, int pos, int data){$/;"	f	language:C	signature:(st_doubNode** phead, int pos, int data)
 insertDoubLoopSortedListNode	CCPPBible/src/struct/doublist.c	/^int insertDoubLoopSortedListNode(st_doubNode** phead, int data){$/;"	f	language:C	signature:(st_doubNode** phead, int data)
@@ -225,6 +231,7 @@ isStackEmpty	CCPPBible/src/struct/stack.c	/^bool isStackEmpty(st_stack * stack){
 is_empty	MLNX/circlequeue.c	/^int is_empty(CircularQueue* q) {$/;"	f	language:C	signature:(CircularQueue* q)
 is_full	MLNX/circlequeue.c	/^int is_full(CircularQueue* q) {$/;"	f	language:C	signature:(CircularQueue* q)
 left	CCPPBible/src/struct/tree.h	/^	struct trNode * left;$/;"	m	language:C++	struct:trNode	typeref:struct:trNode::trNode
+left	MLNX/BTreeRecursiveTraversal.c	/^    struct Node* left;$/;"	m	language:C	struct:Node	typeref:struct:Node::Node	file:
 libstr2float	CCPPBible/src/string/str.c	/^int libstr2float(char * str, float * rst){$/;"	f	language:C	signature:(char * str, float * rst)
 libstr2int	CCPPBible/src/string/str.c	/^int libstr2int(char * str, int * rst){$/;"	f	language:C	signature:(char * str, int * rst)
 longestCommonSubsequence	LeetCode/C/longestCommonSubsequence/longestCommonSubsequence.c	/^int longestCommonSubsequence(char * text1, char * text2){$/;"	f	language:C	signature:(char * text1, char * text2)
@@ -255,6 +262,7 @@ main	LeetCode/C/minDistance/minDistance.c	/^ int main(int argc, char ** argv){$/
 main	LeetCode/C/palindromePairs/palindromePairs.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
 main	LeetCode/C/shortestPalindrome/shortestPalindrome.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
 main	LeetCode/C/singleNumbers/singleNumbers.c	/^ int main(int argc, char ** argv){$/;"	f	language:C	signature:(int argc, char ** argv)
+main	MLNX/BTreeRecursiveTraversal.c	/^int main() {$/;"	f	language:C
 main	MLNX/circlequeue.c	/^int main() {$/;"	f	language:C
 maxSubArray	LeetCode/C/MaxSubArray/MaxSubArray.c	/^int maxSubArray(int* nums, int numsSize){$/;"	f	language:C	signature:(int* nums, int numsSize)
 maxSubArray2	LeetCode/C/MaxSubArray/MaxSubArray.c	/^int maxSubArray2(int* nums, int numsSize){$/;"	f	language:C	signature:(int* nums, int numsSize)
@@ -270,7 +278,10 @@ next	CCPPBible/src/struct/list.h	/^	struct dataNode * next;$/;"	m	language:C++	s
 palindromePairs	LeetCode/C/palindromePairs/palindromePairs.c	/^int** palindromePairs(char ** words, int wordsSize, int* returnSize, int** returnColumnSizes){$/;"	f	language:C	signature:(char ** words, int wordsSize, int* returnSize, int** returnColumnSizes)
 parent	CCPPBible/src/struct/tree.h	/^	struct trNode * parent;$/;"	m	language:C++	struct:trNode	typeref:struct:trNode::trNode
 popStack	CCPPBible/src/struct/stack.c	/^st_dataNode * popStack(st_stack * stack){$/;"	f	language:C	signature:(st_stack * stack)
+postorder	MLNX/BTreeRecursiveTraversal.c	/^void postorder(Node* root) {$/;"	f	language:C	signature:(Node* root)
+preorder	MLNX/BTreeRecursiveTraversal.c	/^void preorder(Node* root) {$/;"	f	language:C	signature:(Node* root)
 prev	CCPPBible/src/struct/doublist.h	/^	struct doubNode * prev;$/;"	m	language:C++	struct:doubNode	typeref:struct:doubNode::doubNode
+printTreeStructure	MLNX/BTreeRecursiveTraversal.c	/^void printTreeStructure(Node* root, int level) {$/;"	f	language:C	signature:(Node* root, int level)
 print_internal_state	MLNX/circlequeue.c	/^void print_internal_state(CircularQueue* q) {$/;"	f	language:C	signature:(CircularQueue* q)
 pushStack	CCPPBible/src/struct/stack.c	/^int pushStack(st_stack * stack, int data){$/;"	f	language:C	signature:(st_stack * stack, int data)
 queue	CCPPBible/src/struct/queue.h	/^typedef struct queue{$/;"	s	language:C++
@@ -284,6 +295,7 @@ removeListNode	CCPPBible/src/struct/list.c	/^st_dataNode * removeListNode(st_dat
 removeSubString	CCPPBible/src/string/str.c	/^int removeSubString(char * str, int index, int size){$/;"	f	language:C	signature:(char * str, int index, int size)
 reverseList	CCPPBible/src/struct/list.c	/^int reverseList(st_dataNode** phead){$/;"	f	language:C	signature:(st_dataNode** phead)
 right	CCPPBible/src/struct/tree.h	/^	struct trNode * right;$/;"	m	language:C++	struct:trNode	typeref:struct:trNode::trNode
+right	MLNX/BTreeRecursiveTraversal.c	/^    struct Node* right;$/;"	m	language:C	struct:Node	typeref:struct:Node::Node	file:
 rightShiftStr	CCPPBible/src/string/str.c	/^int rightShiftStr(char * str, int n){$/;"	f	language:C	signature:(char * str, int n)
 root	CCPPBible/src/struct/tree.h	/^	struct trNode * root;$/;"	m	language:C++	struct:tree	typeref:struct:tree::trNode
 searchDoubListNode	CCPPBible/src/struct/doublist.c	/^st_doubNode* searchDoubListNode(st_doubNode* head, int num){$/;"	f	language:C	signature:(st_doubNode* head, int num)
