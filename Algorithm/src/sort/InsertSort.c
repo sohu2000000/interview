@@ -1,98 +1,89 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define SUCCESS     0
+#define PARAM_ERROR -1
 
-#define SUCCESS		0
-#define PARAM_ERR	-1
+/**
+ * 插入排序函数 - 将数组按升序排列
+ * @param numbers: 待排序的整数数组
+ * @param length: 数组长度
+ * @return: 成功返回SUCCESS，参数错误返回PARAM_ERROR
+ */
+int insertion_sort(int *numbers, int length) {
+    // 参数检查
+    if (numbers == NULL || length <= 0) {
+        printf("Error: Invalid parameters in %s\n", __func__);
+        return PARAM_ERROR;
+    }
 
-int InsertSort(int * array, int size){
-	if(NULL == array){
-		printf("%s para error\n", __func__);
-		return PARAM_ERR;
-	}
+    // 从第二个元素开始，因为第一个元素本身就是有序的
+    for (int current_index = 1; current_index < length; current_index++) {
+        int current_value = numbers[current_index];  // 当前要插入的值
+        int insert_position = current_index;         // 插入位置
 
-	int i = 0, j = 0;
-	int insert = 0;
-	int loc = 0;
+        // 在已排序部分从右向左查找插入位置
+        // 同时将大于current_value的元素向右移动
+        while (insert_position > 0 && numbers[insert_position - 1] > current_value) {
+            numbers[insert_position] = numbers[insert_position - 1];
+            insert_position--;
+        }
+
+        // 将当前值插入到正确位置
+        numbers[insert_position] = current_value;
+
 #ifdef DEBUG
-		int k = 0;
+        // 调试信息：显示每轮排序后的数组状态
+        printf("Round %d: ", current_index);
+        for (int k = 0; k < length; k++) {
+            if (k <= current_index) {
+                printf("[%d] ", numbers[k]);  // 已排序部分
+            } else {
+                printf(" %d  ", numbers[k]);  // 未排序部分
+            }
+        }
+        printf("\n");
 #endif
+    }
 
-
-	for(i = 0; i < size; i++){
-		insert = array[i];
-		/*升序*/
-
-		/*insert 是最大的，不改变，进入下一轮插入排序*/
-		if(insert > array[i-1]){
-			goto info;
-		}
-
-		/*在有序区域查找合适的插入位置*/
-		loc = i-1; //初始插入位置认为在最后一个上
-		for(j = i - 1; j >= 0; j--){
-			if(insert >= array[j]){
-#ifdef DEBUG				
-				printf("find loc insert %d > array[%d] = %d\n", insert, j, array[j]);
-#endif
-				break;
-			}
-			loc = j;
-		}
-
-		/*有序区从插入位置向后移动*/
-		for(j = i; j > loc; j--){
-			array[j] = array[j-1];
-		}
-		
-		array[loc] = insert;
-
-info:			
-#ifdef DEBUG		
-		printf("i = %d insert = %d, loc = %d\n", i, insert, loc);				
-		printf("[");
-		/*有序区域*/
-		for(k =0; k < i+1; k++){
-			printf("  %d  ", array[k]);
-		}
-		printf("] , ");
-
-		/*无序区域*/
-		printf(" [");
-		for(k =i+1; k < size; k++){
-			printf("  %d  ", array[k]);
-		}
-		printf("]\n");
-		printf("\n");
-#endif
-		continue;
-	}
-
-	return SUCCESS;
-	
+    return SUCCESS;
 }
 
 
-int main(int argc, char ** argv){
-	int array[10] = {7,3,5,8,0,9,1,2,4,6};
-	int i = 0;
+/**
+ * 打印数组内容
+ * @param numbers: 数组指针
+ * @param length: 数组长度
+ * @param title: 打印标题
+ */
+void print_array(int *numbers, int length, const char *title) {
+    printf("%s: ", title);
+    for (int i = 0; i < length; i++) {
+        printf("%d ", numbers[i]);
+    }
+    printf("\n");
+}
 
-	printf("Before sort: \n");
-	for(i = 0; i < 10; i++){
-		printf("  %d  ", array[i]);
-	}
-	printf("\n");
-	
+int main(int argc, char **argv) {
+    // 测试已排序数组（最好情况）
+    // 7 3 5 8 0 9 1 2 4 6
+    int test_array[] = {7, 3, 5, 8, 0, 9, 1, 2, 4, 6};
+    int array_size = sizeof(test_array) / sizeof(test_array[0]);
 
-	InsertSort(array, 10);
+    // 显示排序前的数组
+    print_array(test_array, array_size, "Before sorting");
 
-	printf("After sort: \n");
-	for(i = 0; i < 10; i++){
-		printf("  %d  ", array[i]);
-	}
-	printf("\n");
-	
-	return 0;
+    // 执行插入排序
+    int result = insertion_sort(test_array, array_size);
+    
+    if (result == SUCCESS) {
+        // 显示排序后的数组
+        print_array(test_array, array_size, "After sorting");
+    } else {
+        printf("Sorting failed with error code: %d\n", result);
+    }
+
+    return 0;
 }
 
 
