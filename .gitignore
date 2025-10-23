@@ -63,13 +63,3 @@ core
 core.*
 
 # Test executables (common names)
-test
-test_*
-*_test
-list_test
-list_demo
-insert_sort
-merge_sort
-merge_sort_debug
-insert_sort_debug
-optimized_list_complete
