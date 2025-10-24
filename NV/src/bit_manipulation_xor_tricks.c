@@ -578,6 +578,10 @@ static inline uint32_t align_to_power_of_two(uint32_t x, uint32_t align) {
 #define CACHE_LINE_SIZE 64
 #define CACHE_ALIGN(size) ROUND_UP(size, CACHE_LINE_SIZE)
 
+#define ALIGN(x, a) (((x) + (a) - 1) & ~((a) - 1))
+#define ALIGN_4(x) ALIGN(x, 4)
+#define ALIGN_8(x) ALIGN(x, 8)
+
 /* ================================================================================
  * 2. XOR的神奇特性和应用
  * ================================================================================ */
