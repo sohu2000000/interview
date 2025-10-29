@@ -3,24 +3,29 @@
 #include "list.h"
 #include "stack.h"
 
-
-int dumpStack(st_stack * stack){
-	if(NULL == stack){
+/**
+ * 显示栈内容 - 打印栈中所有元素（从栈底到栈顶）
+ * @param stack_ptr: 栈指针
+ * @return: 成功返回SUCCESS
+ * 
+ * 功能：遍历并打印栈的所有元素
+ */
+int display_stack_contents(st_stack *stack_ptr) {
+	if (stack_ptr == NULL) {
 		return SUCCESS;
 	}
 
-	st_dataNode * iter = NULL;
+	ListNode *current_node = NULL;
 
-	printf("========= Dump Stack %p ===========\n", stack);
+	printf("========= 栈内容 %p ===========\n", stack_ptr);
+	printf("\t 栈底(bottom) = %d \n", stack_ptr->bottom->data);
+	printf("\t 栈顶(top)    = %d \n\t", stack_ptr->top->data);
 
-	printf("\t button  = %d \n", stack->btn->data);
-	printf("\t top  = %d \n\t", stack->top->data);
+	current_node = stack_ptr->bottom;
 
-	iter = stack->btn;
-
-	while(NULL != iter){
-		printf(" %d ", iter->data);
-		iter = iter->next;
+	while (current_node != NULL) {
+		printf(" %d ", current_node->data);
+		current_node = current_node->next;
 	}
 
 	printf("\n");
@@ -29,118 +34,154 @@ int dumpStack(st_stack * stack){
 	return SUCCESS;
 }
 
-st_stack * createStack(void){
-	st_stack * q = NULL;
-	q = (st_stack *)malloc(sizeof(st_stack));
-	if(NULL == q){
-		printf("createStack malloc failed\n");
+/**
+ * 创建栈 - 分配并初始化一个新的栈
+ * @return: 成功返回栈指针，失败返回NULL
+ * 
+ * 功能：创建空栈，栈顶和栈底指针都为NULL
+ */
+st_stack *create_new_stack(void) {
+	st_stack *new_stack = NULL;
+	
+	new_stack = (st_stack *)malloc(sizeof(st_stack));
+	if (new_stack == NULL) {
+		printf("Error: create_new_stack malloc failed\n");
 		return NULL;
 	}
 
-	q->top = NULL;
-	q->btn = NULL;
+	new_stack->top = NULL;
+	new_stack->bottom = NULL;
 
-	return q;
+	return new_stack;
 }
 
-
-int pushStack(st_stack * stack, int data){
-	if(NULL == stack){
-		printf("%s param error \n");
-		return PARAM_ERR;
+/**
+ * 入栈操作（压栈）- 将元素压入栈顶
+ * @param stack_ptr: 栈指针
+ * @param element_data: 要压栈的数据
+ * @return: 成功返回SUCCESS，失败返回错误码
+ * 
+ * 算法：尾插法（栈顶在链表尾部）
+ * - 第一个元素：top和bottom都指向它
+ * - 后续元素：追加到top后面，更新top
+ */
+int push_element_to_stack(st_stack *stack_ptr, int element_data) {
+	if (stack_ptr == NULL) {
+		printf("Error: %s parameter error\n", __func__);
+		return PARAM_ERROR;
 	}
 
-	st_dataNode * node = createListNode(data);
-	if(NULL == node){
-		printf("%s createListNode error \n");
-		return ALLOC_ERR;
+	ListNode *new_node = create_node(element_data);
+	if (new_node == NULL) {
+		printf("Error: %s create_node failed\n", __func__);
+		return MEMORY_ERROR;
 	}
 
-	if(NULL == stack->btn){ /*队列第一个元素*/
-		stack->top = node;
-		stack->btn = node;
-	} else { /*不是首节点，加到最后, 更新stack的top*/
-		stack->top->next = node;
-		stack->top = node;
+	if (stack_ptr->bottom == NULL) {
+		// 栈为空，第一个元素
+		stack_ptr->top = new_node;
+		stack_ptr->bottom = new_node;
+	} else {
+		// 栈非空，追加到栈顶
+		stack_ptr->top->next = new_node;
+		stack_ptr->top = new_node;
 	}
 
 	return SUCCESS;
 }
 
 
-st_dataNode * popStack(st_stack * stack){
-	if(NULL == stack){
-		printf("%s param error \n");
+/**
+ * 出栈操作（弹栈）- 从栈顶移除并返回元素
+ * @param stack_ptr: 栈指针
+ * @return: 返回出栈的节点指针（需调用者释放），栈空返回NULL
+ * 
+ * 算法：从尾部删除（栈顶在链表尾部）
+ * - 需要找到栈顶的前一个节点
+ * - 更新栈顶指针
+ * - 如果栈变空，同时更新栈底指针
+ */
+ListNode *pop_element_from_stack(st_stack *stack_ptr) {
+	if (stack_ptr == NULL) {
+		printf("Error: %s parameter error\n", __func__);
 		return NULL;
 	}
 
-	st_dataNode * p = NULL;
-	st_dataNode * iter = NULL;
+	ListNode *popped_node = NULL;
+	ListNode *iterator = NULL;
 
-	/*从top出队，需要得到top的prev*/
-	iter = stack->btn;
-
-	/*只剩下一个节点的时候，让top和btn都为NULL，然后pop最后一个节点*/
-	if(iter == stack->top){ 
-		p = iter;
-		stack->btn = NULL;
-		stack->top = NULL;
-		goto out;
-	}
-	
-	while(iter->next != stack->top){
-		iter = iter->next;
-	}
-
-	p = stack->top;
-	if(NULL == p){ /*空对列*/
+	// 栈为空
+	if (stack_ptr->bottom == NULL) {
 		return NULL;
 	}
 
-	/*出栈*/
-	iter->next = NULL;
-	stack->top = iter;
-
-out:
-	return p;
-}
-
-int getStackLength(st_stack * stack){
-	if(NULL == stack){
-		printf("%s param error \n");
-		return PARAM_ERR;
+	// 只有一个元素的情况
+	if (stack_ptr->bottom == stack_ptr->top) {
+		popped_node = stack_ptr->top;
+		stack_ptr->bottom = NULL;
+		stack_ptr->top = NULL;
+		return popped_node;
 	}
 	
-	st_dataNode * p = NULL;
-	int len = 0;
-
-	len = getListLen(stack->btn);
-
-	return len;
-}
-
-bool isStackEmpty(st_stack * stack){
-	bool flag = false;
-
-	if(NULL == stack->btn && NULL == stack->top){
-		flag = true;
+	// 找到栈顶的前一个节点
+	iterator = stack_ptr->bottom;
+	while (iterator->next != stack_ptr->top) {
+		iterator = iterator->next;
 	}
 
-	return flag;
+	// 取出栈顶节点
+	popped_node = stack_ptr->top;
+
+	// 更新栈顶指针
+	iterator->next = NULL;
+	stack_ptr->top = iterator;
+
+	return popped_node;
+}
+
+/**
+ * 获取栈长度 - 计算栈中元素的个数
+ * @param stack_ptr: 栈指针
+ * @return: 栈长度，错误返回PARAM_ERROR
+ */
+int get_stack_length(st_stack *stack_ptr) {
+	if (stack_ptr == NULL) {
+		printf("Error: %s parameter error\n", __func__);
+		return PARAM_ERROR;
+	}
+	
+	int element_count = 0;
+
+	element_count = get_list_length(stack_ptr->bottom);
+
+	return element_count;
+}
+
+/**
+ * 检查栈是否为空
+ * @param stack_ptr: 栈指针
+ * @return: 空返回true，非空返回false
+ */
+bool is_stack_empty(st_stack *stack_ptr) {
+	if (stack_ptr == NULL) {
+		return true;
+	}
+
+	return (stack_ptr->bottom == NULL && stack_ptr->top == NULL);
 }
 
 
 void testStack(void){
-	st_dataNode * p = NULL;
-	int len = 0;
-	bool rst = 0;
+	ListNode *popped_node = NULL;
+	int stack_length = 0;
+	bool is_empty = false;
 	
 	gstack = createStack();
-	rst = isStackEmpty(gstack);
-	if(rst){
-		printf("Stack is empty\n");
+	is_empty = isStackEmpty(gstack);
+	if(is_empty){
+		printf("栈为空\n");
 	} else {
-		printf("Stack is not empty\n");
+		printf("栈不为空\n");
 	}
 
 	pushStack(gstack, 22);
@@ -150,60 +191,53 @@ void testStack(void){
 	pushStack(gstack, 0);
 	pushStack(gstack, 47);
 	pushStack(gstack, 29);
-	len = getStackLength(gstack);
-	printf("Stack len = %d\n", len);	
+	stack_length = getStackLength(gstack);
+	printf("栈长度 = %d\n", stack_length);	
 	dumpStack(gstack);
 
-	p = popStack(gstack);
-	if(NULL != p)
-		printf("popStack p = %d\n", p->data);
-	free(p);
-	p = popStack(gstack);
-	if(NULL != p)
-		printf("popStack p = %d\n", p->data);
-	free(p);
-	p = popStack(gstack);
-	if(NULL != p)
-		printf("popStack p = %d\n", p->data);
-	free(p);
-	len = getStackLength(gstack);
-	printf("Stack len = %d\n", len);	
+	popped_node = popStack(gstack);
+	if(popped_node != NULL)
+		printf("出栈元素 = %d\n", popped_node->data);
+	free(popped_node);
+	
+	popped_node = popStack(gstack);
+	if(popped_node != NULL)
+		printf("出栈元素 = %d\n", popped_node->data);
+	free(popped_node);
+	
+	popped_node = popStack(gstack);
+	if(popped_node != NULL)
+		printf("出栈元素 = %d\n", popped_node->data);
+	free(popped_node);
+	
+	stack_length = getStackLength(gstack);
+	printf("栈长度 = %d\n", stack_length);	
 	dumpStack(gstack);	
 
-	rst = isStackEmpty(gstack);
-	if(rst){
-		printf("Stack is empty\n");
+	is_empty = isStackEmpty(gstack);
+	if(is_empty){
+		printf("栈为空\n");
 	} else {
-		printf("Stack is not empty\n");
+		printf("栈不为空\n");
 	}
 
-	p = popStack(gstack);
-	free(p);
-	p = popStack(gstack);
-	free(p);
-	p = popStack(gstack);
-	free(p);
-	printf("1\n");
-	p = popStack(gstack);
-	printf("2\n");
-	free(p);	
-	printf("3\n");
+	popped_node = popStack(gstack);
+	free(popped_node);
+	popped_node = popStack(gstack);
+	free(popped_node);
+	popped_node = popStack(gstack);
+	free(popped_node);
+	printf("继续出栈...\n");
+	popped_node = popStack(gstack);
+	free(popped_node);	
+	printf("出栈完成\n");
 	
-	rst = isStackEmpty(gstack);
-	if(rst){
-		printf("Stack is empty\n");
+	is_empty = isStackEmpty(gstack);
+	if(is_empty){
+		printf("栈为空\n");
 	} else {
-		printf("Stack is not empty\n");
+		printf("栈不为空\n");
 	}	
 
 	return;
 }
-
-
-
-
-
-
-
-
-

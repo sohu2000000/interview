@@ -579,8 +579,11 @@ void test_advanced_operations(void) {
 /**
  * 主函数 - 测试所有功能
  */
+// main函数已移到main.c中，此处注释
+/*
 int main(void) {
     test_basic_operations();
     test_advanced_operations();
     return 0;
 }
+*/

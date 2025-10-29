@@ -59,5 +59,9 @@ void test_circular_detection(void);
 void test_merge_sorted_lists(void);
 void test_josephus_problem(void);
 
+// 综合测试函数
+void test_basic_operations(void);
+void test_advanced_operations(void);
+
 #endif
 
