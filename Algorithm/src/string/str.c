@@ -1,89 +1,142 @@
 
-
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "str.h"
 
+/*
+ * ============================================================================
+ * 字符串处理函数库
+ * ============================================================================
+ * 
+ * 本文件包含常用的字符串处理函数，按功能分类：
+ * 1. 基础字符串操作：复制、比较、查找、连接
+ * 2. 字符串转换：整数↔字符串、进制转换
+ * 3. 字符串反转：完全反转、保持单词、保留子串
+ * 4. 字符串操作：删除、替换、编码
+ * 5. 特殊算法：大整数运算、最长公共子串
+ */
 
-int int2str(char * str, int num){
+/* ============================================================================
+ * 【字符串类型转换函数】
+ * ============================================================================ */
 
-	if(NULL == str){
-		printf("int2str param error\n");
+/**
+ * 整数转字符串 - 将整数转换为十进制字符串
+ * @param output_string: 输出字符串缓冲区
+ * @param input_number: 要转换的整数（支持负数）
+ * @return: 成功返回SUCCESS，失败返回PARAM_ERR
+ * 
+ * 算法：逐位提取 + 反转
+ * 1. 处理符号，取绝对值
+ * 2. 逐位提取数字（个位→高位）
+ * 3. 反转数字顺序
+ * 4. 添加负号（如果需要）
+ */
+int convert_string_from_integer(char *str, int num) {
+	if (str == NULL) {
+		printf("Error: int2str parameter error\n");
 		return PARAM_ERR;
 	}
 
-	int negative = 0;
-	char buf[100] = {0};
-	int len = 0, k = 0, i = 0, tmp = 0, n = 0, lenstr = 0;
+	int is_negative = 0;
+	char temp_buffer[100] = {0};
+	int digit_count = 0;
+	int buffer_index = 0;
+	int output_index = 0;
+	int current_digit = 0;
+	int working_number = 0;
+	int total_length = 0;
 
-
-	if(num < 0){
-		negative = 1;
-		n = -num;
+	// 处理负数
+	if (num < 0) {
+		is_negative = 1;
+		working_number = -num;
 	} else {
-		n = num;
+		working_number = num;
 	}
 
-	do{
-		tmp = n % 10;
-		buf[k++] = tmp + '0';
-		n = n / 10;
-	} while(n != 0);
+	// 逐位提取数字（从个位到高位）
+	do {
+		current_digit = working_number % 10;
+		temp_buffer[buffer_index++] = current_digit + '0';
+		working_number = working_number / 10;
+	} while (working_number != 0);
 
-	len = k; /*len 不用在 + 1，因为 k++了*/
-	lenstr = len;
+	digit_count = buffer_index;
+	total_length = digit_count;
 
-	k = 0;
-	if(1 == negative){
-		str[k++] = '-';
-		lenstr = lenstr + 1;
+	// 添加负号
+	output_index = 0;
+	if (is_negative == 1) {
+		str[output_index++] = '-';
+		total_length++;
 	}
 
-	for(i = len - 1; i >= 0; i--){
-		str[k++] = buf[i];
+	// 反转数字顺序
+	for (int i = digit_count - 1; i >= 0; i--) {
+		str[output_index++] = temp_buffer[i];
 	}
 	
-	str[lenstr] = '\0';
+	str[total_length] = '\0';
 	
 	return SUCCESS;
-
 }
 
 
-int str2int(char * str, int * rst){
-	if(NULL == str){
-		printf("int2str param error\n");
+/**
+ * 字符串转整数 - 将十进制字符串转换为整数
+ * @param input_string: 输入字符串
+ * @param result_number: 输出整数指针
+ * @return: 成功返回SUCCESS
+ * 
+ * 算法：从字符串尾部向前解析
+ * 1. 从个位开始，逐位解析
+ * 2. 每位乘以对应的权值（1, 10, 100, ...）
+ * 3. 累加到结果
+ * 4. 遇到负号则取反
+ */
+int convert_string_to_integer(char *str, int *rst) {
+	if (str == NULL || rst == NULL) {
+		printf("Error: str2int parameter error\n");
+		return PARAM_ERR;
 	}
 
-	int num = 0, n = 0, i = 0, k = 0, digit = 0, len = 0;
-	int negative = 0;
+	int accumulated_value = 0;
+	int digit_value = 0;
+	int position_weight = 0;  // 当前位的权值（个位=0, 十位=1, ...）
+	int power_multiplier = 0;
+	int string_length = 0;
 
-	len = strlen(str);
+	string_length = strlen(str);
 
-	for(i = len - 1; i >= 0; i--, digit++){
-		if('-' == str[i]){
-			num = -num;
+	// 从字符串尾部向前解析（从个位到高位）
+	for (int char_index = string_length - 1; char_index >= 0; char_index--, position_weight++) {
+		if (str[char_index] == '-') {
+			accumulated_value = -accumulated_value;
 			continue;
 		}
 
-		n = str[i] - '0';
+		// 将字符转为数字
+		digit_value = str[char_index] - '0';
 
-		k = digit;
-		while(k > 0){
-			n = n * 10;
-			k--;
+		// 计算当前位的权值（10^position_weight）
+		power_multiplier = position_weight;
+		while (power_multiplier > 0) {
+			digit_value = digit_value * 10;
+			power_multiplier--;
 		}
-		num = num + n;
+		
+		accumulated_value = accumulated_value + digit_value;
 	}
 
-	*rst = num;	
+	*rst = accumulated_value;
+	return SUCCESS;
 }
 
 
-int libstr2int(char * str, int * rst){
+int convert_string_to_integer_lib(char *str, int *rst) {
 	if(NULL == str){
 		printf("int2str param error\n");
 		return PARAM_ERR;
@@ -94,7 +147,7 @@ int libstr2int(char * str, int * rst){
 	return SUCCESS;
 }
 
-int libstr2float(char * str, float * rst){
+int convert_string_to_float_lib(char *str, float *rst) {
 	if(NULL == str){
 		printf("int2str param error\n");
 		return PARAM_ERR;
@@ -106,108 +159,145 @@ int libstr2float(char * str, float * rst){
 }
 
 
-int mystrcpy(char * dst, char * src){
-	if(NULL == dst || NULL == src){
-		printf("mystrcpy param error\n");
+/* ============================================================================
+ * 【基础字符串操作函数】
+ * ============================================================================ */
+
+/**
+ * 字符串复制 - 将源字符串复制到目标缓冲区
+ * @param destination: 目标缓冲区
+ * @param source: 源字符串
+ * @return: 成功返回SUCCESS
+ */
+int copy_string_to_buffer(char *dst, char *src) {
+	if (dst == NULL || src == NULL) {
+		printf("Error: mystrcpy parameter error\n");
 		return PARAM_ERR;
 	}	
 
-	char * p = NULL, * q = NULL;
-
-	p = dst;
-	q = src;	
-	while(*q != '\0'){
-		*p++ = *q++;
+	char *dest_ptr = dst;
+	char *src_ptr = src;
+	
+	while (*src_ptr != '\0') {
+		*dest_ptr++ = *src_ptr++;
 	}
-	*p = '\0';
+	*dest_ptr = '\0';
 
 	return SUCCESS;
 }
 
-
-void * mymemcpy(void * dst, void * src, int size){
-	if(NULL == dst || NULL == src){
-		printf("mystrcpy param error\n");
+/**
+ * 内存复制 - 复制指定字节数的内存
+ * @param destination: 目标内存区域
+ * @param source: 源内存区域
+ * @param byte_count: 要复制的字节数
+ * @return: 返回目标指针
+ */
+void *copy_memory_bytes(void *dst, void *src, int size) {
+	if (dst == NULL || src == NULL) {
+		printf("Error: mymemcpy parameter error\n");
 		return NULL;
 	}
 
-	char * p = dst;
-	char * q = src;
+	char *dest_ptr = (char *)dst;
+	char *src_ptr = (char *)src;
 
-	while(size != 0){
-		*p++ = *q++;
+	while (size > 0) {
+		*dest_ptr++ = *src_ptr++;
 		size--;
 	}
 
 	return dst;
 }
 
-
-int mystrlen(char * str){
-	if(NULL == str){
-		printf("mystrcpy param error\n");
+/**
+ * 字符串长度 - 计算字符串长度（不含'\0'）
+ * @param input_string: 输入字符串
+ * @return: 字符串长度
+ */
+int get_string_length(char *str) {
+	if (str == NULL) {
+		printf("Error: mystrlen parameter error\n");
 		return 0;
 	}
 
-	char * c = NULL;
-	int len = 0;
+	char *char_ptr = str;
+	int length = 0;
 
-	c = str;
-	while(*c++ != '\0'){
-		len++;
+	while (*char_ptr != '\0') {
+		length++;
+		char_ptr++;
 	}
 
-	return len;
+	return length;
 }
 
-
-char * mystrstr(char * str, char * sub){
-	if(NULL == str || NULL == sub){
-		printf("mystrstr param error\n");
+/**
+ * 子串查找 - 在主字符串中查找子串
+ * @param main_string: 主字符串
+ * @param substring: 要查找的子串
+ * @return: 找到返回位置指针，否则返回NULL
+ * 
+ * 算法：暴力匹配
+ */
+char *find_string_substring(char *str, char *sub) {
+	if (str == NULL || sub == NULL) {
+		printf("Error: mystrstr parameter error\n");
 		return NULL;
 	}
 
-	char * p = NULL, * q = NULL, * c = NULL;
-	int found = 0;
+	char *main_ptr = str;
+	char *sub_ptr = NULL;
+	char *match_ptr = NULL;
+	int is_found = 0;
 
-	p = str;
-	while(*p != '\0'){
-
-		q = sub;
-		c = p;
-		while(*c == *q && *q != '\0'){
-			q++;
-			c++;
+	while (*main_ptr != '\0') {
+		sub_ptr = sub;
+		match_ptr = main_ptr;
+		
+		// 尝试匹配
+		while (*match_ptr == *sub_ptr && *sub_ptr != '\0') {
+			match_ptr++;
+			sub_ptr++;
 		}
 
-		if('\0' == *q){
-			found = 1;
+		// 匹配成功
+		if (*sub_ptr == '\0') {
+			is_found = 1;
 			break;			
 		}
-		p++;
+		main_ptr++;
 	}
 
-	if(1 == found){
-		return p;
-	} else {
-		return NULL;
-	}
+	return is_found ? main_ptr : NULL;
 }
 
 
 
-int strReverse(char * head, char * tail){
-	if(NULL == head || NULL == tail){
-		printf("strReverse param error!\n");
+/* ============================================================================
+ * 【字符串反转函数】
+ * ============================================================================ */
+
+/**
+ * 字符串反转（基础版）- 反转指定范围内的字符
+ * @param start_ptr: 起始位置指针
+ * @param end_ptr: 结束位置指针
+ * @return: 成功返回SUCCESS
+ * 
+ * 算法：双指针交换
+ */
+int reverse_string_range(char *head, char *tail) {
+	if (head == NULL || tail == NULL) {
+		printf("Error: strReverse parameter error!\n");
 		return PARAM_ERR;
 	}
 	
-	char tmp;
+	char swap_temp;
 
-	while(head < tail){
-		tmp = *head;
+	while (head < tail) {
+		swap_temp = *head;
 		*head = *tail;
-		*tail = tmp;
+		*tail = swap_temp;
 
 		head++;
 		tail--;
@@ -216,7 +306,7 @@ int strReverse(char * head, char * tail){
 	return SUCCESS;
 }
 
-int strReversWithoutWord (char * str){
+int reverse_string_preserve_words(char *str) {
 	if(NULL == str){
 		printf("strReverse param error!\n");
 		return PARAM_ERR;
@@ -230,7 +320,7 @@ int strReversWithoutWord (char * str){
 	len  = strlen(str);
 	head = str;
 	tail = str + len - 1;
-	strReverse(head, tail);
+	reverse_string_range(head, tail);
 	
 	/*逐个单词颠倒回来*/
 	p = str;
@@ -241,15 +331,16 @@ int strReversWithoutWord (char * str){
 			q++;
 		}
 		tail = q - 1;
-		strReverse(head, tail);
+		reverse_string_range(head, tail);
 		
 		p = q + 1;
 	}
 	
+	return SUCCESS;
 }
 
 
-int strReversWithWord (char * str){
+int reverse_string_complete(char *str) {
 	if(NULL == str){
 		printf("strReverse param error!\n");
 		return PARAM_ERR;
@@ -262,12 +353,12 @@ int strReversWithWord (char * str){
 	head = str;
 	tail = str + len - 1;
 	
-	rst = strReverse(head, tail);
+	rst = reverse_string_range(head, tail);
 
 	return rst;
 }
 
-int strReversWithoutSubstr (char * str, char * substr){
+int reverse_string_preserve_substring(char *str, char *substr) {
 	if(NULL == str || NULL == substr){
 		printf("strReverse param error!\n");
 		return PARAM_ERR;
@@ -281,82 +372,94 @@ int strReversWithoutSubstr (char * str, char * substr){
 	len  = strlen(str);
 	head = str;
 	tail = str + len - 1;
-	strReverse(head, tail);
+	reverse_string_range(head, tail);
 
 	/*2. 把子串颠倒*/
 	len  = strlen(substr);
 	head = substr;
 	tail = substr + len - 1;
-	strReverse(head, tail);
+	reverse_string_range(head, tail);
 	
 	
 	/*3. 把子串颠倒回来*/
 	sublen = strlen(substr);
-	head = mystrstr(str, substr);
+	head = find_string_substring(str, substr);
 	tail = head + sublen - 1;
-	strReverse(head, tail);
+	reverse_string_range(head, tail);
 
+	return SUCCESS;
 }
 
 
 
-bool isPalindromeStr(char * str){
-	if(NULL == str){
-		printf("isPalindromeStr param error!\n");
+/* ============================================================================
+ * 【字符串检测和比较函数】
+ * ============================================================================ */
+
+/**
+ * 回文检测 - 判断字符串是否为回文
+ * @param input_string: 输入字符串
+ * @return: 是回文返回true，否则返回false
+ * 
+ * 算法：双指针对比
+ */
+bool validate_string_is_palindrome(char *str) {
+	if (str == NULL) {
+		printf("Error: isPalindromeStr parameter error!\n");
 		return false;
 	}
 
+	char *head_ptr = str;
+	char *tail_ptr = str + strlen(str) - 1;
 
-	bool flag = true;
-
-	char * head = str;
-	char * tail = str + strlen(str) - 1;
-
-	while(head < tail){
-		if(*head != *tail){
-			flag = false;
-			break;
+	while (head_ptr < tail_ptr) {
+		if (*head_ptr != *tail_ptr) {
+			return false;
 		}
-		head++;
-		tail--;
+		head_ptr++;
+		tail_ptr--;
 	}
 
-	return flag;
-	
+	return true;
+}
+
+/**
+ * 字符串比较 - 按字典序比较两个字符串
+ * @param first_string: 第一个字符串
+ * @param second_string: 第二个字符串
+ * @return: >0表示str1>str2, <0表示str1<str2, 0表示相等
+ * 
+ * 修复：原版本有BUG（长度不同时都返回-1）
+ */
+int compare_string_lexical(char *str1, char *str2) {
+	if (str1 == NULL || str2 == NULL) {
+		return 0;
+	}
+
+	char *ptr1 = str1;
+	char *ptr2 = str2;
+
+	// 逐字符比较
+	while (*ptr1 != '\0' && *ptr2 != '\0') {
+		if (*ptr1 != *ptr2) {
+			return (*ptr1 > *ptr2) ? 1 : -1;
+		}
+		ptr1++;
+		ptr2++;
+	}
+
+	// 处理长度差异
+	if (*ptr1 == '\0' && *ptr2 == '\0') {
+		return 0;   // 完全相同
+	} else if (*ptr1 == '\0') {
+		return -1;  // str1更短
+	} else {
+		return 1;   // str2更短
+	}
 }
 
 
-int mystrcmp(char * str1, char * str2){
-
-	char * p = str1;
-	char * q = str2;
-	int len1 = strlen(str1);
-	int len2 = strlen(str2);
-
-	if(len1 > len2){
-		return -1;
-	} else if (len1 < len2){
-		return -1;
-	}
-	
-	while(('\0' != p) && ('\0' != *q)){
-		if(*p != *q){
-			if(*p > *q){
-				return 1;
-			} else if (*p < *q){
-				return -1;
-			} else {
-			}
-		}
-		p++;
-		q++;
-	}
-
-	return 0;
-}
-
-
-char * commonStr(const char * str1, const char * str2){
+char *find_string_longest_common(const char *str1, const char *str2) {
 	if(NULL == str1 || NULL == str2){
 		printf("commonStr param error!\n");
 		return false;
@@ -888,6 +991,7 @@ int strReplaceAll(char * str, char * sub, char * replace){
 	
 	str[len] = '\0'; /*通过'\0'表示结尾*/
 
+	return SUCCESS;
 }
 
 
@@ -1362,6 +1466,3 @@ void testNum2Str(void){
 	
 	return;
 }
-
-
-
