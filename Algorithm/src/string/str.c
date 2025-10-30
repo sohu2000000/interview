@@ -358,34 +358,64 @@ int reverse_string_complete(char *str) {
 	return rst;
 }
 
+/**
+ * 反转字符串但保留子串不变 - 反转整个字符串，但指定子串保持原样
+ * @param str: 主字符串
+ * @param substr: 要保持不变的子串
+ * @return: 成功返回SUCCESS
+ * 
+ * 算法：3步反转法
+ * 1. 反转整个主字符串
+ * 2. 反转子串本身（用于查找）
+ * 3. 在反转后的主串中找到所有子串位置，逐个反转回来
+ * 
+ * 注意：当前实现只处理第一个匹配的子串
+ * 如果有多个相同子串，只有第一个会被保留
+ * 
+ * 示例：
+ * - str="Beijing from Feng", substr="from"
+ *   → "gneF from si gnijieB"（整体反转，"from"不变）
+ * 
+ * BUG: 如果有多个"from"，只有第一个会被保留！
+ */
 int reverse_string_preserve_substring(char *str, char *substr) {
 	if(NULL == str || NULL == substr){
-		printf("strReverse param error!\n");
+		printf("Error: reverse_string_preserve_substring parameter error!\n");
 		return PARAM_ERR;
 	}
 
-	int len = 0, sublen = 0;
-	char * head = NULL, * tail = NULL;
-	char * p = NULL, * q = NULL;
+	int main_length = 0, sub_length = 0;
+	char *range_head = NULL, *range_tail = NULL;
+	char *current_pos = NULL;
 
-	/*1. 整个字符串颠倒*/
-	len  = strlen(str);
-	head = str;
-	tail = str + len - 1;
-	reverse_string_range(head, tail);
+	// 步骤1: 反转整个主字符串
+	main_length = strlen(str);
+	range_head = str;
+	range_tail = str + main_length - 1;
+	reverse_string_range(range_head, range_tail);
 
-	/*2. 把子串颠倒*/
-	len  = strlen(substr);
-	head = substr;
-	tail = substr + len - 1;
-	reverse_string_range(head, tail);
+	// 步骤2: 反转子串本身（用于在反转后的主串中查找）
+	sub_length = strlen(substr);
+	range_head = substr;
+	range_tail = substr + sub_length - 1;
+	reverse_string_range(range_head, range_tail);
 	
-	
-	/*3. 把子串颠倒回来*/
-	sublen = strlen(substr);
-	head = find_string_substring(str, substr);
-	tail = head + sublen - 1;
-	reverse_string_range(head, tail);
+	// 步骤3: 查找所有匹配的子串并反转回来
+	current_pos = str;
+	while (current_pos != NULL && *current_pos != '\0') {
+		current_pos = find_string_substring(current_pos, substr);
+		if (current_pos == NULL) {
+			break;  // 没有找到更多子串
+		}
+		
+		// 将找到的子串反转回来
+		range_head = current_pos;
+		range_tail = current_pos + sub_length - 1;
+		reverse_string_range(range_head, range_tail);
+		
+		// 移到下一个可能的位置
+		current_pos = current_pos + sub_length;
+	}
 
 	return SUCCESS;
 }
@@ -459,537 +489,694 @@ int compare_string_lexical(char *str1, char *str2) {
 }
 
 
+/* ============================================================================
+ * 【字符串操作函数】
+ * ============================================================================ */
+
+/**
+ * 查找最长公共子串 - 找到两个字符串中最长的公共连续子串
+ * @param first_string: 第一个字符串
+ * @param second_string: 第二个字符串
+ * @return: 返回最长公共子串（需调用者释放内存）
+ * 
+ * ============================================================================
+ * 算法思路（简单易懂版）
+ * ============================================================================
+ * 
+ * 核心思想：双重循环暴力匹配
+ * 
+ * 外层循环：遍历str1的每个字符（作为起点）
+ * 内层循环：遍历str2的每个字符（寻找匹配点）
+ * 匹配时：  从匹配点开始，看能连续匹配多少个字符
+ * 
+ * ============================================================================
+ * 执行过程示例：str1="aocdfe", str2="pmcdfa"
+ * ============================================================================
+ * 
+ * str1的第0个字符'a'：
+ *   - 在str2中找'a'：在str2[5]找到
+ *   - 从这里开始匹配：'a'匹配，但下一个不匹配
+ *   - 匹配长度：1
+ * 
+ * str1的第1个字符'o'：
+ *   - 在str2中找不到'o'
+ *   - 匹配长度：0
+ * 
+ * str1的第2个字符'c'：
+ *   - 在str2中找'c'：在str2[2]找到
+ *   - 从这里开始匹配：
+ *     str1: c d f
+ *     str2: c d f
+ *     全都匹配！
+ *   - 匹配长度：3 ← 最长！
+ * 
+ * 继续遍历str1剩余字符...
+ * 
+ * 最终：最长公共子串 = "cdf" (长度3)
+ * 
+ * ============================================================================
+ * 简化版代码逻辑
+ * ============================================================================
+ */
 char *find_string_longest_common(const char *str1, const char *str2) {
-	if(NULL == str1 || NULL == str2){
-		printf("commonStr param error!\n");
-		return false;
+	if (str1 == NULL || str2 == NULL) {
+		printf("Error: find_string_longest_common parameter error!\n");
+		return NULL;
 	}
 
-	const char * p = NULL;
-	const char * q = NULL;
-	const char * start = NULL, *p1 = NULL, *q1 = NULL;
-	char * commstr = NULL;
-	int len = 0, max = 0;
+	int max_length = 0;              // 最长匹配长度
+	const char *max_start = NULL;    // 最长匹配的起始位置
+	char *result = NULL;
 
-	p = str1;
-	while('\0' != *p){
-		q = str2;
-		while('\0' !=  *q){
-			if(*p == *q){ /*发现相等的了, 开始匹配*/
-				len = 0;
-				p1 = p;
-				q1 = q;
-
-				if(NULL == start){
-					start = p;
-				}
-				
-				/*内循环查找common子串*/
-				while(('\0' != *p1) && ('\0' != *q1) && (*p1 == *q1)){
-					len++;
-					p1++;
-					q1++;
-				}
-
-				if(len > max){
-					max = len;
-					start = p;
-				}
+	// 外层循环：遍历str1的每个起始位置
+	for (int i = 0; str1[i] != '\0'; i++) {
+		
+		// 内层循环：遍历str2的每个起始位置
+		for (int j = 0; str2[j] != '\0'; j++) {
+			
+			// 从(i,j)开始，看能匹配多长
+			int match_length = 0;
+			while (str1[i + match_length] != '\0' && 
+			       str2[j + match_length] != '\0' &&
+			       str1[i + match_length] == str2[j + match_length]) {
+				match_length++;
 			}
-			q++;
-		}		
-		p++;
+			
+			// 更新最长记录
+			if (match_length > max_length) {
+				max_length = match_length;
+				max_start = &str1[i];
+			}
+		}
 	}
 
-	commstr = (char *)malloc(max + 1);
-	memset(commstr, 0x0, max + 1);
+	// 分配内存并复制结果
+	result = (char *)malloc(max_length + 1);
+	if (result == NULL) {
+		return NULL;
+	}
 	
-	memcpy(commstr, start, max);
-	commstr[max] = '\0';
+	if (max_length > 0) {
+		memcpy(result, max_start, max_length);
+	}
+	result[max_length] = '\0';
 
-	return commstr;
+	return result;
 }
 
 
-static char hexMetric[16] = { \
-	'0', '1', '2', '3', \
-	'4', '5', '6', '7', \
-	'8', '9', 'A', 'B', \
-	'C', 'D', 'E', 'F', \
+/* 十六进制字符映射表 */
+static char hex_digit_map[16] = {
+	'0', '1', '2', '3', '4', '5', '6', '7',
+	'8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
 };
 
-int int2HexStr(char * str, int num){
-
-	if(NULL == str){
-		printf("int2HexStr param error\n");
+/**
+ * 整数转十六进制字符串 - 将整数转换为十六进制表示
+ * @param output: 输出字符串（带0x前缀）
+ * @param value: 要转换的整数
+ * @return: 成功返回SUCCESS
+ * 
+ * 示例：255 → "0xFF", 16 → "0x10"
+ */
+int convert_string_from_integer_hex(char *str, int num) {
+	if (str == NULL) {
+		printf("Error: convert_string_from_integer_hex parameter error\n");
 		return PARAM_ERR;
 	}
 
-	int base = 16;
-	int len  = 0, n = 0, a = 0, k = 0;
-	char buf[100] = {'0'};
+	const int hex_base = 16;
+	int digit_count = 0;
+	int working_number = num;
+	int remainder = 0;
+	char temp_buffer[100] = {'0'};
 
-	n = num;
+	// 逐位提取十六进制数字
 	do {
-		a = n % base;
-		n = n / base;
-		buf[len++] = hexMetric[a];
-	} while(n != 0);
-	buf[len] = '\0';
+		remainder = working_number % hex_base;
+		working_number = working_number / hex_base;
+		temp_buffer[digit_count++] = hex_digit_map[remainder];
+	} while (working_number != 0);
+	temp_buffer[digit_count] = '\0';
 
-	strReversWithWord(buf);
+	// 反转（因为提取是从低位到高位）
+	reverse_string_complete(temp_buffer);
 
+	// 添加"0x"前缀
 	str[0] = '0';
 	str[1] = 'x';
-	str = str + 2;
-
-	memcpy(str, buf, len);
+	memcpy(str + 2, temp_buffer, digit_count);
+	str[2 + digit_count] = '\0';
 		
 	return SUCCESS;
-
 }
 
 
-static char binMetric[16] = { \
-	'0', '1' \
-};
+/* 二进制字符映射表 */
+static char binary_digit_map[2] = {'0', '1'};
 
-int int2BinStr(char * str, int num){
-	if(NULL == str){
-		printf("int2BinStr param error\n");
+/**
+ * 整数转二进制字符串 - 将整数转换为二进制表示
+ * @param output: 输出字符串（带0b前缀）
+ * @param value: 要转换的整数
+ * @return: 成功返回SUCCESS
+ * 
+ * 示例：5 → "0b101", 8 → "0b1000"
+ */
+int convert_string_from_integer_binary(char *str, int num) {
+	if (str == NULL) {
+		printf("Error: convert_string_from_integer_binary parameter error\n");
 		return PARAM_ERR;
 	}
 
-	int base = 2;
-	int len  = 0, n = 0, a = 0, k = 0;
-	char buf[100] = {'0'};
+	const int binary_base = 2;
+	int digit_count = 0;
+	int working_number = num;
+	int current_bit = 0;
+	char temp_buffer[100] = {'0'};
 
-	n = num;
+	// 逐位提取二进制数字
 	do {
-		a = n % base;
-		n = n >> 1;
-		buf[len++] = binMetric[a];
-	} while(n != 0);
-	buf[len] = '\0';
+		current_bit = working_number % binary_base;
+		working_number = working_number >> 1;  // 右移 = 除以2
+		temp_buffer[digit_count++] = binary_digit_map[current_bit];
+	} while (working_number != 0);
+	temp_buffer[digit_count] = '\0';
 
-	strReversWithWord(buf);
+	// 反转
+	reverse_string_complete(temp_buffer);
 
+	// 添加"0b"前缀
 	str[0] = '0';
 	str[1] = 'b';
-	str = str + 2;
-
-	memcpy(str, buf, len);
+	memcpy(str + 2, temp_buffer, digit_count);
+	str[2 + digit_count] = '\0';
+	
 	return SUCCESS;
 }
 
 
-int statStr(char * str){
-	if(NULL == str){
-		printf("statStr param error\n");
+/**
+ * 统计连续字符 - 在每组连续相同字符后插入出现次数
+ * @param input: 输入字符串
+ * @return: 成功返回SUCCESS
+ * 
+ * 示例："aaabc" → "aaa3b1c1"
+ */
+int count_string_consecutive_chars(char *str) {
+	if (str == NULL) {
+		printf("Error: count_string_consecutive_chars parameter error\n");
 		return PARAM_ERR;
 	}
 
-	int len = strlen(str) + 1; /*加上 '\0'*/
-	int scanlen = 0; /*扫描的长度，从1开始*/
-	int stat = 1;
-	char * p = NULL;
-	char * q = NULL;
-	char s;
+	int total_length = strlen(str) + 1;
+	int processed_length = 0;
+	int consecutive_count = 1;
+	char *current_ptr = NULL;
+	char *scan_ptr = NULL;
+	char count_char;
 
-	p = str;
-	while('\0' != *p){
-		q = p;
-		stat = 0; /*至少有自己重复*/
-		while('\0' != q && *q == *p){
-			stat++;
-			q++;
-		}
-		scanlen += stat;
-
-		s = stat + '0';
-		memcpy(p + stat + 1, p + stat, len - scanlen);	
-		*(p + stat) = s; /*填入统计数字*/
-		scanlen += 1; 	/*因为插入了一个数字*/
-		len = len + 1; 	/*因为插入了一个数字*/
-		p = p + stat + 1; /* + 1 因为插入了一个数字*/
-	}
-
-	return SUCCESS;	
-	
-}
-
-
-static char lowerMap[26] = { \
-	'a','b','c','d','e','f','g', \
-	'h','i','j','k','l','m','n', \
-	'o','p','q','r','s','t','u', \
-	'v','w','x','y','z' \
-};
-
-static char upperMap[26] = { \
-	'A','B','C','D','E','F','G', \
-	'H','I','J','K','L','M','N', \
-	'O','P','Q','R','S','T','U', \
-	'V','W','X','Y','Z' \
-};
-
-int encodeStr(char * str){
-	if(NULL == str){
-		printf("encodeStr param error\n");
-		return PARAM_ERR;
-	}
-
-	char * p = NULL;
-	int dist = 0;
-
-	p = str;
-	while('\0' != *p){
-		if(*p >= 'a' && *p <= 'z'){
-			dist = *p - 'a';
-			dist = dist + 4;
-			dist = dist % 26;
-			*p = lowerMap[dist];
-		} else if (*p >= 'A' && *p <= 'Z'){
-			dist = *p - 'A';
-			dist = dist + 4;
-			dist = dist % 26;
-			*p = upperMap[dist];
-			
-		} else {
-			
-		}
+	current_ptr = str;
+	while (*current_ptr != '\0') {
+		scan_ptr = current_ptr;
+		consecutive_count = 0;
 		
-		p++;
-	}
-
-	strReversWithWord(str);
-	
-	return SUCCESS;
-
-}
-
-
-int addBigInt(char * str1, char * str2, char * rst){
-	if(NULL == str1 || NULL == str2 || NULL == rst){
-		printf("addBigInt param error\n");
-		return PARAM_ERR;
-	}
-
-	char * p1 = NULL, *p2 = NULL, * pr = NULL;
-	char * tail1 = NULL, *tail2 = NULL, *tailr = NULL;
-	int len1 = strlen(str1);
-	int len2 = strlen(str2);
-	int len = len1 > len2 ? len1 : len2;
-	int a = 0, b = 0, r= 0, c = 0;
-	
-	len = len + 1; /*最后可能发生进位*/
-	tail1 = str1 + len1 - 1;
-	tail2 = str2 + len2 - 1;
-	pr = rst;
-	tailr = pr + (len - 1);
-	*(pr + len) = '\0'; /*结尾*/
-	
-
-	/*
-	 * 注意这里要用str-1, 因为字符串的头本身也要处理，
-	 * 结束条件是头前面的一个指针地址
-	 */
-	while(tail1 != str1 - 1 &&  tail2 != str2 - 1){ 
-		a = *tail1 - '0';	
-		b = *tail2 - '0';
-		r = a + b + c;
-		if(r >= 10){
-			r = r % 10;
-			c = 1;
-		} else {
-			c = 0;
+		// 统计连续相同字符的个数
+		while (*scan_ptr != '\0' && *scan_ptr == *current_ptr) {
+			consecutive_count++;
+			scan_ptr++;
 		}
-		*tailr = '0' + r;		
+		processed_length += consecutive_count;
 
-		tail1--;
-		tail2--;
-		tailr--;
+		// 将统计数字转为字符
+		count_char = consecutive_count + '0';
+		
+		// 为插入数字腾出空间
+		memcpy(current_ptr + consecutive_count + 1, 
+		       current_ptr + consecutive_count, 
+		       total_length - processed_length);
+		
+		// 插入统计数字
+		*(current_ptr + consecutive_count) = count_char;
+		
+		// 更新长度和指针
+		processed_length += 1;
+		total_length += 1;
+		current_ptr = current_ptr + consecutive_count + 1;
 	}
-
-	while(tail1 != str1 - 1){
-		a = *tail1 - '0';
-		r = a + c;
-		if(r >= 10){
-			r = r % 10;
-			c = 1;
-		} else {
-			c = 0;
-		}
-		*tailr = '0' + r;
-
-		tail1--;
-		tailr--;
-	}
-
-	while(tail2 != str2 - 1){
-		b = *tail2 - '0';
-		r = b + c;
-		if(r >= 10){
-			r = r % 10;
-			c = 1;
-		} else {
-			c = 0;
-		}
-		*tailr = '0' + r;
-
-		tail2--;
-		tailr--;
-	}
-
-	if(0 == c){
-		memcpy(tailr, tailr + 1, len - 1);
-		*(rst + len - 1) = '\0'; /*因为字符串迁移了，所以要提前一位写入'\0'标明结束*/
-	} else if (1 == c){
-		*tailr = '0' + c;
-	}
-
-	return SUCCESS;	
-	
-}
-
-
-int rightShiftStr(char * str, int n){
-	if(NULL == str){
-		printf("addBigInt param error\n");
-		return PARAM_ERR;
-	}
-
-	int len = strlen(str);
-	if(n > len){
-		printf("addBigInt param error2\n");
-		return PARAM_ERR;
-	}
-
-	char * p = NULL;
-	char * t = str + len - 1;
-	char buf[100] = {'\0'};
-	int k = 0;
-
-	p = t - n + 1;
-	for(k = 0; k < n; k++){
-		buf[k] = *p;
-		p++;
-	}
-
-	p = str + n;
-	memcpy(p, str, len - n);
-
-	p = str;
-	for(k = 0; k < n; k++){
-		*p = buf[k];
-		p++;
-	}
-	
-	return SUCCESS;
-	
-}
-
-
-int removeSubString(char * str, int index, int size){
-	if(NULL == str || index < 0 || size < 0){
-		printf("addBigInt param error\n");
-		return PARAM_ERR;
-	}
-
-	char * p = NULL, *t = NULL;
-	int len  = strlen(str);
-
-	p = str + index;
-	t = p + size;
-
-	memcpy(p, t, len - index - size);	
-	str[len - size] = '\0';
 
 	return SUCCESS;
 }
 
 
-int sortHalfStr(char * str){
-	if(NULL == str){
-		printf("strSortSwap param error\n");
+/* 字母映射表 */
+static char lowercase_alphabet[26] = {
+	'a','b','c','d','e','f','g',
+	'h','i','j','k','l','m','n',
+	'o','p','q','r','s','t','u',
+	'v','w','x','y','z'
+};
+
+static char uppercase_alphabet[26] = {
+	'A','B','C','D','E','F','G',
+	'H','I','J','K','L','M','N',
+	'O','P','Q','R','S','T','U',
+	'V','W','X','Y','Z'
+};
+
+/**
+ * 凯撒密码编码 - 对字符串进行凯撒密码加密（偏移4位）并反转
+ * @param input: 输入字符串
+ * @return: 成功返回SUCCESS
+ * 
+ * 算法：字母偏移 + 反转
+ * 1. 每个字母向后偏移4位（a→e, b→f, ...）
+ * 2. 使用模26运算处理循环（w→a, x→b, ...）
+ * 3. 最后反转整个字符串
+ * 
+ * 示例："abc" → "efg" → "gfe"
+ */
+int encode_string_caesar_cipher(char *str) {
+	if (str == NULL) {
+		printf("Error: encode_string_caesar_cipher parameter error\n");
 		return PARAM_ERR;
 	}
 
-	int len  = strlen(str);	
-	int i = 0, j = 0, sz = len / 2;
-	char * p = str;
-	char * t = str + sz - 1;
-	char tmp;
+	char *char_ptr = str;
+	int alphabet_offset = 0;
+	const int caesar_shift = 4;  // 偏移量
 
-	for(i = 0; i < sz; i++){
-		for(j = i + 1; j < sz; j++){
-			if(p[i] < p[j]){
-				tmp = p[i];
-				p[i] = p[j];
-				p[j] = tmp;
+	while (*char_ptr != '\0') {
+		if (*char_ptr >= 'a' && *char_ptr <= 'z') {
+			// 小写字母编码
+			alphabet_offset = *char_ptr - 'a';
+			alphabet_offset = (alphabet_offset + caesar_shift) % 26;
+			*char_ptr = lowercase_alphabet[alphabet_offset];
+		} else if (*char_ptr >= 'A' && *char_ptr <= 'Z') {
+			// 大写字母编码
+			alphabet_offset = *char_ptr - 'A';
+			alphabet_offset = (alphabet_offset + caesar_shift) % 26;
+			*char_ptr = uppercase_alphabet[alphabet_offset];
+		}
+		// 非字母字符保持不变
+		
+		char_ptr++;
+	}
+
+	// 反转整个字符串（增加编码复杂度）
+	reverse_string_complete(str);
+	
+	return SUCCESS;
+}
+
+
+/**
+ * 大整数加法 - 计算两个以字符串表示的大整数之和
+ * @param num1_string: 第一个大整数字符串
+ * @param num2_string: 第二个大整数字符串  
+ * @param result_string: 结果字符串缓冲区
+ * @return: 成功返回SUCCESS
+ * 
+ * 算法：模拟竖式加法
+ * 1. 从两个数的个位开始相加
+ * 2. 处理进位
+ * 3. 处理长度不同的情况
+ * 4. 处理最高位进位
+ * 
+ * 示例："123" + "456" = "579"
+ */
+int add_string_big_integers(char *str1, char *str2, char *rst) {
+	if (str1 == NULL || str2 == NULL || rst == NULL) {
+		printf("Error: add_string_big_integers parameter error\n");
+		return PARAM_ERR;
+	}
+
+	char *num1_tail = NULL, *num2_tail = NULL, *result_tail = NULL;
+	int length1 = strlen(str1);
+	int length2 = strlen(str2);
+	int max_length = (length1 > length2) ? length1 : length2;
+	int digit1 = 0, digit2 = 0, sum = 0, carry = 0;
+	
+	max_length = max_length + 1;  // 预留最高位进位
+	
+	// 设置尾指针（从个位开始）
+	num1_tail = str1 + length1 - 1;
+	num2_tail = str2 + length2 - 1;
+	result_tail = rst + (max_length - 1);
+	*(rst + max_length) = '\0';
+
+	// 两数都还有位时，逐位相加
+	while (num1_tail >= str1 && num2_tail >= str2) { 
+		digit1 = *num1_tail - '0';
+		digit2 = *num2_tail - '0';
+		sum = digit1 + digit2 + carry;
+		
+		if (sum >= 10) {
+			sum = sum % 10;
+			carry = 1;
+		} else {
+			carry = 0;
+		}
+		*result_tail = '0' + sum;
+
+		num1_tail--;
+		num2_tail--;
+		result_tail--;
+	}
+
+	// 处理num1的剩余位
+	while (num1_tail >= str1) {
+		digit1 = *num1_tail - '0';
+		sum = digit1 + carry;
+		
+		if (sum >= 10) {
+			sum = sum % 10;
+			carry = 1;
+		} else {
+			carry = 0;
+		}
+		*result_tail = '0' + sum;
+
+		num1_tail--;
+		result_tail--;
+	}
+
+	// 处理num2的剩余位
+	while (num2_tail >= str2) {
+		digit2 = *num2_tail - '0';
+		sum = digit2 + carry;
+		
+		if (sum >= 10) {
+			sum = sum % 10;
+			carry = 1;
+		} else {
+			carry = 0;
+		}
+		*result_tail = '0' + sum;
+
+		num2_tail--;
+		result_tail--;
+	}
+
+	// 处理最高位进位
+	if (carry == 0) {
+		// 没有进位，去掉最高位的占位符
+		memcpy(result_tail, result_tail + 1, max_length - 1);
+		*(rst + max_length - 1) = '\0';
+	} else {
+		// 有进位，填入最高位
+		*result_tail = '0' + carry;
+	}
+
+	return SUCCESS;
+}
+
+
+/**
+ * 字符串循环右移 - 将字符串末尾n个字符移到开头
+ * @param input: 输入字符串
+ * @param shift_count: 右移位数
+ * @return: 成功返回SUCCESS
+ * 
+ * 示例："123456789" 右移3位 → "789123456"
+ */
+int shift_string_right_circular(char *str, int n) {
+	if (str == NULL) {
+		printf("Error: shift_string_right_circular parameter error\n");
+		return PARAM_ERR;
+	}
+
+	int string_length = strlen(str);
+	if (n > string_length) {
+		printf("Error: shift count exceeds string length\n");
+		return PARAM_ERR;
+	}
+
+	char temp_buffer[100] = {'\0'};
+	char *tail_start = str + string_length - n;
+
+	// 步骤1: 保存末尾n个字符
+	for (int i = 0; i < n; i++) {
+		temp_buffer[i] = tail_start[i];
+	}
+
+	// 步骤2: 前面的字符后移n位
+	memcpy(str + n, str, string_length - n);
+
+	// 步骤3: 将保存的字符放到开头
+	for (int i = 0; i < n; i++) {
+		str[i] = temp_buffer[i];
+	}
+	
+	return SUCCESS;
+}
+
+
+/**
+ * 删除子串 - 从字符串中删除指定位置和长度的子串
+ * @param input: 输入字符串
+ * @param start_index: 删除起始位置
+ * @param delete_length: 要删除的长度
+ * @return: 成功返回SUCCESS
+ */
+int remove_string_substring_at(char *str, int index, int size) {
+	if (str == NULL || index < 0 || size < 0) {
+		printf("Error: remove_string_substring_at parameter error\n");
+		return PARAM_ERR;
+	}
+
+	int string_length = strlen(str);
+	char *delete_start = str + index;
+	char *content_after = delete_start + size;
+
+	// 将删除位置后的内容前移
+	memcpy(delete_start, content_after, string_length - index - size);
+	str[string_length - size] = '\0';
+
+	return SUCCESS;
+}
+
+/**
+ * 前半部分降序排序 - 对字符串前半部分进行降序排序
+ * @param input: 输入字符串
+ * @return: 成功返回SUCCESS
+ */
+int sort_string_half_descending(char *str) {
+	if (str == NULL) {
+		printf("Error: sort_string_half_descending parameter error\n");
+		return PARAM_ERR;
+	}
+
+	int total_length = strlen(str);
+	int half_length = total_length / 2;
+	char swap_temp;
+
+	// 选择排序（降序）
+	for (int i = 0; i < half_length; i++) {
+		for (int j = i + 1; j < half_length; j++) {
+			if (str[i] < str[j]) {
+				swap_temp = str[i];
+				str[i] = str[j];
+				str[j] = swap_temp;
 			}
 		}
 	}
 
 	return SUCCESS;
-
 }
 
-
-int strRemoveSpecChar(char * str, const char c){
-	if(NULL == str){
-		printf("strRemoveSpecChar param error\n");
+/**
+ * 删除指定字符 - 删除字符串中所有指定的字符
+ * @param input: 输入字符串
+ * @param target_char: 要删除的字符
+ * @return: 成功返回SUCCESS
+ */
+int remove_string_char_all(char *str, const char c) {
+	if (str == NULL) {
+		printf("Error: remove_string_char_all parameter error\n");
 		return PARAM_ERR;
 	}	
 	
-	int len = strlen(str);	
-	int k = 0;
-	char * p = str;	
-	char * t = str + len - 1;
+	int original_length = strlen(str);
+	int removed_count = 0;
+	char *scan_ptr = str;
+	char *string_end = str + original_length - 1;
 
-	while('\0' != *p){
-		if(c == *p){
-			memcpy(p, p + 1, (t - p));
-			k++;
-			/*p 被覆盖掉了，p的位置是新字符，不用p++*/
+	while (*scan_ptr != '\0') {
+		if (c == *scan_ptr) {
+			// 找到目标字符，用后续内容覆盖
+			memcpy(scan_ptr, scan_ptr + 1, (string_end - scan_ptr));
+			removed_count++;
+			// 不移动指针，因为当前位置已被新字符覆盖
 			continue;
 		}
-		p++;
+		scan_ptr++;
 	}
 
-	str[len - k] = '\0';
+	str[original_length - removed_count] = '\0';
 
 	return SUCCESS;
 }
 
-
-
-char * mystrcat(char * str1, char * str2){
-	if(NULL == str1 || NULL == str2){
-		printf("mystrcat param error\n");
+/**
+ * 字符串连接 - 将第二个字符串连接到第一个字符串末尾
+ * @param dest: 目标字符串（需有足够空间）
+ * @param src: 源字符串
+ * @return: 返回目标字符串指针
+ */
+char *concatenate_string_append(char *str1, char *str2) {
+	if (str1 == NULL || str2 == NULL) {
+		printf("Error: concatenate_string_append parameter error\n");
 		return NULL;
 	}	
 	
-	int len1  = strlen(str1);
-	int len2  = strlen(str2);
-	char * p1 = str1;
-	char * p2 = str2;
-	char * t1 = p1 + len1 - 1;
+	int dest_length = strlen(str1);
+	int src_length = strlen(str2);
+	char *append_position = str1 + dest_length;
 
-	t1++; /*复制到第一个字符串的'\0'的地方*/
-	memcpy(t1, p2, len2);
-	str1[len1 + len2] = '\0';
+	// 复制到第一个字符串的'\0'位置
+	memcpy(append_position, str2, src_length);
+	str1[dest_length + src_length] = '\0';
 
 	return str1;
 }
 
 
-int gbkstrlen(char * str){
-	if(NULL == str){
-		printf("mystrcat param error\n");
+/**
+ * GBK字符串长度 - 计算包含中文字符的字符串长度
+ * @param input: 输入字符串（GBK编码）
+ * @return: 字符数（中文算1个字符）
+ */
+int get_string_length_gbk(char *str) {
+	if (str == NULL) {
+		printf("Error: get_string_length_gbk parameter error\n");
 		return PARAM_ERR;
-	}		
-
-	int len = 0;
-	char * p = str;
-
-	while('\0' != *p){
-		/*中文字符直接跳过2个字符*/
-		if(*p < 0 && (*(p + 1) < 0 || *(p + 1) > 63)){ /*中文字符*/
-			p = p + 3;
-		} else {
-			p++;
-		}		
-		len++;
 	}
 
-	return len;
+	int char_count = 0;
+	char *char_ptr = str;
+
+	while (*char_ptr != '\0') {
+		// 中文字符判断（GBK编码）
+		if (*char_ptr < 0 && (*(char_ptr + 1) < 0 || *(char_ptr + 1) > 63)) {
+			char_ptr = char_ptr + 3;  // GBK中文占2-3字节
+		} else {
+			char_ptr++;
+		}
+		char_count++;
+	}
+
+	return char_count;
 }
 
-
-int getStrMaxSuccNum(char * str, int * pnum0, int * pnum1){
-	if(NULL == str){
-		printf("mystrcat param error\n");
+/**
+ * 统计最大连续0/1 - 在二进制字符串中找最大连续0和1的个数
+ * @param input: 输入字符串（只包含'0'和'1'）
+ * @param max_zero: 输出最大连续0的个数
+ * @param max_one: 输出最大连续1的个数
+ * @return: 成功返回SUCCESS
+ * 
+ * ============================================================================
+ * 算法思路（简单易懂版）
+ * ============================================================================
+ * 
+ * 核心思想：遍历一次，边走边统计
+ * 
+ * 1. 当前字符是什么？（'0'还是'1'）
+ * 2. 从这里开始，能连续多少个相同字符？
+ * 3. 如果比之前记录的最大值还大，更新记录
+ * 4. 跳到下一组不同的字符，继续
+ * 
+ * 示例："00011101100"
+ *        ←3→←3→←2→  (连续的0)
+ *           ←4→      (连续的1)
+ * 
+ * 最大连续0 = 3
+ * 最大连续1 = 4
+ * 
+ * ============================================================================
+ */
+int get_string_max_successive_bits(char *str, int *pnum0, int *pnum1) {
+	if (str == NULL || pnum0 == NULL || pnum1 == NULL) {
+		printf("Error: get_string_max_successive_bits parameter error\n");
 		return PARAM_ERR;
 	}
 
-	char * p = str;
-	char * q = NULL;
-	int n = 0, num0 = 0, num1 = 0;
+	int max_zero_count = 0;
+	int max_one_count = 0;
+	int i = 0;
 
-	while('\0' != *p){	
-		q = p;
-		n = 0;
-		if('1' == *p){
-			while('\0' != *q && '1' == *q){
-				n++;
-				q++;
-			}
-			if(n > num1){
-				num1 = n;
-			}
-			p = q; /*不用加1，因为退出循环之前，已经q++*/
-			continue;
-		} else if('0' == *p){
-			while('\0' != *q && '0' == *q){
-				n++;
-				q++;
-			}
-			if(n > num0){
-				num0 = n;
-			}
-			p = q; /*不用加1，因为退出循环之前，已经q++*/
-			continue;
-		} else {
+	while (str[i] != '\0') {
+		char current_char = str[i];
+		int consecutive_count = 0;
 		
+		// 统计从当前位置开始的连续相同字符数
+		while (str[i] == current_char && str[i] != '\0') {
+			consecutive_count++;
+			i++;
 		}
 		
-		p = p + 1;		
+		// 更新最大记录
+		if (current_char == '0' && consecutive_count > max_zero_count) {
+			max_zero_count = consecutive_count;
+		} else if (current_char == '1' && consecutive_count > max_one_count) {
+			max_one_count = consecutive_count;
+		}
 	}
 
-	*pnum0 = num0;
-	*pnum1 = num1;
+	*pnum0 = max_zero_count;
+	*pnum1 = max_one_count;
 
 	return SUCCESS;
 }
 
-
-int strReplaceAll(char * str, char * sub, char * replace){
-
-	if(NULL == str || NULL == sub || NULL == replace){
-		printf("mystrcat param error\n");
+/**
+ * 替换所有子串 - 将字符串中所有指定子串替换为新字符串
+ * @param input: 输入字符串
+ * @param old_substring: 要被替换的子串
+ * @param new_substring: 替换成的新字符串
+ * @return: 成功返回SUCCESS
+ */
+int replace_string_substring_all(char *str, char *sub, char *replace) {
+	if (str == NULL || sub == NULL || replace == NULL) {
+		printf("Error: replace_string_substring_all parameter error\n");
 		return PARAM_ERR;
-	}	
+	}
 
-	char * p = NULL;
-	char * t = NULL;
-	char * q = NULL;
-	char * dst = NULL;
-	char * src = NULL;
-	
+	char *current_pos = str;
+	char *string_end = NULL;
+	char *found_pos = NULL;
+	char *copy_src = NULL;
+	char *copy_dest = NULL;
 
-	int len = strlen(str);
-	int len1 = strlen(sub);
-	int len2 = strlen(replace);
+	int current_length = strlen(str);
+	int old_length = strlen(sub);
+	int new_length = strlen(replace);
 
-	p = str;
-	while('\0' != *p){
-		t = str + len;
-		q = strstr(str, sub);
-		if(NULL == q) /*没有子串了，那么直接返回吧*/{
-			break;
+	while (*current_pos != '\0') {
+		string_end = str + current_length;
+		found_pos = strstr(str, sub);
+		
+		if (found_pos == NULL) {
+			break;  // 没有更多子串
 		}
 
-		src = q + len1; /*源头, 原有sub后的一个字符*/
-		dst = q + len2; /*目的，放完replace后的一个字符*/
-		memcpy(dst, src, t - src); /*原有字符串后移，放出空间*/
-		memcpy(q, replace, len2); /*将replace字符拷贝进来*/
-		len = len + len2 - len1;
+		// 为新字符串腾出空间
+		copy_src = found_pos + old_length;
+		copy_dest = found_pos + new_length;
+		memcpy(copy_dest, copy_src, string_end - copy_src);
 		
-		p = q + len2; /* p 下一轮replace后的一个字符 */
+		// 复制新字符串
+		memcpy(found_pos, replace, new_length);
+		
+		// 更新长度
+		current_length = current_length + new_length - old_length;
+		
+		// 移到下一个可能的位置
+		current_pos = found_pos + new_length;
 	}
 	
-	str[len] = '\0'; /*通过'\0'表示结尾*/
+	str[current_length] = '\0';
 
 	return SUCCESS;
 }
