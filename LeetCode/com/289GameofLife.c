@@ -41,95 +41,126 @@ Could you solve it in-place? Remember that the board needs to be updated simulta
 In this question, we represent the board using a 2D array. In principle, the board is infinite, which would cause problems when the active area encroaches upon the border of the array (i.e., live cells reach the border). How would you address these problems?
  */
 
+/**
+ * 生命游戏 - 状态编码法
+ * 
+ * 核心思想：
+ * - 用不同的值编码"当前状态"和"下一状态"
+ * - 编码值避免与初始值0,1冲突，使用2,3,4,5
+ * - 第一遍：根据规则编码下一状态
+ * - 第二遍：解码为最终状态0或1
+ * 
+ * 状态编码：
+ * 2 = 死->死, 3 = 死->活, 4 = 活->死, 5 = 活->活
+ * 
+ * 时间复杂度：O(m×n)
+ * 空间复杂度：O(1) - 原地更新
+ */
+
 enum state_code {
-	DEADDEAD = 2,
-	DEADALIVE = 3,
-	ALIVEDEAD = 4,
-	ALIVEALIVE = 5,
+	DEAD_TO_DEAD = 2,   // 死->死
+	DEAD_TO_ALIVE = 3,  // 死->活
+	ALIVE_TO_DEAD = 4,  // 活->死
+	ALIVE_TO_ALIVE = 5, // 活->活
 };
 
-int get_live_count(int** board, int boardSize, int* boardColSize,
-	           int row, int col) {
-
-	int live_count = 0;
+/**
+ * 统计周围8个邻居中活细胞的数量
+ */
+int countLiveNeighbors(int** board, int boardSize, int* boardColSize,
+	                   int row, int col) {
+	int liveNeighbors = 0;
 
 	// 定义宏简化代码：检查是否为活细胞（初始1或编码后的4,5）
-	#define IS_ALIVE(state) ((state) == 1 || (state) == ALIVEDEAD || (state) == ALIVEALIVE)
+	#define IS_ALIVE(state) ((state) == 1 || (state) == ALIVE_TO_DEAD || (state) == ALIVE_TO_ALIVE)
 
 	// row - 1, col - 1
 	if (row - 1 >= 0 && col - 1 >= 0 && IS_ALIVE(board[row - 1][col - 1]))
-		live_count++;
+		liveNeighbors++;
 	// row - 1, col
 	if (row - 1 >= 0 && IS_ALIVE(board[row - 1][col]))
-		live_count++;
+		liveNeighbors++;
 	// row - 1, col + 1
 	if (row - 1 >= 0 && col + 1 < *boardColSize && IS_ALIVE(board[row - 1][col + 1]))
-		live_count++;
+		liveNeighbors++;
 	// row, col - 1
 	if (col - 1 >= 0 && IS_ALIVE(board[row][col - 1]))
-		live_count++;
+		liveNeighbors++;
 	// row, col + 1
 	if (col + 1 < *boardColSize && IS_ALIVE(board[row][col + 1]))
-		live_count++;
+		liveNeighbors++;
 	// row + 1, col - 1
 	if (row + 1 < boardSize && col - 1 >= 0 && IS_ALIVE(board[row + 1][col - 1]))
-		live_count++;
+		liveNeighbors++;
 	// row + 1, col
 	if (row + 1 < boardSize && IS_ALIVE(board[row + 1][col]))
-		live_count++;
+		liveNeighbors++;
 	// row + 1, col + 1
 	if (row + 1 < boardSize && col + 1 < *boardColSize && IS_ALIVE(board[row + 1][col + 1]))
-		live_count++;
+		liveNeighbors++;
 
 	#undef IS_ALIVE
 
-	return live_count;
+	return liveNeighbors;
 }
 
-void apply_rule(int** board, int boardSize, int* boardColSize,
-		int row, int col, int live_count) {
+/**
+ * 根据生命游戏规则更新细胞状态（编码为过渡状态）
+ */
+void updateCellState(int** board, int boardSize, int* boardColSize,
+		             int row, int col, int liveNeighbors) {
 	
 	// 检查当前细胞是否活着
-	// 初始状态：1=活着，或编码后：ALIVEDEAD(2)、ALIVEALIVE(3)
-	int isAlive = (board[row][col] == 1 || 
-	               board[row][col] == ALIVEDEAD || 
-	               board[row][col] == ALIVEALIVE);
+	// 初始状态：1=活着，或编码后：ALIVE_TO_DEAD(4)、ALIVE_TO_ALIVE(5)
+	int isCurrentlyAlive = (board[row][col] == 1 || 
+	                        board[row][col] == ALIVE_TO_DEAD || 
+	                        board[row][col] == ALIVE_TO_ALIVE);
 
-	if (isAlive) {
+	if (isCurrentlyAlive) {
 		// 活细胞的规则
-		if (live_count < 2 || live_count > 3) {
-			board[row][col] = ALIVEDEAD;  // 活->死
+		if (liveNeighbors < 2 || liveNeighbors > 3) {
+			board[row][col] = ALIVE_TO_DEAD;  // 活->死（人口过少或过多）
 		} else {
-			board[row][col] = ALIVEALIVE;  // 修复：活->活（需要显式设置）
+			board[row][col] = ALIVE_TO_ALIVE;  // 活->活（人口适中）
 		}
 	} else {
 		// 死细胞的规则
-		if (live_count == 3) {
-			board[row][col] = DEADALIVE;  // 死->活
+		if (liveNeighbors == 3) {
+			board[row][col] = DEAD_TO_ALIVE;  // 死->活（繁殖）
 		} else {
-			board[row][col] = DEADDEAD;   // 修复：死->死（需要显式设置）
+			board[row][col] = DEAD_TO_DEAD;   // 死->死
 		}
 	}
 }
 
+/**
+ * 主函数：生命游戏的下一代
+ * 
+ * 步骤1：编码 - 根据规则计算下一状态并编码
+ * 步骤2：解码 - 将编码状态解码为最终的0或1
+ */
 void gameOfLife(int** board, int boardSize, int* boardColSize) {
-   int i, j, live_count;
+	int row, col, liveNeighbors;
 
-   // encode * apply rule 
-   for (i = 0; i < boardSize; i++) {
-	for (j = 0; j < *boardColSize; j++) {
-		live_count = get_live_count(board, boardSize, boardColSize, i, j);
-		apply_rule(board, boardSize, boardColSize, i, j, live_count);
+	// ===== 步骤1：编码下一代状态 =====
+	for (row = 0; row < boardSize; row++) {
+		for (col = 0; col < *boardColSize; col++) {
+			// 统计活邻居数量
+			liveNeighbors = countLiveNeighbors(board, boardSize, boardColSize, row, col);
+			// 根据规则更新状态（编码）
+			updateCellState(board, boardSize, boardColSize, row, col, liveNeighbors);
+		}
 	}
-   }
 
-   // decode
-   for (i = 0; i < boardSize; i++) {
-	for (j = 0; j < *boardColSize; j++) {
-		if (board[i][j] == ALIVEDEAD || board[i][j] == DEADDEAD)
-			board[i][j] = 0;
-		else if (board[i][j] == DEADALIVE || board[i][j] == ALIVEALIVE)
-			board[i][j] = 1;
+	// ===== 步骤2：解码为最终状态 =====
+	for (row = 0; row < boardSize; row++) {
+		for (col = 0; col < *boardColSize; col++) {
+			// 解码：死状态(2,4) → 0，活状态(3,5) → 1
+			if (board[row][col] == ALIVE_TO_DEAD || board[row][col] == DEAD_TO_DEAD) {
+				board[row][col] = 0;  // 死细胞
+			} else if (board[row][col] == DEAD_TO_ALIVE || board[row][col] == ALIVE_TO_ALIVE) {
+				board[row][col] = 1;  // 活细胞
+			}
+		}
 	}
-   }
 }
