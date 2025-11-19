@@ -19,6 +19,10 @@ interview/
     └── src/          # 实现代码
 ```
 
+## 📖 学习资源
+
+- **[LeetCode 解题经验总结](LeetCode/com/doc/LeetCode解题经验总结.md)** - 23道题目的核心技巧、易错点和面试要点
+
 ## 🎯 LeetCode 题目列表
 
 ### 数组与双指针
