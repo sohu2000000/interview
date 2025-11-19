@@ -216,6 +216,35 @@ if (currentStart <= lastEnd) {
 - ❌ `qsort` 元素大小写成 `2*sizeof(int)` → 应该是 `sizeof(int*)`
 - ❌ cmp函数类型转换错误 → 需要 `*(int**)a`
 
+### 3.4 Insert Interval（57）
+
+**核心思路**：一次遍历，三种情况
+
+```c
+for (i = 0; i < n; i++) {
+    if (intervals[i][1] < newStart) {
+        // 情况1：当前区间在newInterval之前
+        添加当前区间
+    } else if (intervals[i][0] > newEnd) {
+        // 情况2：当前区间在newInterval之后
+        先插入newInterval（如果还没插入）
+        添加当前区间
+    } else {
+        // 情况3：重叠，合并
+        newStart = min(newStart, intervals[i][0]);
+        newEnd = max(newEnd, intervals[i][1]);
+    }
+}
+
+// 最后检查newInterval是否已插入
+if (!inserted) 添加newInterval;
+```
+
+**关键点**：
+- ✅ 不需要排序（已排序）
+- ✅ 用flag标记是否已插入
+- ⚠️ 运算符优先级：`(n+1)*sizeof(int*)` 要加括号
+
 ---
 
 ## 4. 哈希表应用
