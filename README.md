@@ -45,6 +45,7 @@ interview/
 - [x] **151** - Reverse Words in a String (反转字符串中的单词)
 
 ### 贪心算法
+- [x] **56** - Merge Intervals (合并区间)
 - [x] **134** - Gas Station (加油站)
 
 ### 矩阵
@@ -65,6 +66,7 @@ interview/
 ### 1. 贪心算法 (Greedy)
 - Jump Game I & II - 维护最远可达位置
 - Gas Station - 跳过不可能的起点
+- Merge Intervals - 排序后贪心合并
 - H-Index (排序法)
 
 ### 2. 双指针 (Two Pointers)
