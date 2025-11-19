@@ -37,10 +37,11 @@ interview/
 - [x] **3** - Longest Substring Without Repeating Characters (无重复字符的最长子串)
 - [x] **209** - Minimum Size Subarray Sum (长度最小的子数组)
 
-### 字符串
+### 字符串与哈希表
 - [x] **6** - Zigzag Conversion (Z字形变换)
 - [x] **12** - Integer to Roman (整数转罗马数字)
 - [x] **49** - Group Anagrams (字母异位词分组)
+- [x] **128** - Longest Consecutive Sequence (最长连续序列)
 - [x] **151** - Reverse Words in a String (反转字符串中的单词)
 
 ### 贪心算法
@@ -78,6 +79,7 @@ interview/
 
 ### 4. 哈希表 (Hash Table)
 - Group Anagrams - 排序后的字符串作为键，uthash分组
+- Longest Consecutive Sequence - 哈希集合O(1)查找，只从起点计数
 
 ### 5. 数组技巧
 - Product Except Self - 左右累积乘积
