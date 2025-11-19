@@ -42,10 +42,10 @@ In this question, we represent the board using a 2D array. In principle, the boa
  */
 
 enum state_code {
-	DEADDEAD = 0,
-	DEADALIVE = 1,
-	ALIVEDEAD = 2,
-	ALIVEALIVE = 3,
+	DEADDEAD = 2,
+	DEADALIVE = 3,
+	ALIVEDEAD = 4,
+	ALIVEALIVE = 5,
 };
 
 int get_live_count(int** board, int boardSize, int* boardColSize,
@@ -53,38 +53,35 @@ int get_live_count(int** board, int boardSize, int* boardColSize,
 
 	int live_count = 0;
 
+	// 定义宏简化代码：检查是否为活细胞（初始1或编码后的4,5）
+	#define IS_ALIVE(state) ((state) == 1 || (state) == ALIVEDEAD || (state) == ALIVEALIVE)
+
 	// row - 1, col - 1
-	if (row -1 >= 0 && col - 1 >= 0 && 
-	    (board[row - 1][col - 1] == ALIVEALIVE || board[row - 1][col - 1] == ALIVEDEAD))
+	if (row - 1 >= 0 && col - 1 >= 0 && IS_ALIVE(board[row - 1][col - 1]))
 		live_count++;
 	// row - 1, col
-	if (row -1 >= 0 && 
-	    (board[row - 1][col] == ALIVEALIVE || board[row - 1][col] == ALIVEDEAD))
+	if (row - 1 >= 0 && IS_ALIVE(board[row - 1][col]))
 		live_count++;
 	// row - 1, col + 1
-	if (row -1 >= 0 && col + 1 < *boardColSize && 
-	    (board[row - 1][col + 1] == ALIVEALIVE || board[row - 1][col + 1] == ALIVEDEAD))
+	if (row - 1 >= 0 && col + 1 < *boardColSize && IS_ALIVE(board[row - 1][col + 1]))
 		live_count++;
 	// row, col - 1
-	if (col -1 >= 0 && 
-	    (board[row][col - 1] == ALIVEALIVE || board[row][col - 1] == ALIVEDEAD))
+	if (col - 1 >= 0 && IS_ALIVE(board[row][col - 1]))
 		live_count++;
 	// row, col + 1
-	if (col + 1 < *boardColSize && 
-	    (board[row][col + 1] == ALIVEALIVE || board[row][col + 1] == ALIVEDEAD))
+	if (col + 1 < *boardColSize && IS_ALIVE(board[row][col + 1]))
 		live_count++;
 	// row + 1, col - 1
-	if (row + 1 < boardSize && col - 1 >= 0 && 
-	    (board[row + 1][col - 1] == ALIVEALIVE || board[row + 1][col - 1] == ALIVEDEAD))
+	if (row + 1 < boardSize && col - 1 >= 0 && IS_ALIVE(board[row + 1][col - 1]))
 		live_count++;
 	// row + 1, col
-	if (row + 1 < boardSize && 
-	    (board[row + 1][col] == ALIVEALIVE || board[row + 1][col] == ALIVEDEAD))
+	if (row + 1 < boardSize && IS_ALIVE(board[row + 1][col]))
 		live_count++;
 	// row + 1, col + 1
-	if (row + 1 < boardSize && col + 1 < *boardColSize && 
-	    (board[row + 1][col + 1] == ALIVEALIVE || board[row + 1][col + 1] == ALIVEDEAD))
+	if (row + 1 < boardSize && col + 1 < *boardColSize && IS_ALIVE(board[row + 1][col + 1]))
 		live_count++;
+
+	#undef IS_ALIVE
 
 	return live_count;
 }
