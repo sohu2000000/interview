@@ -49,6 +49,7 @@ interview/
 - [x] **36** - Valid Sudoku (有效的数独)
 - [x] **48** - Rotate Image (旋转图像)
 - [x] **54** - Spiral Matrix (螺旋矩阵)
+- [x] **73** - Set Matrix Zeroes (矩阵置零)
 
 ### 链表
 - [x] **138** - Copy List with Random Pointer (复制带随机指针的链表)
@@ -85,6 +86,7 @@ interview/
 - Valid Sudoku - 三个哈希表标记行/列/方块
 - Rotate Image - 转置 + 反转每行 = 顺时针90度
 - Spiral Matrix - 四边界螺旋遍历，注意单行/单列
+- Set Matrix Zeroes - 用首行首列作标记，O(1)空间
 
 ## 🔧 编译与运行
 
