@@ -40,6 +40,7 @@ interview/
 ### 字符串
 - [x] **6** - Zigzag Conversion (Z字形变换)
 - [x] **12** - Integer to Roman (整数转罗马数字)
+- [x] **49** - Group Anagrams (字母异位词分组)
 - [x] **151** - Reverse Words in a String (反转字符串中的单词)
 
 ### 贪心算法
@@ -75,15 +76,18 @@ interview/
 - Longest Substring - 窗口 + 哈希表
 - Minimum Subarray Sum - 动态窗口
 
-### 4. 数组技巧
+### 4. 哈希表 (Hash Table)
+- Group Anagrams - 排序后的字符串作为键，uthash分组
+
+### 5. 数组技巧
 - Product Except Self - 左右累积乘积
 - Rotate Array - 三次反转
 
-### 5. 数据结构设计
+### 6. 数据结构设计
 - RandomizedSet - 动态数组 + 哈希表 + 交换删除
 - Copy Random List - 交织法（O(1)空间）
 
-### 6. 矩阵操作
+### 7. 矩阵操作
 - Valid Sudoku - 三个哈希表标记行/列/方块
 - Rotate Image - 转置 + 反转每行 = 顺时针90度
 - Spiral Matrix - 四边界螺旋遍历，注意单行/单列
