@@ -52,6 +52,7 @@ interview/
 - [x] **56** - Merge Intervals (合并区间)
 - [x] **57** - Insert Interval (插入区间)
 - [x] **134** - Gas Station (加油站)
+- [x] **452** - Minimum Number of Arrows to Burst Balloons (用最少数量的箭引爆气球)
 
 ### 矩阵
 - [x] **36** - Valid Sudoku (有效的数独)
@@ -72,6 +73,8 @@ interview/
 - Jump Game I & II - 维护最远可达位置
 - Gas Station - 跳过不可能的起点
 - Merge Intervals - 排序后贪心合并
+- Insert Interval - 一次遍历插入合并
+- Minimum Arrows - 按end排序，贪心射箭
 - H-Index (排序法)
 
 ### 2. 双指针 (Two Pointers)

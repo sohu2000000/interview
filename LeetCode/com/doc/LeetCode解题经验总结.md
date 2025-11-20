@@ -245,6 +245,37 @@ if (!inserted) 添加newInterval;
 - ✅ 用flag标记是否已插入
 - ⚠️ 运算符优先级：`(n+1)*sizeof(int*)` 要加括号
 
+### 3.5 Minimum Arrows to Burst Balloons（452）
+
+**核心思路**：按结束位置排序 + 贪心射箭
+
+```c
+// 1. 按结束位置排序
+qsort(points, n, sizeof(int*), cmp);
+
+// 2. 贪心：在当前箭覆盖的最右端射箭
+arrowPosition = points[0][1];  // 第一支箭
+arrowCount = 1;
+
+for (i = 1; i < n; i++) {
+    if (points[i][0] <= arrowPosition) {
+        continue;  // 当前箭能射穿这个气球
+    }
+    // 需要新箭：射在新气球的结束位置
+    arrowPosition = points[i][1];
+    arrowCount++;
+}
+```
+
+**为什么按end排序？**
+- 在最早结束的位置射箭
+- 能覆盖尽可能多的后续气球
+- 贪心策略：尽早射箭，为后面留更多空间
+
+**易错点**：
+- ❌ cmp函数用减法 → 大数值会整数溢出
+- ✅ 用if判断比较：`if (a[1] < b[1]) return -1;`
+
 ---
 
 ## 4. 哈希表应用
@@ -589,6 +620,45 @@ int cmp(const void *a, const void *b) {
     return arr1[0] - arr2[0];
 }
 ```
+
+#### 比较函数的整数溢出陷阱（重要！）
+
+```c
+// 危险：大数值会溢出
+int cmp(const void *a, const void *b) {
+    return *(int*)a - *(int*)b;  // ❌
+}
+
+// 测试用例：
+a = -2147483645, b = 2147483647
+a - b = -4294967292  // 超出int范围！溢出！
+```
+
+**安全的写法**：
+
+```c
+// 方法1：if判断（推荐）
+int cmp(const void *a, const void *b) {
+    int val_a = *(int*)a;
+    int val_b = *(int*)b;
+    
+    if (val_a < val_b) return -1;
+    if (val_a > val_b) return 1;
+    return 0;
+}
+
+// 方法2：技巧写法
+int cmp(const void *a, const void *b) {
+    int val_a = *(int*)a;
+    int val_b = *(int*)b;
+    return (val_a > val_b) - (val_a < val_b);
+}
+```
+
+**适用场景**：
+- 小范围（0-1000）：`return a - b` 可以
+- **大范围（int全范围）：必须用if判断**
+- **不确定：总是用if判断最安全**
 
 ### 9.4 全局变量陷阱
 
