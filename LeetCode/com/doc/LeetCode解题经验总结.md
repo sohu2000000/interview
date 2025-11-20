@@ -6,22 +6,331 @@
 
 ## 📚 目录
 
-1. [双指针技巧](#1-双指针技巧)
-2. [滑动窗口](#2-滑动窗口)
-3. [贪心算法](#3-贪心算法)
-4. [哈希表应用](#4-哈希表应用)
-5. [矩阵操作](#5-矩阵操作)
-6. [数据结构设计](#6-数据结构设计)
-7. [数组技巧](#7-数组技巧)
-8. [链表操作](#8-链表操作)
-9. [C语言常见陷阱](#9-c语言常见陷阱)
-10. [面试技巧](#10-面试技巧)
+1. [C语言工具库API](#1-c语言工具库api)
+2. [双指针技巧](#2-双指针技巧)
+3. [滑动窗口](#3-滑动窗口)
+4. [贪心算法](#4-贪心算法)
+5. [哈希表应用](#5-哈希表应用)
+6. [矩阵操作](#6-矩阵操作)
+7. [数据结构设计](#7-数据结构设计)
+8. [数组技巧](#8-数组技巧)
+9. [链表操作](#9-链表操作)
+10. [C语言常见陷阱](#10-c语言常见陷阱)
+11. [面试技巧](#11-面试技巧)
 
 ---
 
-## 1. 双指针技巧
+## 1. C语言工具库API
 
-### 1.1 对撞指针（Two Sum II - 167）
+### 8.1 qsort - 快速排序
+
+**函数原型**：
+```c
+#include <stdlib.h>
+
+void qsort(void *base, size_t nmemb, size_t size,
+           int (*compar)(const void *, const void *));
+```
+
+**参数说明**：
+- `base`：数组首地址
+- `nmemb`：元素个数
+- `size`：**每个元素的字节数**（关键！）
+- `compar`：比较函数
+
+**比较函数返回值**：
+```
+< 0（负数）：a排在b前面
+= 0：        a和b相等，顺序不变
+> 0（正数）：a排在b后面
+```
+
+#### 示例1：整数数组升序
+
+```c
+int arr[] = {5, 2, 8, 1, 9};
+
+int compareAsc(const void *a, const void *b) {
+    int val_a = *(int*)a;
+    int val_b = *(int*)b;
+    
+    // 升序：a小则返回负数，a排前面
+    if (val_a < val_b) return -1;
+    if (val_a > val_b) return 1;
+    return 0;
+}
+
+qsort(arr, 5, sizeof(int), compareAsc);
+// 结果：[1, 2, 5, 8, 9]
+```
+
+#### 示例2：整数数组降序
+
+```c
+int compareDesc(const void *a, const void *b) {
+    int val_a = *(int*)a;
+    int val_b = *(int*)b;
+    
+    // 降序：a大则返回负数，a排前面
+    if (val_a > val_b) return -1;
+    if (val_a < val_b) return 1;
+    return 0;
+}
+
+qsort(arr, 5, sizeof(int), compareDesc);
+// 结果：[9, 8, 5, 2, 1]
+```
+
+#### 示例3：二维数组排序
+
+```c
+int** intervals = [[7,10], [1,5], [3,6]];
+
+int compareByStart(const void *a, const void *b) {
+    // a和b是指向int*的指针
+    int *interval1 = *(int**)a;  // 解引用得到int*
+    int *interval2 = *(int**)b;
+    
+    // 按第一个元素（起始位置）升序
+    if (interval1[0] < interval2[0]) return -1;
+    if (interval1[0] > interval2[0]) return 1;
+    return 0;
+}
+
+// 关键：元素是指针，大小是sizeof(int*)
+qsort(intervals, 3, sizeof(int*), compareByStart);
+// 结果：[[1,5], [3,6], [7,10]]
+```
+
+#### 示例4：结构体排序
+
+```c
+typedef struct {
+    char name[50];
+    int age;
+} Person;
+
+Person people[] = {
+    {"Alice", 25},
+    {"Bob", 30},
+    {"Charlie", 20}
+};
+
+int compareByAge(const void *a, const void *b) {
+    Person *p1 = (Person*)a;
+    Person *p2 = (Person*)b;
+    
+    if (p1->age < p2->age) return -1;
+    if (p1->age > p2->age) return 1;
+    return 0;
+}
+
+qsort(people, 3, sizeof(Person), compareByAge);
+// 结果：Charlie(20), Alice(25), Bob(30)
+```
+
+#### 升降序记忆口诀
+
+| 写法 | 结果 | 记忆 |
+|-----|------|------|
+| `return a - b` | 升序 ↑ | "小的在前"（自然顺序）|
+| `return b - a` | 降序 ↓ | "大的在前"（反过来）|
+| `if (a < b) return -1` | 升序 ↑ | a小排前 |
+| `if (a > b) return -1` | 降序 ↓ | a大排前 |
+
+**⚠️ 重要提醒**：大数值范围必须用if判断，不能用减法（会溢出）！
+
+---
+
+### 8.2 uthash - 哈希表库
+
+**uthash简介**：
+- C语言的宏哈希表库
+- 头文件only，无需链接
+- 支持int、string、自定义键
+
+#### 基本结构
+
+```c
+#include "uthash.h"
+
+// 定义哈希节点
+typedef struct HashNode {
+    int key;               // 键
+    int value;             // 值
+    UT_hash_handle hh;     // 必须包含！uthash句柄
+} HashNode;
+
+HashNode *hashTable = NULL;  // 哈希表头（初始NULL）
+```
+
+#### API 1：HASH_ADD_INT（整数键）
+
+```c
+// 语法：HASH_ADD_INT(head, keyfield_name, item_ptr)
+HashNode *node = (HashNode*)malloc(sizeof(HashNode));
+node->key = 42;
+node->value = 100;
+HASH_ADD_INT(hashTable, key, node);  
+//            ↑        ↑    ↑
+//          表头   字段名  节点指针
+```
+
+**注意**：第2参数是**字段名**（key），不是值！
+
+#### API 2：HASH_FIND_INT（查找）
+
+```c
+// 语法：HASH_FIND_INT(head, key_ptr, output_ptr)
+int searchKey = 42;
+HashNode *found;
+HASH_FIND_INT(hashTable, &searchKey, found);
+//            ↑          ↑          ↑
+//          表头       键的地址    输出指针
+
+if (found) {
+    printf("Value: %d\n", found->value);
+} else {
+    printf("Not found\n");
+}
+```
+
+**注意**：第2参数是**地址**（&key），不是值！
+
+#### API 3：HASH_ADD_STR（字符串键）
+
+```c
+typedef struct {
+    char name[50];         // 字符串键
+    int age;
+    UT_hash_handle hh;
+} Person;
+
+Person *people = NULL;
+Person *p = (Person*)malloc(sizeof(Person));
+strcpy(p->name, "Alice");
+p->age = 25;
+HASH_ADD_STR(people, name, p);  // name是字段名
+```
+
+#### API 4：HASH_FIND_STR（查找字符串）
+
+```c
+Person *found;
+HASH_FIND_STR(people, "Alice", found);  // 直接传字符串
+if (found) {
+    printf("Age: %d\n", found->age);
+}
+```
+
+#### API 5：HASH_DEL（删除）
+
+```c
+HashNode *found;
+int key = 42;
+HASH_FIND_INT(hashTable, &key, found);
+if (found) {
+    HASH_DEL(hashTable, found);  // 从表中删除
+    free(found);                  // 释放内存
+}
+```
+
+#### API 6：HASH_COUNT（计数）
+
+```c
+unsigned int count = HASH_COUNT(hashTable);
+printf("Total: %u items\n", count);
+```
+
+#### API 7：HASH_ITER（遍历）
+
+```c
+HashNode *current, *tmp;
+HASH_ITER(hh, hashTable, current, tmp) {
+    printf("key=%d, value=%d\n", current->key, current->value);
+    // 可以在遍历中安全删除current
+}
+
+// 或者简单遍历（不能删除）
+for (current = hashTable; current != NULL; current = current->hh.next) {
+    printf("key=%d\n", current->key);
+}
+```
+
+#### 完整示例：集合操作
+
+```c
+#include "uthash.h"
+
+typedef struct {
+    int num;
+    UT_hash_handle hh;
+} IntSet;
+
+IntSet *set = NULL;
+
+// 添加
+void add(int num) {
+    IntSet *node;
+    HASH_FIND_INT(set, &num, node);
+    if (node == NULL) {
+        node = (IntSet*)malloc(sizeof(IntSet));
+        node->num = num;
+        HASH_ADD_INT(set, num, node);
+    }
+}
+
+// 查找
+bool contains(int num) {
+    IntSet *found;
+    HASH_FIND_INT(set, &num, found);
+    return found != NULL;
+}
+
+// 删除
+void removeNum(int num) {
+    IntSet *found;
+    HASH_FIND_INT(set, &num, found);
+    if (found) {
+        HASH_DEL(set, found);
+        free(found);
+    }
+}
+
+// 使用
+add(1);
+add(2);
+add(3);
+if (contains(2)) printf("2 exists\n");
+removeNum(2);
+printf("Count: %u\n", HASH_COUNT(set));
+```
+
+#### uthash 常见错误对照表
+
+| 错误写法 | 正确写法 | 说明 |
+|---------|---------|------|
+| `HASH_FIND_INT(h, key, f)` | `HASH_FIND_INT(h, &key, f)` | 需要取地址 |
+| `HASH_ADD_INT(h, 42, n)` | `HASH_ADD_INT(h, key, n)` | 第2参数是字段名 |
+| `HASH_ADD_STR(h, str, n)` | `HASH_ADD_STR(h, key, n)` | 第2参数是字段名 |
+| 缺少`UT_hash_handle hh` | 必须包含 | uthash必需字段 |
+| 头指针未初始化 | `HashNode *h = NULL;` | 必须初始化为NULL |
+
+#### uthash vs 手动哈希表
+
+| 特性 | 手动实现 | uthash |
+|-----|---------|--------|
+| 代码量 | 多（100+行）| 少（几行）|
+| 冲突处理 | 需要实现 | 自动处理 |
+| 内存管理 | 需要自己管理 | 简化但仍需free |
+| 性能 | 可控 | 优秀 |
+| 适用场景 | LeetCode面试 | 两者都可以 |
+
+---
+
+## 17. 双指针技巧
+
+### 8.1 对撞指针（Two Sum II - 167）
 
 **适用场景**：有序数组，找两个数的和
 
@@ -44,7 +353,7 @@ while (left < right) {
 - ✅ 两个指针从两端向中间移动
 - ⚠️ 注意 `left < right`，不能相等
 
-### 1.2 三指针（Three Sum - 15）
+### 8.2 三指针（Three Sum - 15）
 
 **核心思路**：固定一个数 + 双指针
 
@@ -69,7 +378,7 @@ while (left < right && nums[left] == nums[left+1]) left++;
 while (left < right && nums[right] == nums[right-1]) right--;
 ```
 
-### 1.3 贪心双指针（Container With Most Water - 11）
+### 8.3 贪心双指针（Container With Most Water - 11）
 
 **核心思路**：移动较短的边
 
@@ -91,16 +400,16 @@ while (left < right) {
 
 ---
 
-## 2. 滑动窗口
+## 17. 滑动窗口
 
-### 2.1 固定窗口 vs 可变窗口
+### 8.1 固定窗口 vs 可变窗口
 
 | 类型 | 特点 | 例题 |
 |-----|------|------|
 | 可变窗口 | 窗口大小动态调整 | 最长无重复子串(3), 最小子数组和(209) |
 | 固定窗口 | 窗口大小固定 | - |
 
-### 2.2 最长无重复子串（3）
+### 8.2 最长无重复子串（3）
 
 **核心模板**：
 ```c
@@ -124,7 +433,7 @@ for (int right = 0; s[right] != '\0'; right++) {
 - ✅ `>= left` 检查防止left后退
 - ⚠️ 必须检查是否在窗口内
 
-### 2.3 最小子数组和（209）
+### 8.3 最小子数组和（209）
 
 **可变窗口模板**：
 ```c
@@ -147,9 +456,9 @@ for (int right = 0; right < n; right++) {
 
 ---
 
-## 3. 贪心算法
+## 17. 贪心算法
 
-### 3.1 Jump Game（55, 45）
+### 8.1 Jump Game（55, 45）
 
 **核心思想**：维护最远可达位置
 
@@ -171,7 +480,7 @@ return farthest >= n - 1;
 **关键定理**：
 > 不需要模拟跳跃过程，只需要知道"能到达多远"
 
-### 3.2 Gas Station（134）
+### 8.2 Gas Station（134）
 
 **关键定理**：
 > 如果从A到不了B，那么[A, B)之间的任何点也到不了B
@@ -195,7 +504,7 @@ if (currentTank < 0) {
 - ⚠️ `total_tank` 检查要在循环**外面**
 - ⚠️ 不能在循环中提前返回-1
 
-### 3.3 Merge Intervals（56）
+### 8.3 Merge Intervals（56）
 
 **核心思路**：排序 + 贪心合并
 
@@ -216,7 +525,7 @@ if (currentStart <= lastEnd) {
 - ❌ `qsort` 元素大小写成 `2*sizeof(int)` → 应该是 `sizeof(int*)`
 - ❌ cmp函数类型转换错误 → 需要 `*(int**)a`
 
-### 3.4 Insert Interval（57）
+### 8.4 Insert Interval（57）
 
 **核心思路**：一次遍历，三种情况
 
@@ -245,7 +554,7 @@ if (!inserted) 添加newInterval;
 - ✅ 用flag标记是否已插入
 - ⚠️ 运算符优先级：`(n+1)*sizeof(int*)` 要加括号
 
-### 3.5 Minimum Arrows to Burst Balloons（452）
+### 8.5 Minimum Arrows to Burst Balloons（452）
 
 **核心思路**：按结束位置排序 + 贪心射箭
 
@@ -278,9 +587,9 @@ for (i = 1; i < n; i++) {
 
 ---
 
-## 4. 哈希表应用
+## 17. 哈希表应用
 
-### 4.1 Group Anagrams（49）
+### 8.1 Group Anagrams（49）
 
 **核心思想**：排序后的字符串作为键
 
@@ -298,7 +607,7 @@ HASH_FIND_STR(groups, key, group);
 - ✅ 异位词排序后相同
 - ✅ 用uthash库（方便的C哈希表）
 
-### 4.2 Longest Consecutive Sequence（128）
+### 8.2 Longest Consecutive Sequence（128）
 
 **核心优化**：只从序列起点计数
 
@@ -320,25 +629,195 @@ while (found != NULL) {
 - ✅ 每个数字最多访问2次，O(n)
 - ⚠️ uthash: `HASH_FIND_INT` 第2参数需要取地址
 
-### 4.3 uthash 使用要点
+### 8.3 uthash API 完整说明
+
+**uthash简介**：
+- C语言的哈希表宏库
+- 使用简单，性能优秀
+- 支持多种键类型（int, string, 自定义）
+
+#### 基本结构定义
 
 ```c
-// 正确用法
-HASH_FIND_INT(hashSet, &key, found);     // 第2参数：地址
-HASH_ADD_INT(hashSet, fieldName, node);  // 第2参数：字段名（不是值）
+#include "uthash.h"
+
+// 哈希节点结构
+typedef struct HashNode {
+    int key;           // 键（可以是其他类型）
+    int value;         // 值（可以是任意数据）
+    UT_hash_handle hh; // 必须：uthash句柄
+} HashNode;
+
+HashNode *hashTable = NULL;  // 哈希表（初始为NULL）
 ```
 
-**常见错误**：
+#### 常用API
+
+**1. HASH_ADD_INT - 添加（整数键）**
+
 ```c
-HASH_FIND_INT(hashSet, key, found);      // ❌ 缺少&
-HASH_ADD_INT(hashSet, value, node);      // ❌ 应该是字段名，不是变量
+// 语法：HASH_ADD_INT(head, keyfield, item_ptr)
+HashNode *node = (HashNode*)malloc(sizeof(HashNode));
+node->key = 100;
+node->value = 200;
+HASH_ADD_INT(hashTable, key, node);  // 第2参数是字段名
 ```
 
----
+**2. HASH_FIND_INT - 查找（整数键）**
 
-## 5. 矩阵操作
+```c
+// 语法：HASH_FIND_INT(head, key_ptr, out_ptr)
+int searchKey = 100;
+HashNode *found;
+HASH_FIND_INT(hashTable, &searchKey, found);  // 第2参数是地址
+if (found) {
+    printf("Found: %d\n", found->value);
+}
+```
 
-### 5.1 Valid Sudoku（36）
+**3. HASH_DEL - 删除**
+
+```c
+HashNode *found;
+int key = 100;
+HASH_FIND_INT(hashTable, &key, found);
+if (found) {
+    HASH_DEL(hashTable, found);  // 从表中删除
+    free(found);                  // 释放内存
+}
+```
+
+**4. HASH_COUNT - 获取数量**
+
+```c
+unsigned int count = HASH_COUNT(hashTable);
+```
+
+**5. HASH_ITER - 遍历**
+
+```c
+HashNode *current, *tmp;
+HASH_ITER(hh, hashTable, current, tmp) {
+    printf("key=%d, value=%d\n", current->key, current->value);
+}
+```
+
+**6. HASH_ADD_STR - 添加（字符串键）**
+
+```c
+typedef struct {
+    char key[50];      // 字符串键
+    int value;
+    UT_hash_handle hh;
+} StrNode;
+
+StrNode *node = (StrNode*)malloc(sizeof(StrNode));
+strcpy(node->key, "hello");
+node->value = 123;
+HASH_ADD_STR(strTable, key, node);  // 第2参数是字段名
+```
+
+**7. HASH_FIND_STR - 查找（字符串键）**
+
+```c
+StrNode *found;
+HASH_FIND_STR(strTable, "hello", found);  // 第2参数是字符串
+if (found) {
+    printf("Found: %d\n", found->value);
+}
+```
+
+#### 完整示例：整数集合
+
+```c
+#include "uthash.h"
+
+typedef struct {
+    int value;
+    UT_hash_handle hh;
+} IntSet;
+
+// 添加元素
+void addToSet(IntSet **set, int val) {
+    IntSet *node;
+    HASH_FIND_INT(*set, &val, node);
+    if (node == NULL) {  // 不存在才添加
+        node = (IntSet*)malloc(sizeof(IntSet));
+        node->value = val;
+        HASH_ADD_INT(*set, value, node);
+    }
+}
+
+// 查找元素
+bool contains(IntSet *set, int val) {
+    IntSet *found;
+    HASH_FIND_INT(set, &val, found);
+    return found != NULL;
+}
+
+// 使用
+IntSet *mySet = NULL;
+addToSet(&mySet, 1);
+addToSet(&mySet, 2);
+addToSet(&mySet, 3);
+
+if (contains(mySet, 2)) {
+    printf("2 is in set\n");
+}
+```
+
+#### 完整示例：字符串分组（Group Anagrams）
+
+```c
+typedef struct AnagramGroup {
+    char sortedKey[101];     // 排序后的字符串作为键
+    char **strings;          // 该组的字符串数组
+    int count;
+    UT_hash_handle hh;
+} AnagramGroup;
+
+// 添加字符串到组
+void addString(AnagramGroup **groups, char *sortedKey, char *str) {
+    AnagramGroup *group;
+    HASH_FIND_STR(*groups, sortedKey, group);
+    
+    if (group == NULL) {
+        // 创建新组
+        group = (AnagramGroup*)malloc(sizeof(AnagramGroup));
+        strcpy(group->sortedKey, sortedKey);
+        group->count = 0;
+        group->strings = (char**)malloc(10 * sizeof(char*));
+        HASH_ADD_STR(*groups, sortedKey, group);
+    }
+    
+    group->strings[group->count++] = str;
+}
+```
+
+#### 常见错误
+
+| 错误 | 正确 | 说明 |
+|-----|------|------|
+| `HASH_FIND_INT(h, key, f)` | `HASH_FIND_INT(h, &key, f)` | 第2参数需要地址 |
+| `HASH_ADD_INT(h, value, n)` | `HASH_ADD_INT(h, key, n)` | 第2参数是字段名 |
+| `HASH_ADD_STR(h, "key", n)` | `HASH_ADD_STR(h, key, n)` | 第2参数是字段名 |
+| 忘记 `UT_hash_handle hh` | 必须包含此字段 | uthash必需 |
+
+#### API速查表
+
+| 操作 | 整数键 | 字符串键 | 自定义键 |
+|-----|-------|---------|---------|
+| 添加 | `HASH_ADD_INT` | `HASH_ADD_STR` | `HASH_ADD` |
+| 查找 | `HASH_FIND_INT` | `HASH_FIND_STR` | `HASH_FIND` |
+| 删除 | `HASH_DEL` | `HASH_DEL` | `HASH_DEL` |
+| 计数 | `HASH_COUNT` | `HASH_COUNT` | `HASH_COUNT` |
+| 遍历 | `HASH_ITER` | `HASH_ITER` | `HASH_ITER` |
+
+#### qsort 的元素大小
+
+## 17. 矩阵操作
+
+### 8.1 Valid Sudoku（36）
 
 **技巧**：三个哈希表分别标记行/列/方块
 
@@ -355,7 +834,7 @@ boxIndex = (row / 3) * 3 + col / 3;
 - ❌ 数组大小 `[9][9]` → 应该 `[9][10]`（数字1-9需要10个位置）
 - ❌ 全局变量未重置 → LeetCode多次调用会有问题
 
-### 5.2 Rotate Image（48）
+### 8.2 Rotate Image（48）
 
 **核心思想**：转置 + 反转每行
 
@@ -371,7 +850,7 @@ boxIndex = (row / 3) * 3 + col / 3;
 - 直接变换需要额外空间
 - 分解后每步都可以原地操作
 
-### 5.3 Spiral Matrix（54）
+### 8.3 Spiral Matrix（54）
 
 **核心技巧**：四边界螺旋遍历
 
@@ -394,7 +873,7 @@ while (top <= bottom && left <= right) {
 - ✅ 方向3和4需要额外检查
 - ✅ 避免单行/单列情况下重复遍历
 
-### 5.4 Set Matrix Zeroes（73）
+### 8.4 Set Matrix Zeroes（73）
 
 **O(1)空间技巧**：用首行首列作标记
 
@@ -415,7 +894,7 @@ if (matrix[i][j] == 0) {
 **易错点**：
 - ❌ 变量名弄反（`row0`检查的却是列）
 
-### 5.5 Game of Life（289）
+### 8.5 Game of Life（289）
 
 **状态编码技巧**：
 
@@ -434,21 +913,21 @@ ALIVE_TO_ALIVE = 5
 
 ---
 
-## 6. 贪心算法核心
+## 17. 贪心算法核心
 
-### 6.1 贪心的本质
+### 8.1 贪心的本质
 
 **三个要素**：
 1. **贪心选择**：每步做局部最优选择
 2. **无后悔**：不回溯
 3. **期望**：局部最优导致全局最优
 
-### 6.2 贪心正确性的两个条件
+### 8.2 贪心正确性的两个条件
 
 1. **最优子结构**：问题可以分解为子问题
 2. **贪心选择性质**：局部最优能导致全局最优
 
-### 6.3 经典例子
+### 8.3 经典例子
 
 **Jump Game**：
 - 不需要知道"怎么跳"
@@ -462,9 +941,9 @@ ALIVE_TO_ALIVE = 5
 
 ---
 
-## 7. 数据结构设计
+## 17. 数据结构设计
 
-### 7.1 Insert Delete GetRandom O(1)（380）
+### 8.1 Insert Delete GetRandom O(1)（380）
 
 **核心组合**：动态数组 + 哈希表
 
@@ -494,7 +973,7 @@ size--;                         // 缩小
 - 数组中间删除是O(n)
 - 交换到末尾再删除是O(1)
 
-### 7.2 Copy List with Random Pointer（138）
+### 8.2 Copy List with Random Pointer（138）
 
 **交织法**（O(1)空间）：
 
@@ -511,7 +990,7 @@ size--;                         // 缩小
 
 ---
 
-## 8. 数组技巧
+## 17. 数组技巧
 
 ### 8.1 Product Except Self（238）
 
@@ -553,9 +1032,9 @@ for (int i = 0; i < n; i++) {
 
 ---
 
-## 9. C语言常见陷阱
+## 17. C语言常见陷阱
 
-### 9.1 指针相关
+### 11.1 指针相关
 
 #### strlen 不包含 `\0`
 
@@ -574,7 +1053,7 @@ returnColumnSizes = (int*)malloc(...);  // int** = int*，类型不匹配
 *returnColumnSizes = (int*)malloc(...); // *int** = int*
 ```
 
-### 9.2 数组相关
+### 11.2 数组相关
 
 #### 数组大小计算
 
@@ -598,7 +1077,124 @@ free(rows[i]);
 // free(rows);  ❌ 导致buffer overflow
 ```
 
-### 9.3 排序相关
+### 11.3 排序相关
+
+#### qsort API 完整说明
+
+**函数原型**：
+```c
+void qsort(void *base, size_t nmemb, size_t size,
+           int (*compar)(const void *, const void *));
+```
+
+**参数说明**：
+- `base`：数组首地址
+- `nmemb`：元素个数
+- `size`：**每个元素的字节数**
+- `compar`：比较函数
+
+**比较函数规则**：
+```
+返回负数（< 0）：a排在b前面
+返回0：         a和b顺序不变
+返回正数（> 0）：a排在b后面
+```
+
+#### 示例1：整数数组升序
+
+```c
+int arr[] = {5, 2, 8, 1, 9};
+
+int compareAsc(const void *a, const void *b) {
+    int val_a = *(int*)a;
+    int val_b = *(int*)b;
+    
+    // 升序：return a - b
+    if (val_a < val_b) return -1;
+    if (val_a > val_b) return 1;
+    return 0;
+}
+
+qsort(arr, 5, sizeof(int), compareAsc);
+// 结果：[1, 2, 5, 8, 9]
+```
+
+#### 示例2：整数数组降序
+
+```c
+int arr[] = {5, 2, 8, 1, 9};
+
+int compareDesc(const void *a, const void *b) {
+    int val_a = *(int*)a;
+    int val_b = *(int*)b;
+    
+    // 降序：return b - a
+    if (val_a > val_b) return -1;  // a大，排前面
+    if (val_a < val_b) return 1;
+    return 0;
+}
+
+qsort(arr, 5, sizeof(int), compareDesc);
+// 结果：[9, 8, 5, 2, 1]
+```
+
+#### 示例3：二维数组（指针数组）排序
+
+```c
+int** intervals = [[7,10], [1,5], [3,6]];
+
+int compareIntervals(const void *a, const void *b) {
+    // a和b是 int** 类型（指向int*的指针）
+    int *arr1 = *(int**)a;  // 解引用得到int*
+    int *arr2 = *(int**)b;
+    
+    // 按第一个元素升序
+    if (arr1[0] < arr2[0]) return -1;
+    if (arr1[0] > arr2[0]) return 1;
+    return 0;
+}
+
+// 注意：元素大小是指针大小
+qsort(intervals, 3, sizeof(int*), compareIntervals);
+// 结果：[[1,5], [3,6], [7,10]]
+```
+
+#### 示例4：结构体数组排序
+
+```c
+typedef struct {
+    char name[50];
+    int score;
+} Student;
+
+Student students[] = {
+    {"Alice", 85},
+    {"Bob", 92},
+    {"Charlie", 78}
+};
+
+int compareByScore(const void *a, const void *b) {
+    Student *s1 = (Student*)a;
+    Student *s2 = (Student*)b;
+    
+    // 按分数降序
+    if (s1->score > s2->score) return -1;
+    if (s1->score < s2->score) return 1;
+    return 0;
+}
+
+qsort(students, 3, sizeof(Student), compareByScore);
+// 结果：Bob(92), Alice(85), Charlie(78)
+```
+
+#### 升序 vs 降序记忆法
+
+| 代码模式 | 结果 | 理解 |
+|---------|------|------|
+| `return a - b` | 升序 ↑ | a小返回负，a排前 |
+| `return b - a` | 降序 ↓ | a大返回负，a排前 |
+| `if (a < b) return -1` | 升序 ↑ | a小排前 |
+| `if (a > b) return -1` | 降序 ↓ | a大排前 |
 
 #### qsort 的元素大小
 
@@ -660,7 +1256,7 @@ int cmp(const void *a, const void *b) {
 - **大范围（int全范围）：必须用if判断**
 - **不确定：总是用if判断最安全**
 
-### 9.4 全局变量陷阱
+### 11.4 全局变量陷阱
 
 ```c
 bool rowUsed[9][10] = {false};  // 全局变量
@@ -671,7 +1267,7 @@ void function() {
 }
 ```
 
-### 9.5 strcat 的性能陷阱
+### 11.5 strcat 的性能陷阱
 
 ```c
 // 多次strcat：O(n²)
@@ -688,9 +1284,9 @@ for (int i = 0; i < n; i++) {
 
 ---
 
-## 10. 字符串处理
+## 17. 字符串处理
 
-### 10.1 反转字符串中的单词（151）
+### 11.1 反转字符串中的单词（151）
 
 **双指针压缩空格**：
 
@@ -710,7 +1306,7 @@ while (*read != '\0') {
 *write = '\0';
 ```
 
-### 10.2 Integer to Roman（12）
+### 11.2 Integer to Roman（12）
 
 **贪心 + 数据驱动**：
 
@@ -733,7 +1329,7 @@ for (int i = 0; i < 13; i++) {
 
 ---
 
-## 11. 复杂度分析技巧
+## 17. 复杂度分析技巧
 
 ### 11.1 摊还分析
 
@@ -772,16 +1368,16 @@ for (i = 0; i < n-1; i++) {
 
 ---
 
-## 12. 易错点总结
+## 17. 易错点总结
 
-### 12.1 数组越界
+### 14.1 数组越界
 
 | 问题 | 原因 | 解决 |
 |-----|------|------|
 | 数独数组 | 数字1-9，但数组只到8 | `[9][10]`，索引0不用 |
 | 动态分配不够 | Three Sum结果可能O(n²) | 分配 `n²/2` 空间 |
 
-### 12.2 边界条件
+### 14.2 边界条件
 
 | 场景 | 检查 | 原因 |
 |-----|------|------|
@@ -789,7 +1385,7 @@ for (i = 0; i < n-1; i++) {
 | 滑动窗口 | `charLastPos[ch] >= left` | 防止left后退 |
 | Jump Game II | `i < n-1` | 不要遍历到终点 |
 
-### 12.3 变量命名
+### 14.3 变量命名
 
 | 不好 | 更好 | 为什么 |
 |-----|------|--------|
@@ -800,9 +1396,9 @@ for (i = 0; i < n-1; i++) {
 
 ---
 
-## 13. 面试技巧
+## 17. 面试技巧
 
-### 13.1 思路讲解
+### 14.1 思路讲解
 
 **推荐顺序**：
 1. 重述问题（确保理解）
@@ -812,7 +1408,7 @@ for (i = 0; i < n-1; i++) {
 5. 讨论边界情况
 6. 开始编码
 
-### 13.2 代码规范
+### 14.2 代码规范
 
 **变量命名**：
 - ✅ 用完整单词：`maxLength` 而不是 `maxLen`
@@ -824,7 +1420,7 @@ for (i = 0; i < n-1; i++) {
 - ✅ 关键步骤说明
 - ✅ 边界情况注释
 
-### 13.3 常见优化思路
+### 14.3 常见优化思路
 
 | 从 | 到 | 技巧 |
 |---|----|----|
@@ -834,7 +1430,7 @@ for (i = 0; i < n-1; i++) {
 
 ---
 
-## 14. 题目分类速查
+## 17. 题目分类速查
 
 ### 看到这些关键词 → 想到这些方法
 
@@ -854,16 +1450,16 @@ for (i = 0; i < n-1; i++) {
 
 ---
 
-## 15. 学习建议
+## 17. 学习建议
 
-### 15.1 从简单到困难
+### 16.1 从简单到困难
 
 1. **双指针**：Two Sum II → Three Sum → Container With Water
 2. **滑动窗口**：Minimum Subarray → Longest Substring
 3. **贪心**：Jump Game I → Jump Game II → Gas Station
 4. **矩阵**：Valid Sudoku → Rotate Image → Spiral Matrix
 
-### 15.2 重点掌握
+### 16.2 重点掌握
 
 **必须理解的概念**：
 - ✅ 双指针的三种类型（对撞、快慢、固定间距）
@@ -877,7 +1473,7 @@ for (i = 0; i < n-1; i++) {
 - ✅ 空间优化（交织法、双指针）
 - ✅ 去重技巧（排序 + 跳过重复）
 
-### 15.3 调试技巧
+### 16.3 调试技巧
 
 **常见bug**：
 1. 数组越界 → 仔细计算索引范围
@@ -892,7 +1488,7 @@ for (i = 0; i < n-1; i++) {
 
 ---
 
-## 16. 总结
+## 17. 总结
 
 ### 核心思想
 
