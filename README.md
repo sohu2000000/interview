@@ -41,10 +41,11 @@ interview/
 - [x] **3** - Longest Substring Without Repeating Characters (无重复字符的最长子串)
 - [x] **209** - Minimum Size Subarray Sum (长度最小的子数组)
 
-### 字符串与哈希表
+### 字符串与栈
 - [x] **6** - Zigzag Conversion (Z字形变换)
 - [x] **12** - Integer to Roman (整数转罗马数字)
 - [x] **49** - Group Anagrams (字母异位词分组)
+- [x] **71** - Simplify Path (简化路径)
 - [x] **128** - Longest Consecutive Sequence (最长连续序列)
 - [x] **151** - Reverse Words in a String (反转字符串中的单词)
 
@@ -91,15 +92,18 @@ interview/
 - Group Anagrams - 排序后的字符串作为键，uthash分组
 - Longest Consecutive Sequence - 哈希集合O(1)查找，只从起点计数
 
-### 5. 数组技巧
+### 5. 栈 (Stack)
+- Simplify Path - 栈处理目录，遇到".."弹栈
+
+### 6. 数组技巧
 - Product Except Self - 左右累积乘积
 - Rotate Array - 三次反转
 
-### 6. 数据结构设计
+### 7. 数据结构设计
 - RandomizedSet - 动态数组 + 哈希表 + 交换删除
 - Copy Random List - 交织法（O(1)空间）
 
-### 7. 矩阵操作
+### 8. 矩阵操作
 - Valid Sudoku - 三个哈希表标记行/列/方块
 - Rotate Image - 转置 + 反转每行 = 顺时针90度
 - Spiral Matrix - 四边界螺旋遍历，注意单行/单列

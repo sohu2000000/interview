@@ -990,7 +990,49 @@ size--;                         // 缩小
 
 ---
 
-## 17. 数组技巧
+## 9. 栈的应用
+
+### 9.1 Simplify Path（71）
+
+**核心思想**：用栈处理Unix路径
+
+```c
+char **dirStack;  // 栈（存储目录名）
+int stackSize = 0;
+
+// 用strtok分割路径
+token = strtok(pathCopy, "/");
+while (token) {
+    if (strcmp(token, "..") == 0) {
+        // 返回上级：弹栈
+        if (stackSize > 0) stackSize--;
+    } else if (strcmp(token, ".") != 0 && strlen(token) > 0) {
+        // 有效目录名：入栈
+        dirStack[stackSize++] = token;
+    }
+    // "." 跳过
+    token = strtok(NULL, "/");
+}
+
+// 从栈底到栈顶拼接路径
+result[0] = '/';
+for (i = 0; i < stackSize; i++) {
+    // 拼接目录名和 '/'
+}
+```
+
+**关键点**：
+- ✅ `strtok` 分割字符串
+- ✅ 栈处理".."（返回上级）
+- ✅ "..."是有效目录名（不是特殊符号）
+
+**易错点**：
+- ❌ `token = strtok(NULL, "/")` 忘记赋值 → 死循环
+- ❌ `*top++` → 应该是 `(*top)++`（运算符优先级）
+
+---
+
+## 10. 数组技巧
 
 ### 8.1 Product Except Self（238）
 
@@ -1035,6 +1077,44 @@ for (int i = 0; i < n; i++) {
 ## 17. C语言常见陷阱
 
 ### 11.1 指针相关
+
+#### 运算符优先级陷阱（重要！）
+
+**问题**：`*ptr++` 不等于 `(*ptr)++`
+
+```c
+int value = 5;
+int *ptr = &value;
+
+// 错误写法：*ptr++
+*ptr++;  // 等价于 *(ptr++)
+// 1. ptr++ → ptr指针移动
+// 2. * → 解引用移动后的位置（未定义行为！）
+// value 还是 5，没有改变！❌
+
+// 正确写法：(*ptr)++
+(*ptr)++;  
+// 1. *ptr → 解引用，获取value
+// 2. ++ → value增加
+// value 变成 6 ✓
+```
+
+**运算符优先级表**：
+
+| 表达式 | 等价于 | 操作 |
+|-------|--------|------|
+| `*ptr++` | `*(ptr++)` | 指针后移再解引用 ❌ |
+| `(*ptr)++` | `(*ptr)++` | 值增加 ✅ |
+| `++*ptr` | `++(*ptr)` | 值增加 ✅ |
+| `*++ptr` | `*(++ptr)` | 指针先移再解引用 ❌ |
+
+**在栈操作中的应用**：
+```c
+void push(int *top, int val) {
+    (*top)++;  // ✅ 栈顶索引增加
+    // *top++; ❌ 错误！移动指针
+}
+```
 
 #### strlen 不包含 `\0`
 
