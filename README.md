@@ -69,6 +69,7 @@ interview/
 - [x] **289** - Game of Life (生命游戏)
 
 ### 链表
+- [x] **2** - Add Two Numbers (两数相加)
 - [x] **138** - Copy List with Random Pointer (复制带随机指针的链表)
 
 ### 数据结构设计
