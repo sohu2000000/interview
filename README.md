@@ -52,6 +52,7 @@ interview/
 
 ### 栈
 - [x] **71** - Simplify Path (简化路径)
+- [x] **150** - Evaluate Reverse Polish Notation (逆波兰表达式求值)
 - [x] **155** - Min Stack (最小栈)
 
 ### 贪心算法与区间
@@ -99,6 +100,7 @@ interview/
 
 ### 5. 栈 (Stack)
 - Simplify Path - 栈处理目录，遇到".."弹栈
+- Evaluate RPN - 栈计算后缀表达式，注意负数判断
 - Min Stack - 双栈同步，minStack存储每层最小值
 
 ### 6. 数组技巧

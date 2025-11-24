@@ -1030,7 +1030,46 @@ for (i = 0; i < stackSize; i++) {
 - ❌ `token = strtok(NULL, "/")` 忘记赋值 → 死循环
 - ❌ `*top++` → 应该是 `(*top)++`（运算符优先级）
 
-### 9.2 Min Stack（155）
+### 9.2 Evaluate Reverse Polish Notation（150）
+
+**核心思想**：用栈计算后缀表达式
+
+```c
+int stack[MAX_SIZE];
+int top = -1;
+
+for (i = 0; i < tokensSize; i++) {
+    if (isOperator(tokens[i])) {
+        // 操作符：弹出两个操作数
+        int right = stack[top--];
+        int left = stack[top--];
+        stack[++top] = operate(left, right, tokens[i]);
+    } else {
+        // 数字：入栈
+        stack[++top] = atoi(tokens[i]);
+    }
+}
+
+return stack[top];
+```
+
+**关键点**：
+- ✅ 后缀表达式：操作数在前，操作符在后
+- ✅ 遇到操作符就弹出两个数计算
+- ✅ 结果入栈继续使用
+
+**易错点**：
+- ❌ `isOperator` 只检查第一个字符 → 负数"-11"会误判
+- ✅ 必须检查长度：`strlen(op) == 1 && (*op == '-' || ...)`
+- ❌ `stack[top+1] = result` → 应该 `stack[++top] = result`
+
+**区分负数和减号**：
+```c
+"-"   → strlen=1, 是操作符 ✓
+"-11" → strlen=3, 是负数 ✓
+```
+
+### 9.3 Min Stack（155）
 
 **核心思想**：双栈同步，minStack记录每个状态的最小值
 
