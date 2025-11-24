@@ -52,6 +52,7 @@ interview/
 
 ### 栈
 - [x] **71** - Simplify Path (简化路径)
+- [x] **155** - Min Stack (最小栈)
 
 ### 贪心算法与区间
 - [x] **56** - Merge Intervals (合并区间)
@@ -98,6 +99,7 @@ interview/
 
 ### 5. 栈 (Stack)
 - Simplify Path - 栈处理目录，遇到".."弹栈
+- Min Stack - 双栈同步，minStack存储每层最小值
 
 ### 6. 数组技巧
 - Product Except Self - 左右累积乘积

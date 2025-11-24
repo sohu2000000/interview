@@ -1030,6 +1030,61 @@ for (i = 0; i < stackSize; i++) {
 - ❌ `token = strtok(NULL, "/")` 忘记赋值 → 死循环
 - ❌ `*top++` → 应该是 `(*top)++`（运算符优先级）
 
+### 9.2 Min Stack（155）
+
+**核心思想**：双栈同步，minStack记录每个状态的最小值
+
+```c
+typedef struct {
+   int *stack;      // 主栈
+   int *minStack;   // 最小值栈（同步）
+   int top;         // 统一的栈顶索引
+} MinStack;
+
+// Push操作
+void push(MinStack* obj, int val) {
+    obj->top++;
+    obj->stack[obj->top] = val;
+    
+    // 更新最小值栈
+    if (obj->top == 0) {
+        obj->minStack[0] = val;  // 第一个元素
+    } else {
+        int prevMin = obj->minStack[obj->top - 1];
+        obj->minStack[obj->top] = (val < prevMin) ? val : prevMin;
+    }
+}
+
+// GetMin操作：O(1)
+int getMin(MinStack* obj) {
+    return obj->minStack[obj->top];  // 直接返回
+}
+```
+
+**关键点**：
+- ✅ 两个栈同步（top相同）
+- ✅ minStack[i] 存储"前i个元素的最小值"
+- ✅ pop后自动恢复到上一个最小值
+
+**易错点**：
+- ❌ 维护单独的 `min_value` 字段 → pop后忘记更新，导致错误
+- ✅ 直接用 `minStack[top]` → 自动正确
+
+**为什么需要minStack？**
+```
+只用一个min变量：
+push(3), push(2), push(5)
+min = 2
+pop() → 栈=[3,2]，但min如何恢复到3？需要遍历 O(n) ❌
+
+用minStack：
+push(3): minStack=[3]
+push(2): minStack=[3,2]  (前2个元素的最小值是2)
+push(5): minStack=[3,2,2]  (前3个元素的最小值还是2)
+pop(): minStack=[3,2]，getMin()=2 ✓
+pop(): minStack=[3]，getMin()=3 ✓
+```
+
 ---
 
 ## 10. 数组技巧
