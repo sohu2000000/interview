@@ -70,6 +70,7 @@ interview/
 
 ### 链表
 - [x] **2** - Add Two Numbers (两数相加)
+- [x] **19** - Remove Nth Node From End of List (删除链表的倒数第N个节点)
 - [x] **92** - Reverse Linked List II (反转链表II)
 - [x] **138** - Copy List with Random Pointer (复制带随机指针的链表)
 
@@ -90,6 +91,7 @@ interview/
 - Two Sum II - 对撞指针
 - Three Sum - 固定一个数 + 双指针
 - Container With Most Water - 贪心移动较短边
+- Remove Nth Node - 快慢指针，间隔n+1
 - Reverse Words - 双指针压缩空格
 
 ### 3. 滑动窗口 (Sliding Window)

@@ -978,6 +978,50 @@ if (carry > 0) {
 - ❌ 忘记最后的进位（如 5+5=10）
 - ❌ 没有处理不同长度的链表
 
+### 11.2 Remove Nth Node From End（19）
+
+**核心思想**：快慢指针，保持固定间隔
+
+```c
+// 哑节点简化边界处理
+dummy->next = head;
+slow = fast = dummy;
+
+// 快指针先走n+1步
+for (i = 0; i < n+1; i++) {
+    fast = fast->next;
+}
+
+// 快慢指针一起走
+while (fast != NULL) {
+    slow = slow->next;
+    fast = fast->next;
+}
+
+// slow指向要删除节点的前一个
+slow->next = slow->next->next;
+```
+
+**为什么是n+1步？**
+```
+删除倒数第n个 = 找到倒数第n+1个（前一个）
+
+从某节点到NULL的距离 = 该节点到末尾的步数
+如果slow到NULL需要n+1步，则slow在倒数第n+1个位置
+
+所以：fast比slow快n+1步
+```
+
+**关键点**：
+- ✅ 哑节点处理删除头节点的情况
+- ✅ 快指针先走n+1步（不是n步）
+- ✅ 间隔保证slow停在要删除节点的前一个
+- ⚠️ 释放dummy前先保存结果
+
+**易错点**：
+- ❌ fast走n步 → slow停在要删除的节点（不是前一个）
+- ❌ `free(dummy)` 后访问 `dummy->next` → use-after-free
+
 ---
 
 ## 12. 数据结构设计
@@ -1027,7 +1071,7 @@ size--;                         // 缩小
 - 通过 `original.next` 访问对应的新节点
 - 不需要哈希表！
 
-### 11.3 Reverse Linked List II（92）
+### 11.4 Reverse Linked List II（92）
 
 **核心思想**：一次遍历，记录关键节点 + 反转区间
 
