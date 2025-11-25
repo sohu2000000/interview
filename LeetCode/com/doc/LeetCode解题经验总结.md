@@ -1022,6 +1022,52 @@ slow->next = slow->next->next;
 - ❌ fast走n步 → slow停在要删除的节点（不是前一个）
 - ❌ `free(dummy)` 后访问 `dummy->next` → use-after-free
 
+### 11.3 Remove Duplicates from Sorted List II（82）
+
+**核心思想**：删除所有重复节点（一个不留）
+
+```c
+dummy->next = head;
+prev = dummy;  // 最后一个确定保留的节点
+current = head;
+
+while (current != NULL) {
+    currentValue = current->val;
+    nextNode = current->next;
+    
+    // 跳过所有值为currentValue的节点
+    while (nextNode != NULL && nextNode->val == currentValue) {
+        nextNode = nextNode->next;
+    }
+    
+    // 判断是否有重复
+    if (current->next != nextNode) {
+        // 有重复：整组删除
+        prev->next = nextNode;
+    } else {
+        // 无重复：保留，prev前进
+        prev = current;
+    }
+    
+    current = nextNode;
+}
+```
+
+**关键判断**：`current->next != nextNode`
+- 如果相等：current后面没有重复，保留
+- 如果不等：current到nextNode之间有重复，全部删除
+
+**对比19题**：
+
+| 题目 | 目标 | 技巧 |
+|-----|------|------|
+| 19题 | 删除特定位置 | 快慢指针（固定间隔）|
+| 82题 | 删除所有重复 | 判断重复组 + 跳过 |
+
+**易错点**：
+- ❌ 只删除重复的副本，保留一个 → 应该全部删除
+- ❌ 没有使用哑节点 → 删除头节点时需要特殊处理
+
 ---
 
 ## 12. 数据结构设计

@@ -71,6 +71,7 @@ interview/
 ### 链表
 - [x] **2** - Add Two Numbers (两数相加)
 - [x] **19** - Remove Nth Node From End of List (删除链表的倒数第N个节点)
+- [x] **82** - Remove Duplicates from Sorted List II (删除排序链表中的重复元素II)
 - [x] **92** - Reverse Linked List II (反转链表II)
 - [x] **138** - Copy List with Random Pointer (复制带随机指针的链表)
 
