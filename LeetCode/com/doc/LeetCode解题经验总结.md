@@ -1117,6 +1117,60 @@ slow->next = NULL;         // 新尾断开（断环）
 - ❌ 忘记 `k % length`
 - ❌ fast走到NULL而不是最后一个节点
 
+### 11.5 Partition List（86）
+
+**核心思想**：双链表分离 + 合并
+
+```c
+// 两个哑节点管理子链表
+lessDummy, greaterDummy
+
+// 两个尾指针
+lessTail = lessDummy;
+greaterTail = greaterDummy;
+
+// 遍历原链表，分配节点
+while (current != NULL) {
+    if (current->val < x) {
+        lessTail->next = current;
+        lessTail = lessTail->next;
+    } else {
+        greaterTail->next = current;
+        greaterTail = greaterTail->next;
+    }
+    current = current->next;
+}
+
+// 关键：断开greater尾部
+greaterTail->next = NULL;
+
+// 连接两个链表
+lessTail->next = greaterDummy->next;
+return lessDummy->next;
+```
+
+**为什么要断开尾部？**
+```
+原链表：1 -> 4 -> 3 -> 2
+分配后：
+less: 1 -> 2
+greater: 4 -> 3
+但3->next还指向2！
+
+如果不断开：
+1 -> 2 -> 4 -> 3 -> 2 -> ... (成环！超时)
+        ↑______________|
+```
+
+**关键点**：
+- ✅ 两个哑节点简化操作
+- ✅ 原地操作（不创建新节点）
+- ✅ 保持相对顺序
+- ⚠️ **必须断开greater尾部**
+
+**易错点**：
+- ❌ 忘记 `greaterTail->next = NULL` → 成环导致超时
+
 ---
 
 ## 12. 数据结构设计
@@ -1166,7 +1220,7 @@ size--;                         // 缩小
 - 通过 `original.next` 访问对应的新节点
 - 不需要哈希表！
 
-### 11.5 Reverse Linked List II（92）
+### 11.6 Reverse Linked List II（92）
 
 **核心思想**：一次遍历，记录关键节点 + 反转区间
 
