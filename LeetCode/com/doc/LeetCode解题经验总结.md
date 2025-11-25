@@ -1027,6 +1027,45 @@ size--;                         // 缩小
 - 通过 `original.next` 访问对应的新节点
 - 不需要哈希表！
 
+### 11.3 Reverse Linked List II（92）
+
+**核心思想**：一次遍历，记录关键节点 + 反转区间
+
+```c
+while (current != NULL) {
+    nextNode = current->next;  // 保存next
+    position++;
+    
+    // 记录4个关键节点
+    if (position == left - 1) beforeLeft = current;
+    if (position == right + 1) afterRight = current;
+    if (position == left) leftNode = current;
+    if (position == right) rightNode = current;
+    
+    // 反转区间内的指针
+    if (position >= left && position <= right) {
+        current->next = prev;
+    }
+    
+    prev = current;
+    current = nextNode;
+}
+
+// 重新连接
+beforeLeft->next = rightNode;  // before -> 反转后的头
+leftNode->next = afterRight;    // 反转后的尾 -> after
+return (left == 1) ? rightNode : head;
+```
+
+**关键理解**：
+- ✅ leftNode反转后变成**尾部**
+- ✅ rightNode反转后变成**头部**
+- ✅ 保存next避免断链
+
+**易错点**：
+- ❌ 连接错误：`right_ptr->next = right_end` → 应该是 `left_ptr->next`
+- ❌ 返回值：left=1时头节点变了，需要返回 `rightNode`
+
 ---
 
 ## 9. 栈的应用
