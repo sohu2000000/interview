@@ -81,6 +81,6 @@ int canCompleteCircuit(int* gas, int gasSize, int* cost, int costSize) {
 	if (total_tank < 0) {
 	    return -1;
 	}
-	
+    
 	return start;
 }

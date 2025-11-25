@@ -57,7 +57,7 @@ int* twoSum(int* numbers, int numbersSize, int target, int* returnSize) {
 	// 双指针向中间移动
 	while (left < right) {
 		currentSum = numbers[left] + numbers[right];
-		
+
 		if (currentSum == target) {
 			// 找到答案
 			break;
@@ -67,7 +67,7 @@ int* twoSum(int* numbers, int numbersSize, int target, int* returnSize) {
 		} else {
 			// 和太小，左指针右移（增大和）
 			left++;
-		}
+	}
 	}
 
 	// 返回结果（题目要求1-indexed，所以+1）

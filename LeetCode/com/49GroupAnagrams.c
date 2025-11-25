@@ -77,7 +77,7 @@ void generateSortedKey(char *str, char *sortedKey) {
 char*** groupAnagrams(char** strs, int strsSize, int* returnSize, int** returnColumnSizes) {
 	AnagramGroup *groupTable = NULL;  // 哈希表（所有组）
 	AnagramGroup *currentGroup;       // 当前处理的组
-	
+
 	// ===== 步骤1：将字符串分组 =====
 	for (int i = 0; i < strsSize; i++) {
 		char sortedKey[101];

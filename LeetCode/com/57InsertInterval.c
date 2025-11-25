@@ -60,7 +60,7 @@ int** insert(int** intervals, int intervalsSize, int* intervalsColSize, int* new
 	mergeStart = newInterval[0];
 	mergeEnd = newInterval[1];
 	isInserted = 0;
-	
+
 	// 遍历所有区间
 	for (i = 0; i < intervalsSize; i++) {
 		currentStart = intervals[i][0];

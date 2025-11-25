@@ -76,13 +76,13 @@ typedef struct HashNode {
 } HashNode;
 
 // RandomizedSet 结构
-typedef struct {
+ typedef struct {
     int* nums;            // 动态数组，存储实际的值
     int size;             // 当前元素个数
     int capacity;         // 数组容量
     HashNode** map;       // 哈希表，val -> index
-} RandomizedSet;
-
+ } RandomizedSet;
+ 
 // 哈希函数
 int hash(int key) {
     // 处理负数
@@ -91,7 +91,7 @@ int hash(int key) {
 }
 
 // 创建 RandomizedSet
-RandomizedSet* randomizedSetCreate() {
+ RandomizedSet* randomizedSetCreate() {
     RandomizedSet* obj = (RandomizedSet*)malloc(sizeof(RandomizedSet));
     
     // 初始化动态数组
@@ -125,8 +125,8 @@ int mapGet(HashNode** map, int val) {
     }
     
     return -1;  // 不存在
-}
-
+ }
+ 
 // 在哈希表中插入或更新 val -> index
 void mapPut(HashNode** map, int val, int index) {
     int h = hash(val);
@@ -267,4 +267,4 @@ void randomizedSetFree(RandomizedSet* obj) {
  * bool param_2 = randomizedSetRemove(obj, val);
  * int param_3 = randomizedSetGetRandom(obj);
  * randomizedSetFree(obj);
- */
+*/

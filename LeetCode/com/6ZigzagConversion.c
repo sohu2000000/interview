@@ -37,7 +37,7 @@ s consists of English letters (lower-case and upper-case), ',' and '.'.
 1 <= numRows <= 1000
  */
 
-char* convert(char* s, int numRows) {
+ char* convert(char* s, int numRows) {
 	char *result, *rows[numRows];
 	int len, i, row, direct, *rowPos;
 
@@ -93,4 +93,4 @@ char* convert(char* s, int numRows) {
 	// 修复：不要free(rows)，因为rows是VLA（栈上分配）
 
 	return result;
-}
+ }

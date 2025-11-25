@@ -52,7 +52,7 @@ int lengthOfLongestSubstring(char* s) {
 
 	// 初始化：-1表示字符未出现过
 	memset(charLastPos, -1, sizeof(charLastPos));
-	
+
 	while (s[right] != '\0') {
 		unsigned char currentChar = (unsigned char)s[right];
 		

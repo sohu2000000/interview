@@ -76,7 +76,7 @@ int** merge(int** intervals, int intervalsSize, int* intervalsColSize, int* retu
 	// 初始化第一个区间
 	result[mergedCount][0] = intervals[0][0];
 	result[mergedCount][1] = intervals[0][1];
-	
+
 	// 遍历剩余区间
 	for (i = 1; i < intervalsSize; i++) {
 		currentStart = intervals[i][0];

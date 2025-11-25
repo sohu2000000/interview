@@ -68,7 +68,7 @@ enum state_code {
  * 统计周围8个邻居中活细胞的数量
  */
 int countLiveNeighbors(int** board, int boardSize, int* boardColSize,
-	                   int row, int col) {
+	           int row, int col) {
 	int liveNeighbors = 0;
 
 	// 定义宏简化代码：检查是否为活细胞（初始1或编码后的4,5）
@@ -109,7 +109,7 @@ int countLiveNeighbors(int** board, int boardSize, int* boardColSize,
  */
 void updateCellState(int** board, int boardSize, int* boardColSize,
 		             int row, int col, int liveNeighbors) {
-	
+
 	// 检查当前细胞是否活着
 	// 初始状态：1=活着，或编码后：ALIVE_TO_DEAD(4)、ALIVE_TO_ALIVE(5)
 	int isCurrentlyAlive = (board[row][col] == 1 || 
@@ -129,7 +129,7 @@ void updateCellState(int** board, int boardSize, int* boardColSize,
 			board[row][col] = DEAD_TO_ALIVE;  // 死->活（繁殖）
 		} else {
 			board[row][col] = DEAD_TO_DEAD;   // 死->死
-		}
+	}
 	}
 }
 
@@ -149,8 +149,8 @@ void gameOfLife(int** board, int boardSize, int* boardColSize) {
 			liveNeighbors = countLiveNeighbors(board, boardSize, boardColSize, row, col);
 			// 根据规则更新状态（编码）
 			updateCellState(board, boardSize, boardColSize, row, col, liveNeighbors);
-		}
 	}
+   }
 
 	// ===== 步骤2：解码为最终状态 =====
 	for (row = 0; row < boardSize; row++) {
@@ -161,6 +161,6 @@ void gameOfLife(int** board, int boardSize, int* boardColSize) {
 			} else if (board[row][col] == DEAD_TO_ALIVE || board[row][col] == ALIVE_TO_ALIVE) {
 				board[row][col] = 1;  // 活细胞
 			}
-		}
 	}
+   }
 }
