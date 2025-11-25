@@ -1068,6 +1068,55 @@ while (current != NULL) {
 - ❌ 只删除重复的副本，保留一个 → 应该全部删除
 - ❌ 没有使用哑节点 → 删除头节点时需要特殊处理
 
+### 11.4 Rotate List（61）
+
+**核心思想**：快慢指针找到旋转点
+
+```c
+// 1. 处理k（可能>length）
+length = getListLength(head);
+k = k % length;
+
+// 2. 快指针先走k步
+fast = head;
+for (i = 0; i < k; i++) {
+    fast = fast->next;
+}
+
+// 3. 快慢指针一起走到fast到最后
+while (fast->next != NULL) {
+    slow = slow->next;
+    fast = fast->next;
+}
+
+// 4. 重新连接
+newHead = slow->next;      // 新头
+oldTail->next = head;      // 旧尾连旧头（成环）
+slow->next = NULL;         // 新尾断开（断环）
+```
+
+**图解**：`[1,2,3,4,5], k=2`
+```
+原链表：1 -> 2 -> 3 -> 4 -> 5
+旋转2：4 -> 5 -> 1 -> 2 -> 3
+
+操作：
+1. 找到新头：4（倒数第k个）
+2. 找到新尾：3（倒数第k+1个）
+3. 旧尾5连旧头1
+4. 新尾3断开
+```
+
+**关键点**：
+- ✅ k取模避免重复旋转
+- ✅ 快指针先走k步（不是k+1）
+- ✅ while条件是 `fast->next != NULL`（到最后一个节点）
+- ⚠️ 注意 `k=0` 和空链表的边界情况
+
+**易错点**：
+- ❌ 忘记 `k % length`
+- ❌ fast走到NULL而不是最后一个节点
+
 ---
 
 ## 12. 数据结构设计
@@ -1117,7 +1166,7 @@ size--;                         // 缩小
 - 通过 `original.next` 访问对应的新节点
 - 不需要哈希表！
 
-### 11.4 Reverse Linked List II（92）
+### 11.5 Reverse Linked List II（92）
 
 **核心思想**：一次遍历，记录关键节点 + 反转区间
 
