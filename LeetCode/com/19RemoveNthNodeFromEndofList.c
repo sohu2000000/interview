@@ -48,6 +48,6 @@ struct ListNode* removeNthFromEnd(struct ListNode* head, int n) {
 	// 保存结果再释放dummy
 	result = dummy->next;
 	free(dummy);
-	
+
 	return result;
 }

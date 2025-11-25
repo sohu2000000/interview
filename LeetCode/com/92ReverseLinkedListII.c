@@ -72,7 +72,7 @@ struct ListNode* reverseBetween(struct ListNode* head, int left, int right) {
 	if (leftNode != NULL) {
 		leftNode->next = afterRight;
 	}
-	
+
 	// 如果left=1，头节点变了，返回新头
 	return (left == 1) ? rightNode : head;
 }
