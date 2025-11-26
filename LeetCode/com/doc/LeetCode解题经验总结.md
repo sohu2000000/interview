@@ -1175,7 +1175,79 @@ greater: 4 -> 3
 
 ## 12. 数据结构设计
 
-### 12.1 Insert Delete GetRandom O(1)（380）
+### 12.1 LRU Cache（146）
+
+**核心组合**：双向链表 + 哈希表
+
+```c
+typedef struct CacheNode {
+    int key, value;
+    struct CacheNode *prev, *next;
+    UT_hash_handle hh;  // 哈希表句柄
+} CacheNode;
+
+typedef struct {
+    CacheNode *head;  // 最久未使用（LRU）
+    CacheNode *tail;  // 最近使用（MRU）
+    int capacity, size;
+} LRUCache;
+```
+
+**核心操作**：
+
+```c
+// Get: 查找并移到尾部
+int get(LRUCache* cache, int key) {
+    HASH_FIND_INT(hashTable, &key, node);
+    if (node) {
+        moveToTail(cache, node);  // 标记为最近使用
+        return node->value;
+    }
+    return -1;
+}
+
+// Put: 更新或插入
+void put(LRUCache* cache, int key, int value) {
+    HASH_FIND_INT(hashTable, &key, node);
+    if (node) {
+        // 已存在：更新值，移到尾部
+        node->value = value;
+        moveToTail(cache, node);
+    } else {
+        // 不存在：创建新节点
+        if (cache->size == cache->capacity) {
+            // 容量满：删除头节点（LRU）
+            removeHead(cache);
+        }
+        // 添加新节点到尾部
+        addToTail(cache, newNode);
+    }
+}
+```
+
+**关键辅助函数**：
+
+1. **moveToTail**：将节点移到尾部（最近使用）
+2. **addToTail**：添加节点到尾部
+3. **removeHead**：删除头节点（最久未使用）
+
+**为什么需要双向链表？**
+```
+单向链表：删除节点需要找前驱节点 O(n) ❌
+双向链表：通过prev直接访问前驱 O(1) ✓
+```
+
+**关键点**：
+- ✅ head=LRU（最久），tail=MRU（最近）
+- ✅ get/put都要moveToTail
+- ✅ 容量满时removeHead
+
+**易错点**：
+- ❌ 第一次插入忘记检查tail=NULL
+- ❌ capacity=1时，删除head后tail变野指针
+- ❌ 全局hashTable在多个实例间共享（LeetCode可能测试多实例）
+
+### 12.2 Insert Delete GetRandom O(1)（380）
 
 **核心组合**：动态数组 + 哈希表
 
