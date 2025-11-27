@@ -80,6 +80,7 @@ interview/
 ### 二叉树
 - [x] **105** - Construct Binary Tree from Preorder and Inorder Traversal (从前序与中序遍历构造二叉树)
 - [x] **106** - Construct Binary Tree from Inorder and Postorder Traversal (从中序与后序遍历构造二叉树)
+- [x] **117** - Populating Next Right Pointers in Each Node II (填充每个节点的下一个右侧节点指针 II)
 
 ### 数据结构设计
 - [x] **146** - LRU Cache (LRU缓存)
@@ -131,9 +132,10 @@ interview/
 - Set Matrix Zeroes - 用首行首列作标记，O(1)空间
 - Game of Life - 状态编码（2位表示前后状态），原地更新
 
-### 9. 二叉树构造
+### 9. 二叉树
 - Construct Binary Tree (105) - 前序+中序递归构造，哈希表优化O(n)
 - Construct Binary Tree (106) - 中序+后序递归构造，根节点在后序末尾
+- Populating Next Right Pointers (117) - 层序遍历，利用next指针连接，O(1)空间
 
 ## 🔧 编译与运行
 

@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了24道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了25道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -1727,6 +1727,319 @@ postorder = [1,2,3]
 - ✅ 其他逻辑与105题完全相同
 - ✅ 掌握一题，另一题只需改根节点位置
 
+### 10.3 填充每个节点的下一个右侧节点指针 II（117）
+
+**核心思想**：层序遍历 + O(1) 空间
+
+**问题描述**：
+给定一个二叉树：
+```c
+struct Node {
+    int val;
+    struct Node *left;
+    struct Node *right;
+    struct Node *next;  // 指向右侧节点
+};
+```
+
+填充每个 `next` 指针，使其指向下一个右侧节点。如果没有右侧节点，则 `next` 指针设为 `NULL`。
+
+**示例**：
+
+```
+输入：
+      1
+     / \
+    2   3
+   / \   \
+  4   5   7
+
+输出：
+      1 -> NULL
+     / \
+    2 ->3 -> NULL
+   / \   \
+  4->5-> 7 -> NULL
+```
+
+**核心技巧**：利用已建立的 next 指针遍历
+
+**算法思路**：
+
+```c
+void connectLevel(struct Node* levelHead) {
+    struct Node* current = levelHead;        // 当前层的遍历指针
+    struct Node* nextLevelHead = NULL;       // 下一层的头节点
+    struct Node* nextLevelTail = NULL;       // 下一层的尾节点
+    
+    if (!levelHead) return;
+    
+    // 遍历当前层（通过 next 指针）
+    while (current) {
+        // 1. 找到下一层的第一个节点
+        if (!nextLevelHead) {
+            nextLevelHead = current->left ? current->left : current->right;
+        }
+        
+        // 2. 连接左子节点
+        if (current->left) {
+            if (nextLevelTail) {
+                nextLevelTail->next = current->left;
+            }
+            nextLevelTail = current->left;
+        }
+        
+        // 3. 连接右子节点
+        if (current->right) {
+            if (nextLevelTail) {
+                nextLevelTail->next = current->right;
+            }
+            nextLevelTail = current->right;
+        }
+        
+        // 4. 移动到当前层的下一个节点
+        current = current->next;
+    }
+    
+    // 5. 递归处理下一层
+    connectLevel(nextLevelHead);
+}
+```
+
+**详细走查**：`[1,2,3,4,5,null,7]`
+
+```
+=== 第1层：处理节点1 ===
+current = 1
+nextLevelHead = 2 (第一个子节点)
+nextLevelTail = 2
+
+处理1的左子节点2：
+  nextLevelTail = 2
+
+处理1的右子节点3：
+  nextLevelTail->next = 3  (即 2->next = 3)
+  nextLevelTail = 3
+
+结果：2 -> 3 -> NULL
+
+=== 第2层：处理节点2和3 ===
+current = 2
+nextLevelHead = 4 (2的左子节点)
+nextLevelTail = 4
+
+处理2的左子节点4：
+  nextLevelTail = 4
+
+处理2的右子节点5：
+  nextLevelTail->next = 5  (即 4->next = 5)
+  nextLevelTail = 5
+
+current = 3 (通过next指针移动)
+
+处理3的右子节点7：
+  nextLevelTail->next = 7  (即 5->next = 7)
+  nextLevelTail = 7
+
+结果：4 -> 5 -> 7 -> NULL
+
+=== 第3层：处理节点4, 5, 7 ===
+都是叶子节点，nextLevelHead = NULL，递归终止
+```
+
+**关键变量说明**：
+
+| 变量名 | 作用 | 说明 |
+|--------|------|------|
+| `levelHead` | 当前层的头节点 | 递归参数 |
+| `current` | 当前层的遍历指针 | 通过 next 移动 |
+| `nextLevelHead` | 下一层的头节点 | 记录第一个子节点 |
+| `nextLevelTail` | 下一层的尾节点 | 用于连接新节点 |
+
+**图解连接过程**：
+
+```
+当前层：  A -> B -> C -> NULL
+         /\   /    /\
+下一层： D  E F   G  H
+
+处理A：
+  nextLevelTail = D
+  nextLevelTail = E (D->next = E)
+  
+处理B：
+  nextLevelTail = F (E->next = F)
+  
+处理C：
+  nextLevelTail = G (F->next = G)
+  nextLevelTail = H (G->next = H)
+
+结果：D -> E -> F -> G -> H -> NULL
+```
+
+**与116题的区别**：
+
+| 特性 | 116题 | 117题 |
+|-----|-------|-------|
+| 树类型 | 完美二叉树 | 任意二叉树 |
+| 子节点 | 每个节点都有2个或0个子节点 | 可能只有1个子节点 |
+| 难度 | 较简单 | 较复杂 |
+| 核心区别 | 可以假设每层都是满的 | 需要动态找下一层的头节点 |
+
+**易错点总结**：
+
+**🐛 Bug #1: 返回值错误**
+```c
+// ❌ 错误：返回了下一层的节点
+struct Node* connectLevel(struct Node* levelHead) {
+    ...
+    return connectLevel(nextLevelHead);
+}
+
+// ✅ 正确：返回当前层的头节点
+void connectLevel(struct Node* levelHead) {
+    ...
+    connectLevel(nextLevelHead);
+    return;
+}
+
+struct Node* connect(struct Node* root) {
+    connectLevel(root);
+    return root;  // 返回 root
+}
+```
+
+**🐛 Bug #2: 忘记更新 nextLevelTail**
+```c
+// ❌ 错误：只连接不更新尾节点
+if (current->left) {
+    if (nextLevelTail) {
+        nextLevelTail->next = current->left;
+    }
+    // 忘记更新 nextLevelTail
+}
+
+// ✅ 正确：必须更新尾节点
+if (current->left) {
+    if (nextLevelTail) {
+        nextLevelTail->next = current->left;
+    }
+    nextLevelTail = current->left;  // 更新尾节点
+}
+```
+
+**🐛 Bug #3: nextLevelHead 初始化错误**
+```c
+// ❌ 错误：可能跳过某些节点
+nextLevelHead = current->left;
+
+// ✅ 正确：第一个非空子节点
+if (!nextLevelHead) {
+    nextLevelHead = current->left ? current->left : current->right;
+}
+```
+
+**优化技巧**：
+
+**1. 迭代实现（避免递归栈）**：
+```c
+struct Node* connect(struct Node* root) {
+    struct Node* levelHead = root;
+    
+    while (levelHead) {
+        struct Node* current = levelHead;
+        struct Node* nextLevelHead = NULL;
+        struct Node* nextLevelTail = NULL;
+        
+        while (current) {
+            // 处理左右子节点
+            if (!nextLevelHead) {
+                nextLevelHead = current->left ? current->left : current->right;
+            }
+            
+            if (current->left) {
+                if (nextLevelTail) nextLevelTail->next = current->left;
+                nextLevelTail = current->left;
+            }
+            
+            if (current->right) {
+                if (nextLevelTail) nextLevelTail->next = current->right;
+                nextLevelTail = current->right;
+            }
+            
+            current = current->next;
+        }
+        
+        levelHead = nextLevelHead;  // 移动到下一层
+    }
+    
+    return root;
+}
+```
+
+**2. 使用哑节点简化逻辑**：
+```c
+struct Node dummy = {0};
+struct Node* tail = &dummy;
+
+// 连接时不需要检查 tail 是否为 NULL
+tail->next = current->left;
+tail = tail->next;
+```
+
+**复杂度分析**：
+
+| 实现方式 | 时间复杂度 | 空间复杂度 | 说明 |
+|---------|-----------|-----------|------|
+| 递归 | O(n) | O(h) | h 是树的高度 |
+| 迭代 | O(n) | O(1) | 真正的常数空间 |
+| 队列BFS | O(n) | O(w) | w 是树的最大宽度 |
+
+**测试用例**：
+
+```c
+// 用例1：普通二叉树
+输入：[1,2,3,4,5,null,7]
+输出：1->NULL, 2->3->NULL, 4->5->7->NULL
+
+// 用例2：左偏树
+输入：[1,2,null,3,null,4]
+输出：1->NULL, 2->NULL, 3->NULL, 4->NULL
+
+// 用例3：右偏树
+输入：[1,null,2,null,3]
+输出：1->NULL, 2->NULL, 3->NULL
+
+// 用例4：空树
+输入：[]
+输出：[]
+
+// 用例5：单节点
+输入：[1]
+输出：1->NULL
+```
+
+**关键要点**：
+- ✅ 利用已建立的 next 指针遍历当前层
+- ✅ 同时建立下一层的 next 连接
+- ✅ 动态查找下一层的头节点（可能是左或右子节点）
+- ✅ 迭代实现可以达到 O(1) 空间
+- ✅ 必须更新 nextLevelTail 才能正确连接
+
+**记忆技巧**：
+
+```
+当前层 → 下一层
+  ↓        ↓
+通过next  建立next
+遍历      连接
+```
+
+**应用场景**：
+- 层序遍历不使用队列
+- 利用树的结构信息进行优化
+- 原地修改数据结构
+
 ---
 
 ## 12. 数据结构设计
@@ -2522,6 +2835,7 @@ for (i = 0; i < n-1; i++) {
 | 跳过不可能 | 贪心 + 数学定理 | 134 |
 | 前序+中序构造树 | 递归 + 哈希表 | 105 |
 | 中序+后序构造树 | 递归 + 哈希表 | 106 |
+| 填充next指针 | 层序遍历 + next指针 | 117 |
 
 ---
 
