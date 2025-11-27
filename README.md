@@ -77,6 +77,9 @@ interview/
 - [x] **92** - Reverse Linked List II (反转链表II)
 - [x] **138** - Copy List with Random Pointer (复制带随机指针的链表)
 
+### 二叉树
+- [x] **105** - Construct Binary Tree from Preorder and Inorder Traversal (从前序与中序遍历构造二叉树)
+
 ### 数据结构设计
 - [x] **146** - LRU Cache (LRU缓存)
 - [x] **380** - Insert Delete GetRandom O(1) (常数时间插入删除和获取随机元素)
@@ -126,6 +129,9 @@ interview/
 - Spiral Matrix - 四边界螺旋遍历，注意单行/单列
 - Set Matrix Zeroes - 用首行首列作标记，O(1)空间
 - Game of Life - 状态编码（2位表示前后状态），原地更新
+
+### 9. 二叉树构造
+- Construct Binary Tree (105) - 前序+中序递归构造，哈希表优化O(n)
 
 ## 🔧 编译与运行
 
