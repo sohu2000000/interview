@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了23道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了24道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -1457,6 +1457,276 @@ rootVal = postorder[postEnd];  // 最后一个元素
 - ✅ 准确计算索引范围
 - ✅ 注意内存释放
 
+### 10.2 从中序与后序遍历构造二叉树（106）
+
+**核心思想**：后序遍历根节点在末尾
+
+**遍历特点**：
+- 后序遍历：`[[左子树], [右子树], 根节点]`
+- 中序遍历：`[[左子树], 根节点, [右子树]]`
+
+**与105题的对比**：
+
+| 题目 | 遍历组合 | 根节点位置 | 关键区别 |
+|-----|---------|-----------|---------|
+| 105 | 前序+中序 | 前序第一个 | 根节点在前序开头 |
+| 106 | 中序+后序 | 后序最后一个 | 根节点在后序末尾 |
+
+**算法步骤**：
+```c
+buildTreeRecursive(inorder, postorder, inStart, inEnd, postStart, postEnd, hashMap) {
+    // 1. 终止条件
+    if (inStart > inEnd) return NULL;
+    
+    // 2. 后序最后一个元素是根节点（关键区别！）
+    postorderRootIdx = postEnd;  // ⚠️ 不是 postStart
+    rootVal = postorder[postorderRootIdx];
+    
+    // 3. 在中序中找到根节点位置（与105相同）
+    inorderRootIdx = hashMap[rootVal].index;
+    
+    // 4. 计算左子树大小（与105相同）
+    leftSize = inorderRootIdx - inStart;
+    
+    // 5. 计算左子树范围
+    inLeftStart = inStart;
+    inLeftEnd = inorderRootIdx - 1;
+    postLeftStart = postStart;
+    postLeftEnd = postLeftStart + leftSize - 1;
+    
+    // 6. 计算右子树范围
+    inRightStart = inorderRootIdx + 1;
+    inRightEnd = inEnd;
+    postRightStart = postLeftEnd + 1;
+    postRightEnd = postEnd - 1;  // ⚠️ 减1，因为根节点在末尾
+    
+    // 7. 递归构建左右子树
+    root->left = buildTreeRecursive(...左子树范围...);
+    root->right = buildTreeRecursive(...右子树范围...);
+}
+```
+
+**示例走查**：`inorder = [9,3,15,20,7], postorder = [9,15,7,20,3]`
+
+```
+第1次递归：
+  rootVal = 3 (postorder最后一个)
+  inorderRootIdx = 1
+  leftSize = 1
+  左子树: inorder[0:0], postorder[0:0] → [9], [9]
+  右子树: inorder[2:4], postorder[1:3] → [15,20,7], [15,7,20]
+
+第2次递归（左）：
+  rootVal = 9
+  左右子树为空
+
+第3次递归（右）：
+  rootVal = 20 (postorder[1:3]的最后一个)
+  inorderRootIdx = 3
+  leftSize = 1
+  左子树: [15]
+  右子树: [7]
+```
+
+**变量命名体系**（与105题保持一致）：
+
+| 前缀 | 含义 | 示例 |
+|------|------|------|
+| `post` | 后序遍历相关 | `postStart`, `postLeftEnd` |
+| `in` | 中序遍历相关 | `inStart`, `inRightEnd` |
+| `Start` | 范围起始索引 | `postStart` |
+| `End` | 范围结束索引 | `postEnd` |
+| `Idx` | 单个索引位置 | `postorderRootIdx` |
+| `Size` | 节点数量 | `leftSize` |
+
+**关键计算公式**：
+
+```c
+// 根节点位置（关键区别）
+postorderRootIdx = postEnd;  // 在末尾！
+
+// 左子树大小（相同）
+leftSize = inorderRootIdx - inStart;
+
+// 左子树后序范围
+postLeftStart = postStart;
+postLeftEnd = postLeftStart + leftSize - 1;
+
+// 右子树后序范围
+postRightStart = postLeftEnd + 1;
+postRightEnd = postEnd - 1;  // ⚠️ 减1，排除根节点
+```
+
+**索引关系图解**：
+
+```
+后序遍历数组：[左子树 | 右子树 | 根]
+索引关系：    postStart...postLeftEnd  postRightStart...postEnd-1  postEnd
+                   │                           │                      │
+                   └─ leftSize 个元素          └─ rightSize 个元素    └─ 根节点
+
+中序遍历数组：[左子树 | 根 | 右子树]
+索引关系：    inStart...inLeftEnd  inorderRootIdx  inRightStart...inEnd
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: 根节点位置错误**
+```c
+// ❌ 错误：用了前序的思路
+rootVal = postorder[postStart];
+
+// ✅ 正确：后序根节点在末尾
+rootVal = postorder[postEnd];
+```
+
+**🐛 Bug #2: 右子树范围计算错误**
+```c
+// ❌ 错误：没有排除根节点
+postRightEnd = postEnd;
+
+// ✅ 正确：减1排除根节点
+postRightEnd = postEnd - 1;
+```
+
+**105题 vs 106题对比**：
+
+**相同点**：
+- ✅ 都需要中序遍历划分左右子树
+- ✅ 都使用哈希表优化查找 O(1)
+- ✅ 左子树大小计算方式相同
+- ✅ 时间复杂度都是 O(n)
+
+**不同点**：
+
+| 特性 | 105题（前序+中序） | 106题（中序+后序） |
+|-----|------------------|------------------|
+| 根节点位置 | `preorder[preStart]` | `postorder[postEnd]` |
+| 根节点在哪 | 遍历数组开头 | 遍历数组末尾 |
+| 右子树结束 | `preEnd` | `postEnd - 1` |
+| 参数顺序 | preorder, inorder | inorder, postorder |
+
+**完整代码框架**：
+
+```c
+/* 哈希表节点 */
+struct InorderIndexNode {
+    int val;
+    int index;
+    UT_hash_handle hh;
+};
+
+struct InorderIndexNode *inorderHashMap = NULL;
+
+/* 创建哈希映射 */
+void createInorderHashMap(int* inorder, int inorderSize) {
+    for (i = 0; i < inorderSize; i++) {
+        node = malloc(sizeof(struct InorderIndexNode));
+        node->val = inorder[i];
+        node->index = i;
+        HASH_ADD_INT(inorderHashMap, val, node);
+    }
+}
+
+/* 递归构建 */
+struct TreeNode *buildTreeRecursive(...) {
+    if (inStart > inEnd) return NULL;
+    
+    // 关键：根节点在末尾
+    rootVal = postorder[postEnd];
+    
+    // 查找 + 计算范围
+    HASH_FIND_INT(hashMap, &rootVal, foundNode);
+    inorderRootIdx = foundNode->index;
+    leftSize = inorderRootIdx - inStart;
+    
+    // 左子树
+    postLeftStart = postStart;
+    postLeftEnd = postLeftStart + leftSize - 1;
+    
+    // 右子树
+    postRightStart = postLeftEnd + 1;
+    postRightEnd = postEnd - 1;  // 减1！
+    
+    // 递归
+    root->left = buildTreeRecursive(...);
+    root->right = buildTreeRecursive(...);
+    
+    return root;
+}
+
+/* 主函数 */
+struct TreeNode* buildTree(int* inorder, int inorderSize, 
+                          int* postorder, int postorderSize) {
+    createInorderHashMap(inorder, inorderSize);
+    root = buildTreeRecursive(inorder, postorder, inorderHashMap, 
+                             0, inorderSize - 1, 
+                             0, postorderSize - 1);
+    freeHashMap();
+    return root;
+}
+```
+
+**测试用例**：
+
+```c
+// 用例1：完全二叉树
+inorder   = [9,3,15,20,7]
+postorder = [9,15,7,20,3]
+输出：     3
+        /   \
+       9    20
+           /  \
+          15   7
+
+// 用例2：左偏树
+inorder   = [3,2,1]
+postorder = [3,2,1]
+输出：   1
+       /
+      2
+     /
+    3
+
+// 用例3：右偏树
+inorder   = [1,2,3]
+postorder = [1,2,3]
+输出：   1
+          \
+           2
+            \
+             3
+```
+
+**记忆技巧**：
+
+```
+前序（Pre-order）：根在前面 → preorder[preStart]
+后序（Post-order）：根在后面 → postorder[postEnd]
+中序（In-order）：根在中间 → 用于划分左右
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 说明 |
+|-----|-----------|------|
+| 构建哈希表 | O(n) | 遍历中序数组 |
+| 递归构建树 | O(n) | 每个节点访问一次 |
+| 哈希表查找 | O(1) | 查找根节点位置 |
+| **总计** | **O(n)** | 线性时间 |
+
+| 空间 | 空间复杂度 | 说明 |
+|-----|-----------|------|
+| 哈希表 | O(n) | 存储n个节点 |
+| 递归栈 | O(h) | 树高，最坏O(n) |
+| **总计** | **O(n)** | 线性空间 |
+
+**关键要点**：
+- ✅ 后序遍历根节点在末尾（与前序相反）
+- ✅ 右子树范围要减1排除根节点
+- ✅ 其他逻辑与105题完全相同
+- ✅ 掌握一题，另一题只需改根节点位置
+
 ---
 
 ## 12. 数据结构设计
@@ -2251,6 +2521,7 @@ for (i = 0; i < n-1; i++) {
 | 最少步数 | BFS思想 | 45 |
 | 跳过不可能 | 贪心 + 数学定理 | 134 |
 | 前序+中序构造树 | 递归 + 哈希表 | 105 |
+| 中序+后序构造树 | 递归 + 哈希表 | 106 |
 
 ---
 
