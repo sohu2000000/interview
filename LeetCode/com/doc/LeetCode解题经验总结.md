@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了25道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了26道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -1727,7 +1727,316 @@ postorder = [1,2,3]
 - ✅ 其他逻辑与105题完全相同
 - ✅ 掌握一题，另一题只需改根节点位置
 
-### 10.3 填充每个节点的下一个右侧节点指针 II（117）
+### 10.3 二叉树展开为链表（114）
+
+**核心思想**：Morris 遍历 + O(1) 空间
+
+**问题描述**：
+给定一个二叉树，原地将它展开为"链表"（使用 right 指针连接），展开后的顺序应该是原二叉树的**前序遍历**顺序。
+
+**示例**：
+
+```
+输入：
+    1
+   / \
+  2   5
+ / \   \
+3   4   6
+
+输出：
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+         \
+          6
+
+前序遍历顺序：1 -> 2 -> 3 -> 4 -> 5 -> 6
+```
+
+**方法对比**：
+
+| 方法 | 时间复杂度 | 空间复杂度 | 特点 |
+|-----|-----------|-----------|------|
+| 递归法 | O(n) | O(h) | 简单直观，使用递归栈 |
+| Morris遍历 | O(n) | O(1) | 巧妙，真正的O(1)空间 |
+
+**方法1：递归法**
+
+```c
+void flattenRecursive(struct TreeNode *root, struct TreeNode **prevNode) {
+    struct TreeNode *leftChild, *rightChild;
+    
+    if (root == NULL) return;
+    
+    // 关键：先保存左右子树指针
+    leftChild = root->left;
+    rightChild = root->right;
+    
+    // 将当前节点连接到前一个节点的右边
+    (*prevNode)->right = root;
+    (*prevNode)->left = NULL;
+    (*prevNode) = root;
+    
+    // 递归处理左子树和右子树
+    flattenRecursive(leftChild, prevNode);
+    flattenRecursive(rightChild, prevNode);
+}
+```
+
+**易错点**：
+```c
+// ❌ 错误：直接使用 root->left，在递归中会丢失
+flattenRecursive(root->left, prevNode);
+flattenRecursive(root->right, prevNode);
+
+// ✅ 正确：先保存指针
+leftChild = root->left;
+rightChild = root->right;
+flattenRecursive(leftChild, prevNode);
+flattenRecursive(rightChild, prevNode);
+```
+
+**方法2：Morris 遍历法（推荐）**
+
+**核心思想**：
+利用树中的空闲指针（左子树最右节点的 right 指针）来保存信息。
+
+**算法步骤**：
+
+```c
+void flatten(struct TreeNode* root) {
+    struct TreeNode *current = root;
+    struct TreeNode *predecessor = NULL;
+    
+    while (current != NULL) {
+        // 情况1：没有左子树，直接往右走
+        if (!current->left) {
+            current = current->right;
+        }
+        // 情况2：有左子树，需要重组结构
+        else {
+            // 步骤1: 找到左子树的最右节点
+            predecessor = current->left;
+            while (predecessor->right != NULL) {
+                predecessor = predecessor->right;
+            }
+            
+            // 步骤2: 将右子树接到predecessor右边
+            predecessor->right = current->right;
+            
+            // 步骤3: 将左子树移到右边
+            current->right = current->left;
+            current->left = NULL;
+            
+            // 步骤4: 继续往右走
+            current = current->right;
+        }
+    }
+}
+```
+
+**Morris 遍历详细走查**：
+
+输入：`[1,2,5,3,4,null,6]`
+
+```
+=== 初始状态 ===
+    1
+   / \
+  2   5
+ / \   \
+3   4   6
+
+=== 第1步：处理节点1 ===
+current = 1, 有左子树
+1. 找 predecessor: 2 -> 4 (左子树最右节点)
+2. predecessor->right = 5 (将5接到4右边)
+3. 将左子树移到右边：
+   1
+    \
+     2
+    / \
+   3   4
+        \
+         5
+          \
+           6
+
+=== 第2步：处理节点2 ===
+current = 2, 有左子树
+1. 找 predecessor: 3 (左子树最右节点)
+2. predecessor->right = 4 (将4接到3右边)
+3. 将左子树移到右边：
+   1
+    \
+     2
+      \
+       3
+        \
+         4
+          \
+           5
+            \
+             6
+
+=== 第3-6步 ===
+节点3,4,5,6都没有左子树，直接往右走
+
+最终结果：1 -> 2 -> 3 -> 4 -> 5 -> 6
+```
+
+**Morris 遍历图解**：
+
+```
+步骤1（原始）：        步骤2（连接右子树）：    步骤3（左树移右边）：
+    current               current                 current
+       / \                   / \                      \
+   left  right          left  right                 left
+    /                    /                           /  \
+   ...                  ...                        ...  right
+    \                    \
+  predecessor          predecessor
+                           \
+                          right
+  
+操作流程：
+1. 找到 predecessor（左子树的最右节点）
+2. predecessor->right = right（将右子树接到predecessor）
+3. current->right = left（左子树移到右边）
+4. current->left = NULL（清空左指针）
+```
+
+**关键变量说明**：
+
+| 变量名 | 作用 | 说明 |
+|--------|------|------|
+| `current` | 当前处理的节点 | 从root开始，沿着right移动 |
+| `predecessor` | 左子树的最右节点 | 用于连接右子树 |
+| `leftChild` | 保存的左子树指针 | 递归法使用 |
+| `rightChild` | 保存的右子树指针 | 递归法使用 |
+
+**为什么Morris遍历是O(1)空间？**
+
+```
+传统遍历：需要栈/队列存储节点 → O(h) 或 O(n)
+Morris遍历：利用树本身的空指针 → O(1)
+
+关键洞察：
+- 左子树的最右节点的 right 指针本来是 NULL
+- 我们用它来临时存储信息
+- 不需要额外的数据结构
+```
+
+**复杂度分析**：
+
+**时间复杂度**：O(n)
+- 每个节点最多访问2次
+- 第1次：处理该节点
+- 第2次：寻找predecessor时可能经过该节点
+- 总操作次数：O(n)
+
+**空间复杂度**：
+- 递归法：O(h) - 递归栈，h是树的高度
+- Morris法：O(1) - 只使用几个指针变量
+
+**易错点总结**：
+
+**🐛 Bug #1: 忘记保存子树指针**
+```c
+// ❌ 错误：修改结构后再访问
+(*prevNode)->right = root;
+(*prevNode) = root;
+flattenRecursive(root->left, prevNode);  // root->left可能已改变
+
+// ✅ 正确：先保存
+leftChild = root->left;
+rightChild = root->right;
+(*prevNode)->right = root;
+flattenRecursive(leftChild, prevNode);
+```
+
+**🐛 Bug #2: predecessor 查找错误**
+```c
+// ❌ 错误：可能找到错误的节点
+predecessor = current->left;
+while (predecessor->right != NULL && predecessor->right != current) {
+    predecessor = predecessor->right;
+}
+
+// ✅ 正确：在这题中不需要检查环
+predecessor = current->left;
+while (predecessor->right != NULL) {
+    predecessor = predecessor->right;
+}
+```
+
+**🐛 Bug #3: 忘记清空左指针**
+```c
+// ❌ 错误：只移动右指针，没有清空左指针
+current->right = current->left;
+
+// ✅ 正确：必须清空左指针
+current->right = current->left;
+current->left = NULL;
+```
+
+**测试用例**：
+
+```c
+// 用例1：普通二叉树
+输入：[1,2,5,3,4,null,6]
+输出：1->2->3->4->5->6
+
+// 用例2：左偏树
+输入：[1,2,null,3,null,4]
+输出：1->2->3->4
+
+// 用例3：右偏树
+输入：[1,null,2,null,3]
+输出：1->2->3
+
+// 用例4：单节点
+输入：[1]
+输出：1
+
+// 用例5：空树
+输入：[]
+输出：[]
+```
+
+**Morris 遍历的应用**：
+
+1. **前序遍历**（本题）
+2. **中序遍历**：经典Morris遍历
+3. **后序遍历**：需要额外处理
+4. **任何需要O(1)空间遍历二叉树的场景**
+
+**记忆技巧**：
+
+```
+Morris遍历口诀：
+找到前驱（predecessor）
+接上右树（right subtree）
+左树右移（move left to right）
+清空左边（set left NULL）
+继续右行（go right）
+```
+
+**关键要点**：
+- ✅ Morris遍历是真正的O(1)空间复杂度
+- ✅ 核心是利用左子树最右节点的空指针
+- ✅ 递归法必须先保存左右子树指针
+- ✅ 时间复杂度虽然看起来是O(n²)，实际是O(n)
+- ✅ 每个节点的right指针最多被修改2次
+
+### 10.4 填充每个节点的下一个右侧节点指针 II（117）
 
 **核心思想**：层序遍历 + O(1) 空间
 
@@ -2835,6 +3144,7 @@ for (i = 0; i < n-1; i++) {
 | 跳过不可能 | 贪心 + 数学定理 | 134 |
 | 前序+中序构造树 | 递归 + 哈希表 | 105 |
 | 中序+后序构造树 | 递归 + 哈希表 | 106 |
+| 二叉树展开为链表 | Morris遍历 + O(1)空间 | 114 |
 | 填充next指针 | 层序遍历 + next指针 | 117 |
 
 ---

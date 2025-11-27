@@ -80,6 +80,7 @@ interview/
 ### 二叉树
 - [x] **105** - Construct Binary Tree from Preorder and Inorder Traversal (从前序与中序遍历构造二叉树)
 - [x] **106** - Construct Binary Tree from Inorder and Postorder Traversal (从中序与后序遍历构造二叉树)
+- [x] **114** - Flatten Binary Tree to Linked List (二叉树展开为链表)
 - [x] **117** - Populating Next Right Pointers in Each Node II (填充每个节点的下一个右侧节点指针 II)
 
 ### 数据结构设计
@@ -135,6 +136,7 @@ interview/
 ### 9. 二叉树
 - Construct Binary Tree (105) - 前序+中序递归构造，哈希表优化O(n)
 - Construct Binary Tree (106) - 中序+后序递归构造，根节点在后序末尾
+- Flatten Binary Tree (114) - Morris遍历展开，O(1)空间原地操作
 - Populating Next Right Pointers (117) - 层序遍历，利用next指针连接，O(1)空间
 
 ## 🔧 编译与运行
