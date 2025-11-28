@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了27道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了28道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -2661,6 +2661,287 @@ int sumNumbers(struct TreeNode* root) {
 - DFS遍历应用
 - 路径相关统计
 
+### 10.6 二叉搜索树迭代器（173）
+
+**核心思想**：栈模拟中序遍历 + 按需推进
+
+**问题描述**：
+实现一个二叉搜索树迭代器，支持 `next()` 和 `hasNext()` 操作。
+
+**要求**：
+- `next()` 和 `hasNext()` 的平均时间复杂度为 **O(1)**
+- 空间复杂度为 **O(h)**，h 为树的高度
+
+**示例**：
+
+```
+BST:
+    7
+   / \
+  3   15
+     /  \
+    9   20
+
+调用序列：
+next()    -> 3
+next()    -> 7
+hasNext() -> true
+next()    -> 9
+hasNext() -> true
+next()    -> 15
+hasNext() -> true
+next()    -> 20
+hasNext() -> false
+
+中序遍历顺序（升序）：3, 7, 9, 15, 20
+```
+
+**核心数据结构**：
+
+```c
+typedef struct {
+    Stack nodeStack;          /* 栈：存储遍历路径上的祖先节点 */
+    struct TreeNode *current; /* 当前待访问的节点 */
+} BSTIterator;
+```
+
+**算法实现**：
+
+```c
+/* 创建迭代器 */
+BSTIterator* bSTIteratorCreate(struct TreeNode* root) {
+    BSTIterator *iterator = malloc(sizeof(BSTIterator));
+    initStack(&iterator->nodeStack);
+    iterator->current = root;
+    return iterator;
+}
+
+/* 返回下一个最小值 */
+int bSTIteratorNext(BSTIterator* obj) {
+    struct TreeNode *node;
+    
+    // 步骤1: 将current及其所有左子节点入栈
+    while (obj->current != NULL) {
+        pushStack(&obj->nodeStack, obj->current);
+        obj->current = obj->current->left;
+    }
+    
+    // 步骤2: 弹出栈顶节点（当前最小值）
+    node = popStack(&obj->nodeStack);
+    
+    // 步骤3: 移动到右子树
+    obj->current = node->right;
+    
+    return node->val;
+}
+
+/* 判断是否还有下一个元素 */
+bool bSTIteratorHasNext(BSTIterator* obj) {
+    return obj->current != NULL || !isStackEmpty(&obj->nodeStack);
+}
+```
+
+**详细走查**：输入 `[7,3,15,null,null,9,20]`
+
+```
+BST:
+    7
+   / \
+  3   15
+     /  \
+    9   20
+
+=== 初始化 ===
+stack: []
+current: 7
+
+=== 第1次 next() ===
+1. while: push(7), push(3)
+   stack: [7, 3]
+   current: NULL
+2. pop() -> node = 3
+   stack: [7]
+3. current = NULL
+返回: 3
+
+=== 第2次 next() ===
+1. while: current=NULL，跳过
+2. pop() -> node = 7
+   stack: []
+3. current = 15
+返回: 7
+
+=== 第3次 next() ===
+1. while: push(15), push(9)
+   stack: [15, 9]
+   current: NULL
+2. pop() -> node = 9
+   stack: [15]
+3. current = NULL
+返回: 9
+
+=== 第4次 next() ===
+1. while: 跳过
+2. pop() -> node = 15
+   stack: []
+3. current = 20
+返回: 15
+
+=== 第5次 next() ===
+1. while: push(20)
+   stack: [20]
+   current: NULL
+2. pop() -> node = 20
+   stack: []
+3. current = NULL
+返回: 20
+
+=== hasNext() ===
+current=NULL && stack=[] -> false
+```
+
+**关键理解**：
+
+**1. 为什么用栈？**
+- 中序遍历需要记住"路径"
+- 访问完左子树后，需要回到父节点
+- 栈保存了这些等待访问的父节点
+
+**2. current的作用？**
+- 指向下一个要处理的子树
+- NULL 表示当前分支已访问完，需要从栈中取父节点
+
+**3. 为什么是O(1)平均时间？**
+```
+n个节点，调用n次next()
+总操作：
+- 每个节点入栈一次：n次
+- 每个节点出栈一次：n次
+- 总计：2n次操作
+摊还：2n / n = O(1)
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: push/pop的++/--顺序错误**
+```c
+// ❌ 错误：top=-1时，先用后加会访问[-1]
+void push(Stack *stack, struct TreeNode *node) {
+    stack->nodes[stack->top++] = node;  // 访问[-1]
+}
+
+// ✅ 正确：先加后用
+void pushStack(Stack *stack, struct TreeNode *node) {
+    stack->nodes[++stack->top] = node;  // 先变0，再访问[0]
+}
+
+// ❌ 错误：top=0时，先减后用会访问[-1]
+struct TreeNode *pop(Stack *stack) {
+    return stack->nodes[--stack->top];
+}
+
+// ✅ 正确：先用后减
+struct TreeNode *popStack(Stack *stack) {
+    return stack->nodes[stack->top--];  // 先访问[0]，再变-1
+}
+```
+
+**记忆口诀**：
+```
+入栈：++top  （先增后用）
+出栈：top--  （先用后减）
+```
+
+**🐛 Bug #2: 使用错误的指针**
+```c
+// ❌ 错误：obj->current可能是NULL
+node = pop(&obj->nodeStack);
+obj->current = obj->current->right;  // NULL->right崩溃
+
+// ✅ 正确：使用pop出来的node
+node = popStack(&obj->nodeStack);
+obj->current = node->right;  // 使用node
+```
+
+**🐛 Bug #3: hasNext() 逻辑错误**
+```c
+// ❌ 错误：只检查栈
+bool hasNext(BSTIterator* obj) {
+    return !isStackEmpty(&obj->nodeStack);
+}
+
+// ✅ 正确：同时检查current和栈
+bool bSTIteratorHasNext(BSTIterator* obj) {
+    return obj->current != NULL || !isStackEmpty(&obj->nodeStack);
+}
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 说明 |
+|-----|-----------|------|
+| next() | 平均O(1) | 摊还分析 |
+| next() | 最坏O(h) | 需要遍历整条左链 |
+| hasNext() | O(1) | 只检查变量 |
+| **空间** | **O(h)** | **栈的最大深度** |
+
+**摊还分析详解**：
+
+```
+假设BST有n个节点：
+- 每个节点入栈1次，出栈1次
+- 总操作次数：2n
+- 调用next()的次数：n次
+- 平均每次next()：2n/n = 2 = O(1)
+
+单次可能O(h)，但n次总计O(n)，摊还O(1)
+```
+
+**与普通遍历的对比**：
+
+| 方法 | 空间 | 特点 |
+|-----|------|------|
+| 完整中序遍历 | O(n) | 一次性存储所有结果 |
+| 迭代器 | O(h) | 按需访问，节省空间 |
+
+**测试用例**：
+
+```c
+// 用例1：完全二叉树
+输入：[7,3,15,9,20]
+输出：3,7,9,15,20
+
+// 用例2：左偏树
+输入：[3,2,null,1]
+输出：1,2,3
+
+// 用例3：右偏树
+输入：[1,null,2,null,3]
+输出：1,2,3
+
+// 用例4：单节点
+输入：[1]
+输出：1
+```
+
+**关键要点**：
+- ✅ 使用栈模拟中序遍历
+- ✅ BST中序遍历 = 升序序列
+- ✅ 按需推进，不一次性遍历
+- ✅ push用++top，pop用top--（先后顺序很重要）
+- ✅ 平均O(1)时间，通过摊还分析证明
+
+**记忆技巧**：
+
+```
+栈的作用：记住"回家的路"
+- 沿着左子树往下走（入栈）
+- 访问完左子树后，通过栈"回家"（出栈）
+- 然后访问右子树
+
+中序遍历 = 左-根-右 = BST升序
+```
+
 ---
 
 ## 12. 数据结构设计
@@ -3459,6 +3740,7 @@ for (i = 0; i < n-1; i++) {
 | 二叉树展开为链表 | Morris遍历 + O(1)空间 | 114 |
 | 填充next指针 | 层序遍历 + next指针 | 117 |
 | 根到叶路径数字和 | DFS路径累积 | 129 |
+| BST迭代器 | 栈模拟中序遍历 | 173 |
 
 ---
 

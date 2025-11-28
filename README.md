@@ -83,6 +83,7 @@ interview/
 - [x] **114** - Flatten Binary Tree to Linked List (二叉树展开为链表)
 - [x] **117** - Populating Next Right Pointers in Each Node II (填充每个节点的下一个右侧节点指针 II)
 - [x] **129** - Sum Root to Leaf Numbers (求根节点到叶节点数字之和)
+- [x] **173** - Binary Search Tree Iterator (二叉搜索树迭代器)
 
 ### 数据结构设计
 - [x] **146** - LRU Cache (LRU缓存)
@@ -140,6 +141,7 @@ interview/
 - Flatten Binary Tree (114) - Morris遍历展开，O(1)空间原地操作
 - Populating Next Right Pointers (117) - 层序遍历，利用next指针连接，O(1)空间
 - Sum Root to Leaf Numbers (129) - DFS路径累积，数字=父数字*10+当前值
+- BST Iterator (173) - 栈模拟中序遍历，平均O(1)时间，O(h)空间
 
 ## 🔧 编译与运行
 
