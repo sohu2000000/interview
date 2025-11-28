@@ -82,6 +82,7 @@ interview/
 - [x] **106** - Construct Binary Tree from Inorder and Postorder Traversal (从中序与后序遍历构造二叉树)
 - [x] **114** - Flatten Binary Tree to Linked List (二叉树展开为链表)
 - [x] **117** - Populating Next Right Pointers in Each Node II (填充每个节点的下一个右侧节点指针 II)
+- [x] **129** - Sum Root to Leaf Numbers (求根节点到叶节点数字之和)
 
 ### 数据结构设计
 - [x] **146** - LRU Cache (LRU缓存)
@@ -138,6 +139,7 @@ interview/
 - Construct Binary Tree (106) - 中序+后序递归构造，根节点在后序末尾
 - Flatten Binary Tree (114) - Morris遍历展开，O(1)空间原地操作
 - Populating Next Right Pointers (117) - 层序遍历，利用next指针连接，O(1)空间
+- Sum Root to Leaf Numbers (129) - DFS路径累积，数字=父数字*10+当前值
 
 ## 🔧 编译与运行
 

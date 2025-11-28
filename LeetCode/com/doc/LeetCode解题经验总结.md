@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了26道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了27道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -2349,6 +2349,318 @@ tail = tail->next;
 - 利用树的结构信息进行优化
 - 原地修改数据结构
 
+### 10.5 求根节点到叶节点数字之和（129）
+
+**核心思想**：DFS路径累积
+
+**问题描述**：
+给定一个二叉树，每个节点都包含数字 0-9，从根节点到叶子节点的每条路径代表一个数字，计算所有路径表示的数字之和。
+
+**示例**：
+
+```
+输入：
+    1              路径: 1->2 => 12
+   / \                   1->3 => 13
+  2   3            总和: 12 + 13 = 25
+
+输入：
+    4              路径: 4->9->5 => 495
+   / \                   4->9->1 => 491
+  9   0                  4->0   => 40
+ / \              总和: 495 + 491 + 40 = 1026
+5   1
+```
+
+**算法思路**：
+
+```c
+void dfsPathSum(struct TreeNode* root, int pathNumber, int* totalSum) {
+    if (root == NULL) return;
+    
+    // 1. 计算当前路径数字
+    int currentNumber = pathNumber * 10 + root->val;
+    
+    // 2. 如果是叶子节点，累加到总和
+    if (root->left == NULL && root->right == NULL) {
+        *totalSum += currentNumber;
+        return;
+    }
+    
+    // 3. 递归遍历左右子树
+    dfsPathSum(root->left, currentNumber, totalSum);
+    dfsPathSum(root->right, currentNumber, totalSum);
+}
+
+int sumNumbers(struct TreeNode* root) {
+    int totalSum = 0;
+    dfsPathSum(root, 0, &totalSum);
+    return totalSum;
+}
+```
+
+**详细走查**：
+
+输入：`[4,9,0,5,1]`
+
+```
+    4
+   / \
+  9   0
+ / \
+5   1
+
+=== DFS遍历过程 ===
+
+访问节点4: pathNumber=0
+  currentNumber = 0 * 10 + 4 = 4
+  
+  访问节点9: pathNumber=4
+    currentNumber = 4 * 10 + 9 = 49
+    
+    访问节点5: pathNumber=49
+      currentNumber = 49 * 10 + 5 = 495
+      叶子节点，totalSum += 495
+      totalSum = 495
+    
+    访问节点1: pathNumber=49
+      currentNumber = 49 * 10 + 1 = 491
+      叶子节点，totalSum += 491
+      totalSum = 986
+  
+  访问节点0: pathNumber=4
+    currentNumber = 4 * 10 + 0 = 40
+    叶子节点，totalSum += 40
+    totalSum = 1026
+
+最终结果：495 + 491 + 40 = 1026
+```
+
+**关键变量说明**：
+
+| 变量名 | 作用 | 说明 |
+|--------|------|------|
+| `pathNumber` | 从根到父节点的路径数字 | 传递给子节点 |
+| `currentNumber` | 从根到当前节点的路径数字 | pathNumber * 10 + root->val |
+| `totalSum` | 所有路径数字之和 | 指针参数，累加结果 |
+
+**核心公式**：
+
+```
+从根到当前节点的数字 = 从根到父节点的数字 × 10 + 当前节点值
+
+示例：
+根节点4: 0 * 10 + 4 = 4
+节点9:   4 * 10 + 9 = 49
+节点5:   49 * 10 + 5 = 495
+```
+
+**递归过程图解**：
+
+```
+    4 (pathNumber=0, currentNumber=4)
+   / \
+  9   0 (pathNumber=4, currentNumber=49/40)
+ / \
+5   1 (pathNumber=49, currentNumber=495/491)
+
+遍历顺序（前序DFS）：
+4 -> 9 -> 5（累加495）-> 回溯 -> 1（累加491）-> 回溯 -> 0（累加40）
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: 所有节点都累加**
+```c
+// ❌ 错误：在每个节点都累加
+void dfsPathSum(struct TreeNode* root, int pathNumber, int* totalSum) {
+    if (root == NULL) return;
+    int currentNumber = pathNumber * 10 + root->val;
+    *totalSum += currentNumber;  // 错误！包括非叶子节点
+    dfsPathSum(root->left, currentNumber, totalSum);
+    dfsPathSum(root->right, currentNumber, totalSum);
+}
+
+// ✅ 正确：只在叶子节点累加
+if (root->left == NULL && root->right == NULL) {
+    *totalSum += currentNumber;
+}
+```
+
+**🐛 Bug #2: 忘记乘10**
+```c
+// ❌ 错误：直接相加
+currentNumber = pathNumber + root->val;  // 错误！
+
+// ✅ 正确：乘10再加
+currentNumber = pathNumber * 10 + root->val;
+```
+
+**🐛 Bug #3: 使用root->val而不是currentNumber**
+```c
+// ❌ 错误：只累加当前节点值
+if (root->left == NULL && root->right == NULL) {
+    *totalSum += root->val;  // 错误！
+}
+
+// ✅ 正确：累加整个路径数字
+if (root->left == NULL && root->right == NULL) {
+    *totalSum += currentNumber;
+}
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 说明 |
+|-----|-----------|------|
+| 访问每个节点 | O(n) | DFS遍历 |
+| 计算路径数字 | O(1) | 每个节点 |
+| **总计** | **O(n)** | 线性时间 |
+
+| 空间 | 空间复杂度 | 说明 |
+|-----|-----------|------|
+| 递归栈 | O(h) | 树的高度 |
+| 其他变量 | O(1) | 常数空间 |
+| **总计** | **O(h)** | h=log(n)到n |
+
+**测试用例**：
+
+```c
+// 用例1：平衡树
+输入：[1,2,3]
+输出：25 (12 + 13)
+
+// 用例2：左偏树
+输入：[1,2,null,3]
+输出：123 (1->2->3)
+
+// 用例3：右偏树
+输入：[1,null,2,null,3]
+输出：123 (1->2->3)
+
+// 用例4：单节点
+输入：[0]
+输出：0
+
+// 用例5：包含0的树
+输入：[4,9,0,5,1]
+输出：1026 (495 + 491 + 40)
+```
+
+**变体问题**：
+
+**1. 求路径数字的最大值**：
+```c
+void dfsMaxPath(struct TreeNode* root, int pathNumber, int* maxSum) {
+    if (root == NULL) return;
+    int currentNumber = pathNumber * 10 + root->val;
+    
+    if (root->left == NULL && root->right == NULL) {
+        if (currentNumber > *maxSum) {
+            *maxSum = currentNumber;
+        }
+        return;
+    }
+    
+    dfsMaxPath(root->left, currentNumber, maxSum);
+    dfsMaxPath(root->right, currentNumber, maxSum);
+}
+```
+
+**2. 统计路径数字个数**：
+```c
+void dfsCountPaths(struct TreeNode* root, int pathNumber, int* count) {
+    if (root == NULL) return;
+    int currentNumber = pathNumber * 10 + root->val;
+    
+    if (root->left == NULL && root->right == NULL) {
+        (*count)++;
+        return;
+    }
+    
+    dfsCountPaths(root->left, currentNumber, count);
+    dfsCountPaths(root->right, currentNumber, count);
+}
+```
+
+**3. 返回所有路径数字（不累加）**：
+```c
+void dfsCollectPaths(struct TreeNode* root, int pathNumber, int* result, int* index) {
+    if (root == NULL) return;
+    int currentNumber = pathNumber * 10 + root->val;
+    
+    if (root->left == NULL && root->right == NULL) {
+        result[(*index)++] = currentNumber;
+        return;
+    }
+    
+    dfsCollectPaths(root->left, currentNumber, result, index);
+    dfsCollectPaths(root->right, currentNumber, result, index);
+}
+```
+
+**迭代实现（使用栈）**：
+
+```c
+int sumNumbers(struct TreeNode* root) {
+    if (root == NULL) return 0;
+    
+    int totalSum = 0;
+    struct StackNode {
+        struct TreeNode* node;
+        int pathNumber;
+    } stack[1000];
+    int top = 0;
+    
+    stack[top++] = (struct StackNode){root, 0};
+    
+    while (top > 0) {
+        struct StackNode current = stack[--top];
+        int currentNumber = current.pathNumber * 10 + current.node->val;
+        
+        // 叶子节点
+        if (current.node->left == NULL && current.node->right == NULL) {
+            totalSum += currentNumber;
+            continue;
+        }
+        
+        // 压栈（注意顺序：右->左，保证左子树先处理）
+        if (current.node->right) {
+            stack[top++] = (struct StackNode){current.node->right, currentNumber};
+        }
+        if (current.node->left) {
+            stack[top++] = (struct StackNode){current.node->left, currentNumber};
+        }
+    }
+    
+    return totalSum;
+}
+```
+
+**关键要点**：
+- ✅ DFS前序遍历，累积路径数字
+- ✅ 路径数字 = 父数字 × 10 + 当前值
+- ✅ 只在叶子节点累加到总和
+- ✅ 使用指针参数传递累加结果
+- ✅ 可以用递归或迭代实现
+
+**记忆技巧**：
+
+```
+路径累积公式：
+父数字 × 10 + 当前值
+
+类比十进制：
+123 = 12 × 10 + 3
+    = (1 × 10 + 2) × 10 + 3
+```
+
+**应用场景**：
+- 树的路径问题
+- 数字累积计算
+- DFS遍历应用
+- 路径相关统计
+
 ---
 
 ## 12. 数据结构设计
@@ -3146,6 +3458,7 @@ for (i = 0; i < n-1; i++) {
 | 中序+后序构造树 | 递归 + 哈希表 | 106 |
 | 二叉树展开为链表 | Morris遍历 + O(1)空间 | 114 |
 | 填充next指针 | 层序遍历 + next指针 | 117 |
+| 根到叶路径数字和 | DFS路径累积 | 129 |
 
 ---
 
