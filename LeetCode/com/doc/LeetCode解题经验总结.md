@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了28道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了29道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -2942,6 +2942,322 @@ bool bSTIteratorHasNext(BSTIterator* obj) {
 中序遍历 = 左-根-右 = BST升序
 ```
 
+### 10.7 二叉树的最近公共祖先（236）
+
+**核心思想**：后序遍历 + 信息向上传递
+
+**问题描述**：
+给定一个二叉树，找到该树中两个指定节点的最近公共祖先（LCA - Lowest Common Ancestor）。
+
+**最近公共祖先定义**：
+对于树T的两个节点p、q，最近公共祖先是一个节点x，满足：
+- x是p、q的祖先
+- x的深度尽可能大
+- 一个节点也可以是它自己的祖先
+
+**示例**：
+
+```
+         3
+       /   \
+      5     1
+     / \   / \
+    6   2 0   8
+       / \
+      7   4
+
+LCA(5, 1) = 3  (5和1分别在左右子树)
+LCA(5, 4) = 5  (5是4的祖先，也是自己的祖先)
+LCA(6, 4) = 5  (6和4都在5的子树中)
+LCA(7, 4) = 2  (7和4都在2的子树中)
+```
+
+**算法实现**：
+
+```c
+struct TreeNode* lowestCommonAncestor(struct TreeNode* root, 
+                                     struct TreeNode* p, 
+                                     struct TreeNode* q) {
+    struct TreeNode *leftResult, *rightResult;
+    
+    // 情况1: 空节点
+    if (root == NULL) return NULL;
+    
+    // 情况2: 找到目标节点
+    if (root == p || root == q) return root;
+    
+    // 步骤1: 在左子树查找
+    leftResult = lowestCommonAncestor(root->left, p, q);
+    
+    // 步骤2: 在右子树查找
+    rightResult = lowestCommonAncestor(root->right, p, q);
+    
+    // 步骤3: 根据结果判断
+    if (leftResult != NULL && rightResult != NULL) {
+        return root;  // 左右都找到，root是LCA
+    }
+    
+    // 只有一边找到，返回那一边
+    return leftResult != NULL ? leftResult : rightResult;
+}
+```
+
+**返回值含义**：
+
+| 返回值 | 含义 | 说明 |
+|--------|------|------|
+| NULL | 子树中没有p和q | 两个节点都不在这个子树 |
+| p或q | 找到了目标节点 | 可能是p/q本身，也可能是它们的LCA |
+| root | root是LCA | 左右子树都找到了 |
+
+**详细走查**：查找 `LCA(5, 1)`
+
+```
+树结构：
+         3
+       /   \
+      5     1
+     / \   / \
+    6   2 0   8
+
+=== 递归过程（后序遍历：左->右->根）===
+
+处理节点6: 返回NULL
+处理节点7: 返回NULL
+处理节点4: 返回NULL
+处理节点2: 左右都NULL，返回NULL
+
+处理节点5: root==5，返回5 ✓
+
+处理节点0: 返回NULL
+处理节点8: 返回NULL
+
+处理节点1: root==1，返回1 ✓
+
+处理节点3:
+  leftResult = 5  (左子树返回5)
+  rightResult = 1 (右子树返回1)
+  左右都不为NULL -> 返回3 ✓
+
+答案：3
+```
+
+**关键场景分析**：
+
+**场景1：p和q分别在左右子树**
+```
+     root
+     /  \
+    p    q
+
+leftResult = p
+rightResult = q
+-> 返回 root (root就是LCA)
+```
+
+**场景2：p是q的祖先**
+```
+     p
+    /
+   q
+
+处理p节点：root==p，返回p
+处理p的父节点：
+  leftResult = p (包含p和q)
+  rightResult = NULL
+  -> 返回 p (p就是LCA)
+```
+
+**场景3：p和q在同一子树**
+```
+     root
+     /
+   subtree
+   /   \
+  p     q
+
+leftResult = LCA(p,q) (子树中的LCA)
+rightResult = NULL
+-> 返回 leftResult
+```
+
+**四种返回情况**：
+
+```c
+// 1. 左右都找到 -> root是LCA
+if (leftResult != NULL && rightResult != NULL)
+    return root;
+
+// 2. 只在左边找到 -> 返回左边结果
+if (leftResult != NULL)
+    return leftResult;
+
+// 3. 只在右边找到 -> 返回右边结果
+if (rightResult != NULL)
+    return rightResult;
+
+// 4. 都没找到 -> 返回NULL
+return NULL;
+```
+
+**简化版本**：
+```c
+// 可以简化为
+if (leftResult && rightResult) return root;
+return leftResult ? leftResult : rightResult;
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: 只判断值相等，不判断节点相等**
+```c
+// ❌ 错误：判断值相等（树中可能有重复值）
+if (root->val == p->val || root->val == q->val)
+    return root;
+
+// ✅ 正确：判断节点指针相等
+if (root == p || root == q)
+    return root;
+```
+
+**🐛 Bug #2: 找到一个就返回，没有继续查找**
+```c
+// ❌ 错误：找到p就返回，没有继续找q
+if (root == p) return root;
+leftResult = lowestCommonAncestor(root->left, p, q);
+if (leftResult != NULL) return leftResult;  // 提前返回
+
+// ✅ 正确：都查找完再判断
+if (root == p || root == q) return root;
+leftResult = lowestCommonAncestor(root->left, p, q);
+rightResult = lowestCommonAncestor(root->right, p, q);
+// 统一在最后判断
+```
+
+**🐛 Bug #3: 没有考虑节点是自己祖先的情况**
+```c
+// 这个算法自动处理了这种情况
+// 当root==p时，直接返回p
+// 后续判断会正确处理
+```
+
+**为什么用后序遍历？**
+
+```
+前序（根-左-右）：
+- 先处理根节点，无法知道子树的信息
+- ❌ 无法判断p、q的位置
+
+中序（左-根-右）：
+- 处理根时，只知道左子树信息
+- ❌ 无法同时知道左右子树的情况
+
+后序（左-右-根）：
+- 处理根时，已知左右子树的信息
+- ✅ 可以根据左右结果判断LCA
+```
+
+**递归返回值的妙用**：
+
+```
+返回值有两重含义：
+1. 在该子树中是否找到p或q
+2. 如果找到，返回的可能是：
+   - p或q本身
+   - p和q的LCA
+
+这种"双重含义"巧妙地解决了问题
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 说明 |
+|-----|-----------|------|
+| 访问每个节点 | O(n) | 最坏情况遍历所有节点 |
+| 每个节点的处理 | O(1) | 常数时间判断 |
+| **总计** | **O(n)** | 线性时间 |
+
+| 空间 | 空间复杂度 | 说明 |
+|-----|-----------|------|
+| 递归栈 | O(h) | 树的高度 |
+| 其他变量 | O(1) | 常数空间 |
+| **总计** | **O(h)** | h从log(n)到n |
+
+**测试用例**：
+
+```c
+// 用例1：p和q在不同子树
+输入：root=[3,5,1,6,2,0,8], p=5, q=1
+输出：3
+
+// 用例2：p是q的祖先
+输入：root=[3,5,1,6,2,0,8], p=5, q=4
+输出：5
+
+// 用例3：p和q在同一子树
+输入：root=[3,5,1,6,2,0,8], p=6, q=4
+输出：5
+
+// 用例4：两个节点是叶子节点
+输入：root=[3,5,1,6,2,0,8], p=7, q=4
+输出：2
+
+// 用例5：根节点是LCA
+输入：root=[1,2,3], p=2, q=3
+输出：1
+```
+
+**相关题目**：
+
+**LeetCode 235: 二叉搜索树的最近公共祖先**
+- BST有序性质，可以通过比较值来判断
+- 不需要遍历整棵树，O(h)时间
+
+```c
+struct TreeNode* lowestCommonAncestorBST(struct TreeNode* root, 
+                                        struct TreeNode* p, 
+                                        struct TreeNode* q) {
+    // 利用BST性质：左<根<右
+    while (root) {
+        if (p->val < root->val && q->val < root->val) {
+            root = root->left;  // p、q都在左子树
+        } else if (p->val > root->val && q->val > root->val) {
+            root = root->right; // p、q都在右子树
+        } else {
+            return root;  // 分叉点就是LCA
+        }
+    }
+    return NULL;
+}
+```
+
+**关键要点**：
+- ✅ 使用后序遍历（左-右-根）
+- ✅ 递归返回值表示"是否找到目标节点"
+- ✅ 左右都找到 -> 当前节点是LCA
+- ✅ 只有一边找到 -> 返回那边的结果
+- ✅ 节点可以是自己的祖先
+- ✅ 信息从下往上传递
+
+**记忆技巧**：
+
+```
+后序遍历口诀：
+左右根（Left-Right-Root）
+先知子树，后判自己
+
+LCA判断：
+两边都有 -> 我是祖先
+一边有 -> 传上去
+都没有 -> 返回空
+```
+
+**应用场景**：
+- 树的最近公共祖先问题
+- 信息向上传递的递归模式
+- 后序遍历的应用
+- 节点关系判断
+
 ---
 
 ## 12. 数据结构设计
@@ -3741,6 +4057,7 @@ for (i = 0; i < n-1; i++) {
 | 填充next指针 | 层序遍历 + next指针 | 117 |
 | 根到叶路径数字和 | DFS路径累积 | 129 |
 | BST迭代器 | 栈模拟中序遍历 | 173 |
+| 最近公共祖先 | 后序遍历 + 信息向上传递 | 236 |
 
 ---
 
