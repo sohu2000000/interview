@@ -78,6 +78,7 @@ interview/
 - [x] **138** - Copy List with Random Pointer (复制带随机指针的链表)
 
 ### 二叉树
+- [x] **98** - Validate Binary Search Tree (验证二叉搜索树)
 - [x] **102** - Binary Tree Level Order Traversal (二叉树的层序遍历)
 - [x] **103** - Binary Tree Zigzag Level Order Traversal (二叉树的锯齿形层序遍历)
 - [x] **105** - Construct Binary Tree from Preorder and Inorder Traversal (从前序与中序遍历构造二叉树)
@@ -141,6 +142,7 @@ interview/
 - Game of Life - 状态编码（2位表示前后状态），原地更新
 
 ### 9. 二叉树
+- Validate BST (98) - 范围约束递归传递，用long避免边界问题
 - Level Order Traversal (102) - BFS层序遍历标准模板，返回二维数组
 - Zigzag Level Order (103) - BFS + 方向标记，逆序存储偶数层
 - Construct Binary Tree (105) - 前序+中序递归构造，哈希表优化O(n)

@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了33道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了34道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -1176,7 +1176,273 @@ greater: 4 -> 3
 
 ## 10. 二叉树
 
-### 10.1 二叉树的层序遍历（102）
+### 10.1 验证二叉搜索树（98）
+
+**核心思想**：范围约束递归传递
+
+**问题描述**：
+给定一个二叉树的根节点，判断其是否是一个有效的二叉搜索树（BST）。
+
+**BST定义**：
+- 节点的左子树只包含**小于**当前节点的数
+- 节点的右子树只包含**大于**当前节点的数
+- 所有左子树和右子树自身也必须是BST
+
+**关键理解**：
+```
+❌ 错误理解：只检查直接子节点
+   左子节点 < 根 < 右子节点
+
+✅ 正确理解：检查整个子树
+   左子树所有节点 < 根 < 右子树所有节点
+```
+
+**示例**：
+
+```
+合法BST:         非法BST:
+    2               5
+   / \             / \
+  1   3           1   4  ❌ 4 < 5，违反BST
+                     / \
+                    3   6  ❌ 6在根节点5的左子树中
+```
+
+**算法实现**：
+
+```c
+bool validateBSTRange(struct TreeNode* root, long minValue, long maxValue) {
+    if (!root) return true;
+    
+    // 步骤1: 检查当前节点是否在合法范围内
+    if (root->val <= minValue || root->val >= maxValue)
+        return false;
+    
+    // 步骤2: 检查左子树（范围：(minValue, root->val)）
+    if (!validateBSTRange(root->left, minValue, root->val))
+        return false;
+    
+    // 步骤3: 检查右子树（范围：(root->val, maxValue)）
+    if (!validateBSTRange(root->right, root->val, maxValue))
+        return false;
+    
+    return true;
+}
+
+bool isValidBST(struct TreeNode* root) {
+    // 根节点范围：(-∞, +∞)
+    return validateBSTRange(root, LONG_MIN, LONG_MAX);
+}
+```
+
+**范围传递图解**：
+
+```
+                 10 (-∞, +∞)
+                /          \
+               /            \
+         5 (-∞, 10)      15 (10, +∞)
+        /      \          /        \
+       /        \        /          \
+  3 (-∞,5)  7 (5,10) 12(10,15)  20(15,+∞)
+
+规则：
+- 左子树：min继承，max=父节点值
+- 右子树：min=父节点值，max继承
+
+为什么这样？
+- 左子树所有节点要 < 根节点
+- 右子树所有节点要 > 根节点
+- 约束是传递的！
+```
+
+**详细走查**：输入 `[5,1,4,null,null,3,6]`
+
+```
+    5
+   / \
+  1   4
+     / \
+    3   6
+
+=== 递归过程 ===
+
+validateBSTRange(5, LONG_MIN, LONG_MAX)
+  范围：(-∞, +∞)
+  检查：5 > -∞ && 5 < +∞ ✓
+  
+  检查左子树：
+  validateBSTRange(1, LONG_MIN, 5)
+    范围：(-∞, 5)
+    检查：1 > -∞ && 1 < 5 ✓
+    返回 true
+  
+  检查右子树：
+  validateBSTRange(4, 5, LONG_MAX)
+    范围：(5, +∞)
+    检查：4 > 5? false ✗
+    返回 false
+
+整体返回 false（正确识别非法BST）✓
+```
+
+**为什么用long类型？**
+
+```
+边界问题：
+
+测试用例：[INT_MAX]
+
+用int：
+  validateBSTRange(INT_MAX, INT_MIN, INT_MAX)
+  检查：INT_MAX < INT_MAX? false ✗
+  错误返回false
+
+用long：
+  validateBSTRange(INT_MAX, LONG_MIN, LONG_MAX)
+  检查：INT_MAX < LONG_MAX? true ✓
+  正确返回true
+
+同理，[INT_MIN]也需要用long处理
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: 只检查直接子节点**
+```c
+// ❌ 错误：只检查父子关系
+bool isValidBST(struct TreeNode* root) {
+    if (root->left && root->left->val >= root->val)
+        return false;
+    if (root->right && root->right->val <= root->val)
+        return false;
+    return isValidBST(root->left) && isValidBST(root->right);
+}
+// 无法检测深层违规（如孙子节点违反祖父约束）
+
+// ✅ 正确：传递范围约束
+bool validateBSTRange(root, minValue, maxValue) {
+    if (root->val <= minValue || root->val >= maxValue)
+        return false;
+    // 范围会逐层传递
+}
+```
+
+**🐛 Bug #2: 使用int类型**
+```c
+// ❌ 错误：边界值INT_MIN/INT_MAX会失败
+bool validateBSTRange(struct TreeNode* root, int min, int max)
+
+// ✅ 正确：使用long类型
+bool validateBSTRange(struct TreeNode* root, long minValue, long maxValue)
+```
+
+**🐛 Bug #3: 先检查子树，后检查当前节点**
+```c
+// ❌ 效率低：即使当前节点不合法，仍会递归子树
+if (!validateBSTRange(root->left, ...)) return false;
+if (!validateBSTRange(root->right, ...)) return false;
+if (root->val <= minValue || root->val >= maxValue)
+    return false;
+
+// ✅ 高效：先检查当前节点（提前剪枝）
+if (root->val <= minValue || root->val >= maxValue)
+    return false;
+if (!validateBSTRange(root->left, ...)) return false;
+if (!validateBSTRange(root->right, ...)) return false;
+```
+
+**递归的调用顺序 vs 处理顺序（深度理解）**：
+
+从"调用顺序"上看：
+- 递归是从根节点往下"钻"到叶子
+- 调用栈不断深入：root → left → left's left → ...
+- 这时调用栈最深，但还没有真正"处理"节点
+
+从"处理顺序"上看：
+- 到达叶子后，开始返回
+- 叶子先处理完，返回给父节点
+- 父节点再处理完，返回给祖父节点
+- 逐层向上，最后回到根
+- 这就是后序遍历的"自底向上"效果
+
+**图解递归过程**：
+
+```
+    10
+   /  \
+  5   15
+
+调用顺序（往下钻）：
+1. validateBSTRange(10, ...)  [调用，未处理]
+2.   validateBSTRange(5, ...)  [调用，未处理]
+3.     NULL（叶子），返回true
+4.     NULL（叶子），返回true
+5.   validateBSTRange(15, ...) [调用，未处理]
+6.     NULL（叶子），返回true
+7.     NULL（叶子），返回true
+
+处理顺序（往上爬）：
+8.   节点5处理完成，返回true
+9.   节点15处理完成，返回true
+10. 节点10处理完成，返回true（最后处理）
+
+写在"子递归调用之后"的代码，执行顺序就是从叶子往上到root！
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 说明 |
+|-----|-----------|------|
+| 访问每个节点 | O(n) | 每个节点检查一次 |
+| 每个节点的检查 | O(1) | 常数时间 |
+| **总计** | **O(n)** | 线性时间 |
+
+| 空间 | 空间复杂度 | 说明 |
+|-----|-----------|------|
+| 递归栈 | O(h) | 树的高度 |
+| **总计** | **O(h)** | h从log(n)到n |
+
+**测试用例**：
+
+```c
+// 用例1：合法BST
+输入：[2,1,3]
+输出：true
+
+// 用例2：非法BST（值不对）
+输入：[5,1,4,null,null,3,6]
+输出：false（4 < 5，违反右子树 > 根）
+
+// 用例3：边界值
+输入：[2147483647]（INT_MAX）
+输出：true（必须用long才能通过）
+
+// 用例4：边界值
+输入：[-2147483648]（INT_MIN）
+输出：true（必须用long才能通过）
+```
+
+**关键要点**：
+- ✅ 范围约束是递归传递的（不是只看直接子节点）
+- ✅ 必须使用long类型（避免INT_MIN/INT_MAX边界问题）
+- ✅ 左子树：min继承，max=root->val
+- ✅ 右子树：min=root->val，max继承
+- ✅ 先检查当前节点可以提前剪枝（优化）
+
+**记忆技巧**：
+
+```
+BST范围约束：
+左子树：(min, root->val)  - min继承
+右子树：(root->val, max)  - max继承
+
+边界值：必须用long
+- LONG_MIN < INT_MIN
+- LONG_MAX > INT_MAX
+```
+
+### 10.2 二叉树的层序遍历（102）
 
 **核心思想**：BFS + 队列
 
@@ -1249,7 +1515,7 @@ int** levelOrder(struct TreeNode* root, int* returnSize, int** returnColumnSizes
 - 二叉树的最大深度（104）- 统计层数
 - 填充next指针（117）- 连接每层节点
 
-### 10.2 二叉树的锯齿形层序遍历（103）
+### 10.3 二叉树的锯齿形层序遍历（103）
 
 **核心思想**：BFS + 方向标记 + 逆序存储
 
@@ -1466,7 +1732,7 @@ Direction currentDirection = LEFT_TO_RIGHT;
 LEFT -> RIGHT -> LEFT -> RIGHT ...
 ```
 
-### 10.3 从前序与中序遍历构造二叉树（105）
+### 10.4 从前序与中序遍历构造二叉树（105）
 
 **核心思想**：利用遍历特性递归构建
 
@@ -1747,7 +2013,7 @@ rootVal = postorder[postEnd];  // 最后一个元素
 - ✅ 准确计算索引范围
 - ✅ 注意内存释放
 
-### 10.4 从中序与后序遍历构造二叉树（106）
+### 10.5 从中序与后序遍历构造二叉树（106）
 
 **核心思想**：后序遍历根节点在末尾
 
@@ -2017,7 +2283,7 @@ postorder = [1,2,3]
 - ✅ 其他逻辑与105题完全相同
 - ✅ 掌握一题，另一题只需改根节点位置
 
-### 10.5 二叉树展开为链表（114）
+### 10.6 二叉树展开为链表（114）
 
 **核心思想**：Morris 遍历 + O(1) 空间
 
@@ -2326,7 +2592,7 @@ Morris遍历口诀：
 - ✅ 时间复杂度虽然看起来是O(n²)，实际是O(n)
 - ✅ 每个节点的right指针最多被修改2次
 
-### 10.6 填充每个节点的下一个右侧节点指针 II（117）
+### 10.7 填充每个节点的下一个右侧节点指针 II（117）
 
 **核心思想**：层序遍历 + O(1) 空间
 
@@ -2639,7 +2905,7 @@ tail = tail->next;
 - 利用树的结构信息进行优化
 - 原地修改数据结构
 
-### 10.7 求根节点到叶节点数字之和（129）
+### 10.8 求根节点到叶节点数字之和（129）
 
 **核心思想**：DFS路径累积
 
@@ -2951,7 +3217,7 @@ int sumNumbers(struct TreeNode* root) {
 - DFS遍历应用
 - 路径相关统计
 
-### 10.8 二叉搜索树迭代器（173）
+### 10.9 二叉搜索树迭代器（173）
 
 **核心思想**：栈模拟中序遍历 + 按需推进
 
@@ -3232,7 +3498,7 @@ bool bSTIteratorHasNext(BSTIterator* obj) {
 中序遍历 = 左-根-右 = BST升序
 ```
 
-### 10.9 二叉树的右视图（199）
+### 10.10 二叉树的右视图（199）
 
 **核心思想**：BFS层序遍历 + 记录每层最右节点
 
@@ -3517,7 +3783,7 @@ while (队列非空) {
 }
 ```
 
-### 10.10 二叉搜索树中第K小的元素（230）
+### 10.11 二叉搜索树中第K小的元素（230）
 
 **核心思想**：中序遍历 + 计数 + 剪枝
 
@@ -3794,7 +4060,7 @@ BST + 中序遍历 = 升序
 后判断（是否是第k个）
 ```
 
-### 10.11 二叉树的最近公共祖先（236）
+### 10.12 二叉树的最近公共祖先（236）
 
 **核心思想**：后序遍历 + 信息向上传递
 
@@ -4903,6 +5169,7 @@ for (i = 0; i < n-1; i++) {
 | O(1)随机访问 | 数组 + 哈希表 | 380 |
 | 最少步数 | BFS思想 | 45 |
 | 跳过不可能 | 贪心 + 数学定理 | 134 |
+| 验证BST | 范围约束递归传递 + long | 98 |
 | 层序遍历 | BFS + 队列 | 102 |
 | 锯齿形层序遍历 | BFS + 方向标记 + 逆序 | 103 |
 | 前序+中序构造树 | 递归 + 哈希表 | 105 |
