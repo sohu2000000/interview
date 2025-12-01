@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了29道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了30道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -2942,7 +2942,292 @@ bool bSTIteratorHasNext(BSTIterator* obj) {
 中序遍历 = 左-根-右 = BST升序
 ```
 
-### 10.7 二叉树的最近公共祖先（236）
+### 10.7 二叉树的右视图（199）
+
+**核心思想**：BFS层序遍历 + 记录每层最右节点
+
+**问题描述**：
+给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+
+**示例**：
+
+```
+输入: [1,2,3,null,5,null,4]
+    1            从右边看到：
+   / \           第1层：1（最右）
+  2   3          第2层：3（最右）
+   \   \         第3层：4（最右）
+    5   4        
+输出: [1,3,4]
+
+输入: [1,2,3,4]
+    1            从右边看到：
+   / \           第1层：1
+  2   3          第2层：3
+ /               第3层：4
+4
+输出: [1,3,4]
+```
+
+**算法实现**：
+
+```c
+int* rightSideView(struct TreeNode* root, int* returnSize) {
+    int* result = malloc(sizeof(int) * MAX_SIZE);
+    *returnSize = 0;
+    
+    if (root == NULL) return result;
+    
+    // 重置队列
+    queueSize = 0;
+    frontIndex = 0;
+    rearIndex = 0;
+    
+    enqueueNode(root);
+    
+    while (!isQueueEmpty()) {
+        // 关键：记录当前层的节点数量
+        int currentLevelSize = queueSize;
+        
+        // 遍历当前层的所有节点
+        for (int i = 0; i < currentLevelSize; i++) {
+            struct TreeNode* node = dequeueNode();
+            
+            // 如果是当前层的最后一个节点（最右边）
+            if (i == currentLevelSize - 1) {
+                result[(*returnSize)++] = node->val;
+            }
+            
+            // 将子节点入队（先左后右）
+            if (node->left) enqueueNode(node->left);
+            if (node->right) enqueueNode(node->right);
+        }
+    }
+    
+    return result;
+}
+```
+
+**详细走查**：输入 `[1,2,3,null,5,null,4]`
+
+```
+    1
+   / \
+  2   3
+   \   \
+    5   4
+
+=== 初始化 ===
+queue: [1]
+queueSize: 1
+
+=== 第1层 ===
+currentLevelSize = 1
+遍历1个节点：
+  i=0: node=1
+       i==0（最后一个）-> 记录1
+       入队2, 3
+queue: [2, 3]
+result: [1]
+
+=== 第2层 ===
+currentLevelSize = 2
+遍历2个节点：
+  i=0: node=2, 入队5
+  i=1: node=3
+       i==1（最后一个）-> 记录3
+       入队4
+queue: [5, 4]
+result: [1, 3]
+
+=== 第3层 ===
+currentLevelSize = 2
+遍历2个节点：
+  i=0: node=5
+  i=1: node=4
+       i==1（最后一个）-> 记录4
+queue: []
+result: [1, 3, 4] ✓
+```
+
+**关键技巧**：
+
+**1. 层序遍历的标准模板**
+```c
+while (!isQueueEmpty()) {
+    int currentLevelSize = queueSize;  // 记录当前层大小
+    
+    for (int i = 0; i < currentLevelSize; i++) {
+        // 处理当前层的节点
+    }
+}
+```
+
+**2. 识别每层最右节点**
+```c
+if (i == currentLevelSize - 1) {
+    // 这是当前层的最后一个节点
+}
+```
+
+**为什么先左后右入队能保证最右？**
+```
+队列FIFO（先进先出）：
+入队顺序：左子节点 -> 右子节点
+出队顺序：左子节点 -> 右子节点
+所以当前层的最后一个出队的就是最右节点
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: 判断队列为空来识别最右节点**
+```c
+// ❌ 错误：isQueueEmpty()不能识别每层的最右节点
+while (!isQueueEmpty()) {
+    node = dequeue();
+    if (isQueueEmpty()) {  // 只有最后一个节点时才为true
+        result[(*returnSize)++] = node->val;
+    }
+    enqueue(node->left);
+    enqueue(node->right);
+}
+
+// ✅ 正确：记录每层的节点数量
+while (!isQueueEmpty()) {
+    int currentLevelSize = queueSize;
+    for (int i = 0; i < currentLevelSize; i++) {
+        node = dequeue();
+        if (i == currentLevelSize - 1) {
+            result[(*returnSize)++] = node->val;
+        }
+        // ...
+    }
+}
+```
+
+**🐛 Bug #2: 全局变量不重置**
+```c
+// ❌ 错误：不重置，多次调用会越界
+int frontIndex = 0;   // 全局变量
+int rearIndex = 0;
+
+void bfsLevelOrder(...) {
+    enqueueNode(root);  // rearIndex继续递增
+    // 多次调用后 rearIndex 会超过数组大小
+}
+
+// ✅ 正确：函数开始时重置
+void bfsLevelOrder(...) {
+    queueSize = 0;
+    frontIndex = 0;
+    rearIndex = 0;
+    // ...
+}
+```
+
+**🐛 Bug #3: 循环条件错误**
+```c
+// ❌ 错误：使用队列当前大小
+int currentLevelSize = queueSize;
+while (queueSize > 0) {  // queueSize在变化！
+    node = dequeue();
+    // ...
+}
+
+// ✅ 正确：使用for循环固定次数
+int currentLevelSize = queueSize;
+for (int i = 0; i < currentLevelSize; i++) {
+    node = dequeue();
+    // ...
+}
+```
+
+**方法对比**：
+
+| 方法 | 时间 | 空间 | 特点 |
+|-----|------|------|------|
+| BFS（本题） | O(n) | O(w) | w是树的最大宽度 |
+| DFS+深度 | O(n) | O(h) | 记录每层第一次访问的节点 |
+
+**DFS实现（右-左顺序）**：
+
+```c
+void dfsRightView(struct TreeNode* root, int depth, 
+                  int* result, int* returnSize) {
+    if (root == NULL) return;
+    
+    // 如果是第一次访问这一层，记录节点值
+    if (depth == *returnSize) {
+        result[(*returnSize)++] = root->val;
+    }
+    
+    // 先访问右子树，再访问左子树（关键！）
+    dfsRightView(root->right, depth + 1, result, returnSize);
+    dfsRightView(root->left, depth + 1, result, returnSize);
+}
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 说明 |
+|-----|-----------|------|
+| 访问每个节点 | O(n) | BFS遍历 |
+| 每个节点的处理 | O(1) | 常数时间 |
+| **总计** | **O(n)** | 线性时间 |
+
+| 空间 | 空间复杂度 | 说明 |
+|-----|-----------|------|
+| 队列 | O(w) | w是树的最大宽度 |
+| 结果数组 | O(h) | h是树的高度（层数） |
+| **总计** | **O(w)** | w最大为n/2 |
+
+**测试用例**：
+
+```c
+// 用例1：右偏树
+输入：[1,null,3,null,4]
+输出：[1,3,4]
+
+// 用例2：左偏树（左节点也要看到）
+输入：[1,2]
+输出：[1,2]
+
+// 用例3：满二叉树
+输入：[1,2,3,4,5,6,7]
+输出：[1,3,7]
+
+// 用例4：单节点
+输入：[1]
+输出：[1]
+
+// 用例5：复杂情况
+输入：[1,2,3,null,5,null,4]
+输出：[1,3,4]
+```
+
+**关键要点**：
+- ✅ BFS层序遍历
+- ✅ 记录每层的节点数量（currentLevelSize）
+- ✅ 识别每层的最后一个节点（i == currentLevelSize - 1）
+- ✅ 必须重置全局队列变量
+- ✅ 先左后右入队，保证最右节点最后出队
+
+**记忆技巧**：
+
+```
+层序遍历模板：
+while (队列非空) {
+    currentLevelSize = queueSize;  // 固定当前层大小
+    for (i = 0 到 currentLevelSize) {
+        处理节点
+        if (i == currentLevelSize-1) {
+            // 这是当前层最后一个节点
+        }
+    }
+}
+```
+
+### 10.8 二叉树的最近公共祖先（236）
 
 **核心思想**：后序遍历 + 信息向上传递
 
@@ -4057,6 +4342,7 @@ for (i = 0; i < n-1; i++) {
 | 填充next指针 | 层序遍历 + next指针 | 117 |
 | 根到叶路径数字和 | DFS路径累积 | 129 |
 | BST迭代器 | 栈模拟中序遍历 | 173 |
+| 二叉树右视图 | BFS层序遍历 + 记录最右 | 199 |
 | 最近公共祖先 | 后序遍历 + 信息向上传递 | 236 |
 
 ---
