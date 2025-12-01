@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了31道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了32道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -1249,7 +1249,224 @@ int** levelOrder(struct TreeNode* root, int* returnSize, int** returnColumnSizes
 - 二叉树的最大深度（104）- 统计层数
 - 填充next指针（117）- 连接每层节点
 
-### 10.2 从前序与中序遍历构造二叉树（105）
+### 10.2 二叉树的锯齿形层序遍历（103）
+
+**核心思想**：BFS + 方向标记 + 逆序存储
+
+**问题描述**：
+给定一个二叉树，返回其节点值的锯齿形层序遍历（奇数层从左到右，偶数层从右到左）。
+
+**示例**：
+
+```
+输入: [3,9,20,null,null,15,7]
+    3
+   / \
+  9  20
+    /  \
+   15   7
+   
+输出: [[3], [20,9], [15,7]]
+
+第1层：从左到右 -> [3]
+第2层：从右到左 -> [20,9]
+第3层：从左到右 -> [15,7]
+```
+
+**算法实现**：
+
+```c
+int** zigzagLevelOrder(struct TreeNode* root, int* returnSize, int** returnColumnSizes) {
+    if (root == NULL) return result;
+    
+    // 初始化队列和方向
+    enqueueNode(root);
+    Direction currentDirection = LEFT_TO_RIGHT;
+    
+    while (!isQueueEmpty()) {
+        int currentLevelSize = getQueueSize();
+        
+        // 按需分配当前层空间
+        result[currentLevel] = malloc(sizeof(int) * currentLevelSize);
+        
+        // 遍历当前层
+        for (int i = 0; i < currentLevelSize; i++) {
+            struct TreeNode* node = dequeueNode();
+            
+            // 根据方向存储
+            if (currentDirection == LEFT_TO_RIGHT) {
+                result[currentLevel][i] = node->val;  // 正序
+            } else {
+                result[currentLevel][currentLevelSize-1-i] = node->val;  // 逆序
+            }
+            
+            // 入队子节点（始终先左后右）
+            if (node->left) enqueueNode(node->left);
+            if (node->right) enqueueNode(node->right);
+        }
+        
+        // 切换方向
+        currentDirection = (currentDirection == LEFT_TO_RIGHT) ? 
+                          RIGHT_TO_LEFT : LEFT_TO_RIGHT;
+        currentLevel++;
+    }
+    
+    return result;
+}
+```
+
+**详细走查**：输入 `[3,9,20,null,null,15,7]`
+
+```
+=== 第1层（LEFT_TO_RIGHT）===
+queue: [3]
+出队: 9
+存储: result[0][0] = 3 (正序)
+入队: [9, 20]
+结果: [[3]]
+
+=== 第2层（RIGHT_TO_LEFT）===
+queue: [9, 20]
+i=0: 出队9, 存储到 result[1][2-1-0] = result[1][1] = 9
+i=1: 出队20, 存储到 result[1][2-1-1] = result[1][0] = 20
+入队: [15, 7]
+结果: [[3], [20,9]]  (逆序！)
+
+=== 第3层（LEFT_TO_RIGHT）===
+queue: [15, 7]
+i=0: 出队15, 存储到 result[2][0] = 15
+i=1: 出队7, 存储到 result[2][1] = 7
+结果: [[3], [20,9], [15,7]] ✓
+```
+
+**逆序存储技巧**：
+
+```
+正常存储（i=0,1,2）：
+result[level][i] = node->val
+存储位置：[0], [1], [2]
+
+逆序存储（i=0,1,2，size=3）：
+result[level][size-1-i] = node->val
+i=0 -> [2]
+i=1 -> [1]
+i=2 -> [0]
+存储位置：[2], [1], [0]（逆序！）
+```
+
+**方向切换**：
+
+```c
+// 方法1：三元运算符
+currentDirection = (currentDirection == LEFT_TO_RIGHT) ? 
+                   RIGHT_TO_LEFT : LEFT_TO_RIGHT;
+
+// 方法2：取反（如果用bool）
+leftToRight = !leftToRight;
+
+// 方法3：异或（如果用0/1）
+currentDirection ^= 1;
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: 改变入队顺序**
+```c
+// ❌ 错误：改变入队顺序会破坏树结构
+if (currentDirection == LEFT_TO_RIGHT) {
+    enqueue(node->left);
+    enqueue(node->right);
+} else {
+    enqueue(node->right);  // 错误！
+    enqueue(node->left);
+}
+
+// ✅ 正确：始终先左后右入队，只改变存储顺序
+enqueue(node->left);
+enqueue(node->right);
+```
+
+**🐛 Bug #2: 逆序计算错误**
+```c
+// ❌ 错误：索引计算错误
+result[currentLevel][currentLevelSize - i] = node->val;  // 会越界
+
+// ✅ 正确：减1
+result[currentLevel][currentLevelSize - 1 - i] = node->val;
+```
+
+**🐛 Bug #3: 方向初始化错误**
+```c
+// ❌ 错误：从RIGHT_TO_LEFT开始
+Direction currentDirection = RIGHT_TO_LEFT;
+
+// ✅ 正确：第1层从左到右
+Direction currentDirection = LEFT_TO_RIGHT;
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 说明 |
+|-----|-----------|------|
+| 访问每个节点 | O(n) | BFS遍历 |
+| 每个节点的处理 | O(1) | 常数时间 |
+| **总计** | **O(n)** | 线性时间 |
+
+| 空间 | 空间复杂度 | 说明 |
+|-----|-----------|------|
+| 队列 | O(w) | w是树的最大宽度 |
+| 结果数组 | O(n) | 存储所有节点 |
+| **总计** | **O(n)** | 线性空间 |
+
+**测试用例**：
+
+```c
+// 用例1：完全二叉树
+输入：[3,9,20,null,null,15,7]
+输出：[[3], [20,9], [15,7]]
+
+// 用例2：右偏树
+输入：[1,null,2,null,3]
+输出：[[1], [2], [3]]
+
+// 用例3：对称树
+输入：[1,2,2,3,4,4,3]
+输出：[[1], [2,2], [3,4,4,3]]
+
+// 用例4：单节点
+输入：[1]
+输出：[[1]]
+```
+
+**与102题对比**：
+
+| 特性 | 102题（层序遍历） | 103题（锯齿形遍历） |
+|-----|-----------------|-------------------|
+| 遍历方式 | 每层从左到右 | 奇偶层方向不同 |
+| 存储方式 | `result[level][i]` | 根据方向决定 |
+| 入队顺序 | 先左后右 | 先左后右（相同） |
+| 额外变量 | 无 | Direction 枚举 |
+
+**关键要点**：
+- ✅ 使用BFS层序遍历框架
+- ✅ 添加方向标记（LEFT_TO_RIGHT / RIGHT_TO_LEFT）
+- ✅ 从右到左时逆序存储：`result[level][size-1-i]`
+- ✅ 节点始终先左后右入队（不改变入队顺序）
+- ✅ 每层结束后切换方向
+
+**记忆技巧**：
+
+```
+锯齿形 = 层序遍历 + 逆序存储
+
+正序：result[level][i]
+逆序：result[level][size-1-i]
+
+方向切换：
+LEFT -> RIGHT -> LEFT -> RIGHT ...
+```
+
+### 10.3 从前序与中序遍历构造二叉树（105）
 
 **核心思想**：利用遍历特性递归构建
 
@@ -1530,7 +1747,7 @@ rootVal = postorder[postEnd];  // 最后一个元素
 - ✅ 准确计算索引范围
 - ✅ 注意内存释放
 
-### 10.3 从中序与后序遍历构造二叉树（106）
+### 10.4 从中序与后序遍历构造二叉树（106）
 
 **核心思想**：后序遍历根节点在末尾
 
@@ -1800,7 +2017,7 @@ postorder = [1,2,3]
 - ✅ 其他逻辑与105题完全相同
 - ✅ 掌握一题，另一题只需改根节点位置
 
-### 10.4 二叉树展开为链表（114）
+### 10.5 二叉树展开为链表（114）
 
 **核心思想**：Morris 遍历 + O(1) 空间
 
@@ -2109,7 +2326,7 @@ Morris遍历口诀：
 - ✅ 时间复杂度虽然看起来是O(n²)，实际是O(n)
 - ✅ 每个节点的right指针最多被修改2次
 
-### 10.5 填充每个节点的下一个右侧节点指针 II（117）
+### 10.6 填充每个节点的下一个右侧节点指针 II（117）
 
 **核心思想**：层序遍历 + O(1) 空间
 
@@ -2422,7 +2639,7 @@ tail = tail->next;
 - 利用树的结构信息进行优化
 - 原地修改数据结构
 
-### 10.6 求根节点到叶节点数字之和（129）
+### 10.7 求根节点到叶节点数字之和（129）
 
 **核心思想**：DFS路径累积
 
@@ -2734,7 +2951,7 @@ int sumNumbers(struct TreeNode* root) {
 - DFS遍历应用
 - 路径相关统计
 
-### 10.7 二叉搜索树迭代器（173）
+### 10.8 二叉搜索树迭代器（173）
 
 **核心思想**：栈模拟中序遍历 + 按需推进
 
@@ -3015,7 +3232,7 @@ bool bSTIteratorHasNext(BSTIterator* obj) {
 中序遍历 = 左-根-右 = BST升序
 ```
 
-### 10.8 二叉树的右视图（199）
+### 10.9 二叉树的右视图（199）
 
 **核心思想**：BFS层序遍历 + 记录每层最右节点
 
@@ -3300,7 +3517,7 @@ while (队列非空) {
 }
 ```
 
-### 10.9 二叉树的最近公共祖先（236）
+### 10.10 二叉树的最近公共祖先（236）
 
 **核心思想**：后序遍历 + 信息向上传递
 
@@ -4410,6 +4627,7 @@ for (i = 0; i < n-1; i++) {
 | 最少步数 | BFS思想 | 45 |
 | 跳过不可能 | 贪心 + 数学定理 | 134 |
 | 层序遍历 | BFS + 队列 | 102 |
+| 锯齿形层序遍历 | BFS + 方向标记 + 逆序 | 103 |
 | 前序+中序构造树 | 递归 + 哈希表 | 105 |
 | 中序+后序构造树 | 递归 + 哈希表 | 106 |
 | 二叉树展开为链表 | Morris遍历 + O(1)空间 | 114 |

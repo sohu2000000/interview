@@ -79,6 +79,7 @@ interview/
 
 ### 二叉树
 - [x] **102** - Binary Tree Level Order Traversal (二叉树的层序遍历)
+- [x] **103** - Binary Tree Zigzag Level Order Traversal (二叉树的锯齿形层序遍历)
 - [x] **105** - Construct Binary Tree from Preorder and Inorder Traversal (从前序与中序遍历构造二叉树)
 - [x] **106** - Construct Binary Tree from Inorder and Postorder Traversal (从中序与后序遍历构造二叉树)
 - [x] **114** - Flatten Binary Tree to Linked List (二叉树展开为链表)
@@ -140,6 +141,7 @@ interview/
 
 ### 9. 二叉树
 - Level Order Traversal (102) - BFS层序遍历标准模板，返回二维数组
+- Zigzag Level Order (103) - BFS + 方向标记，逆序存储偶数层
 - Construct Binary Tree (105) - 前序+中序递归构造，哈希表优化O(n)
 - Construct Binary Tree (106) - 中序+后序递归构造，根节点在后序末尾
 - Flatten Binary Tree (114) - Morris遍历展开，O(1)空间原地操作
