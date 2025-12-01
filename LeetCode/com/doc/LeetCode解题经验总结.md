@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了32道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了33道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -3517,7 +3517,284 @@ while (队列非空) {
 }
 ```
 
-### 10.10 二叉树的最近公共祖先（236）
+### 10.10 二叉搜索树中第K小的元素（230）
+
+**核心思想**：中序遍历 + 计数 + 剪枝
+
+**问题描述**：
+给定一个二叉搜索树的根节点和整数 k，返回树中第 k 小的元素（k 从 1 开始计数）。
+
+**示例**：
+
+```
+输入: root = [3,1,4,null,2], k = 1
+    3
+   / \
+  1   4
+   \
+    2
+输出: 1
+
+中序遍历：1, 2, 3, 4（升序）
+第1小的元素：1
+第2小的元素：2
+第3小的元素：3
+```
+
+**核心理解**：**BST的中序遍历 = 升序序列**
+
+**算法实现**：
+
+```c
+int visitedCount = 0;  // 全局计数器
+
+bool inorderTraversal(struct TreeNode* root, int k, int *kthValue) {
+    if (!root) return false;
+    
+    // 1. 递归遍历左子树
+    if (inorderTraversal(root->left, k, kthValue))
+        return true;
+    
+    // 2. 访问当前节点
+    visitedCount++;  // 关键：先计数
+    if (visitedCount == k) {  // 然后判断
+        *kthValue = root->val;
+        return true;  // 找到后立即返回（剪枝）
+    }
+    
+    // 3. 递归遍历右子树
+    if (inorderTraversal(root->right, k, kthValue))
+        return true;
+    
+    return false;
+}
+
+int kthSmallest(struct TreeNode* root, int k) {
+    int kthValue = 0;
+    visitedCount = 0;  // 重置计数器
+    inorderTraversal(root, k, &kthValue);
+    return kthValue;
+}
+```
+
+**详细走查**：输入 `root = [5,3,6,2,4,null,null,1], k = 3`
+
+```
+BST:
+      5
+     / \
+    3   6
+   / \
+  2   4
+ /
+1
+
+中序遍历顺序：1, 2, 3, 4, 5, 6
+
+=== 查找第3小 (k=3) ===
+
+访问节点1: visitedCount++ = 1, 1==3? false
+访问节点2: visitedCount++ = 2, 2==3? false
+访问节点3: visitedCount++ = 3, 3==3? true
+  -> 返回3，停止遍历 ✓
+```
+
+**为什么先计数，后判断？**
+
+```
+关键理解：k从1开始，不是从0开始
+
+错误顺序（先判断后计数）：
+visitedCount = 0
+访问节点1: 检查0==1(false), count++变成1
+访问节点2: 检查1==1(true), 返回节点2 ❌
+结果：k=1返回第2小的元素（错位！）
+
+正确顺序（先计数后判断）：
+visitedCount = 0
+访问节点1: count++变成1, 检查1==1(true), 返回节点1 ✓
+结果：k=1返回第1小的元素（正确！）
+```
+
+**计数逻辑对比**：
+
+| k值 | 含义 | visitedCount | 判断时机 |
+|-----|------|-------------|---------|
+| 1 | 第1小 | 先++变成1 | 然后检查1==1 |
+| 2 | 第2小 | 先++变成2 | 然后检查2==2 |
+| 3 | 第3小 | 先++变成3 | 然后检查3==3 |
+
+**剪枝优化**：
+
+```c
+// 找到后立即返回，不再遍历后续节点
+if (visitedCount == k) {
+    *kthValue = root->val;
+    return true;  // 剪枝：提前终止
+}
+```
+
+**为什么能剪枝？**
+- BST中序遍历是升序的
+- 找到第k小后，后面的都更大
+- 不需要继续遍历
+
+**易错点总结**：
+
+**🐛 Bug #1: 先判断后计数（最常见错误）**
+```c
+// ❌ 错误：计数和判断顺序错误
+if (visitedCount == k) {
+    *kthValue = root->val;
+    return true;
+}
+visitedCount++;
+
+// ✅ 正确：先计数，后判断
+visitedCount++;
+if (visitedCount == k) {
+    *kthValue = root->val;
+    return true;
+}
+```
+
+**🐛 Bug #2: 没有重置全局变量**
+```c
+// ❌ 错误：不重置，LeetCode多次调用会出错
+int visitedCount = 0;  // 全局变量
+
+int kthSmallest(...) {
+    inorderTraversal(...);  // visitedCount继续累加
+}
+
+// ✅ 正确：每次调用前重置
+int kthSmallest(...) {
+    visitedCount = 0;  // 重置
+    inorderTraversal(...);
+}
+```
+
+**🐛 Bug #3: 没有剪枝优化**
+```c
+// ❌ 效率低：找到后仍继续遍历
+void inorderTraversal(...) {
+    inorderTraversal(root->left, ...);
+    
+    visitedCount++;
+    if (visitedCount == k) {
+        *kthValue = root->val;
+    }
+    
+    inorderTraversal(root->right, ...);  // 仍会执行
+}
+
+// ✅ 高效：找到后立即返回
+bool inorderTraversal(...) {
+    if (inorderTraversal(root->left, ...))
+        return true;  // 提前返回
+    
+    visitedCount++;
+    if (visitedCount == k) {
+        *kthValue = root->val;
+        return true;  // 立即返回
+    }
+    
+    if (inorderTraversal(root->right, ...))
+        return true;  // 提前返回
+}
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 说明 |
+|-----|-----------|------|
+| 平均情况 | O(h+k) | h是树高，k是目标位置 |
+| 最好情况 | O(h) | k=1，只访问最左路径 |
+| 最坏情况 | O(n) | k=n，遍历整棵树 |
+
+| 空间 | 空间复杂度 | 说明 |
+|-----|-----------|------|
+| 递归栈 | O(h) | 树的高度 |
+| 其他变量 | O(1) | 常数空间 |
+| **总计** | **O(h)** | h从log(n)到n |
+
+**优化方案**：
+
+**方法1：迭代实现（避免递归）**
+```c
+int kthSmallest(struct TreeNode* root, int k) {
+    struct TreeNode* stack[1000];
+    int top = -1;
+    int count = 0;
+    
+    struct TreeNode* current = root;
+    
+    while (current || top >= 0) {
+        // 一直往左走
+        while (current) {
+            stack[++top] = current;
+            current = current->left;
+        }
+        
+        // 访问节点
+        current = stack[top--];
+        count++;
+        if (count == k) {
+            return current->val;
+        }
+        
+        // 转向右子树
+        current = current->right;
+    }
+    
+    return -1;
+}
+```
+
+**方法2：Morris遍历（O(1)空间）**
+- 不使用栈或递归
+- 利用线索二叉树的思想
+- 空间复杂度O(1)
+
+**测试用例**：
+
+```c
+// 用例1：找第1小
+输入：root=[3,1,4,null,2], k=1
+输出：1
+
+// 用例2：找第3小
+输入：root=[5,3,6,2,4], k=3
+输出：4
+
+// 用例3：左偏树
+输入：root=[1,null,2], k=2
+输出：2
+
+// 用例4：完全二叉树
+输入：root=[2,1,3], k=2
+输出：2
+```
+
+**关键要点**：
+- ✅ BST中序遍历 = 升序序列
+- ✅ k从1开始计数（不是0）
+- ✅ 先计数，后判断（visitedCount++在前）
+- ✅ 找到后立即返回（剪枝优化）
+- ✅ 必须重置全局计数器
+
+**记忆技巧**：
+
+```
+BST + 中序遍历 = 升序
+第k小 = 升序序列的第k个
+
+计数顺序：
+先++ （当前是第几个）
+后判断（是否是第k个）
+```
+
+### 10.11 二叉树的最近公共祖先（236）
 
 **核心思想**：后序遍历 + 信息向上传递
 
@@ -4635,6 +4912,7 @@ for (i = 0; i < n-1; i++) {
 | 根到叶路径数字和 | DFS路径累积 | 129 |
 | BST迭代器 | 栈模拟中序遍历 | 173 |
 | 二叉树右视图 | BFS层序遍历 + 记录最右 | 199 |
+| BST第K小元素 | 中序遍历 + 计数 + 剪枝 | 230 |
 | 最近公共祖先 | 后序遍历 + 信息向上传递 | 236 |
 
 ---

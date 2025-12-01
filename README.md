@@ -87,6 +87,7 @@ interview/
 - [x] **129** - Sum Root to Leaf Numbers (求根节点到叶节点数字之和)
 - [x] **173** - Binary Search Tree Iterator (二叉搜索树迭代器)
 - [x] **199** - Binary Tree Right Side View (二叉树的右视图)
+- [x] **230** - Kth Smallest Element in a BST (二叉搜索树中第K小的元素)
 - [x] **236** - Lowest Common Ancestor of a Binary Tree (二叉树的最近公共祖先)
 
 ### 数据结构设计
@@ -149,6 +150,7 @@ interview/
 - Sum Root to Leaf Numbers (129) - DFS路径累积，数字=父数字*10+当前值
 - BST Iterator (173) - 栈模拟中序遍历，平均O(1)时间，O(h)空间
 - Binary Tree Right Side View (199) - BFS层序遍历，记录每层最右节点
+- Kth Smallest in BST (230) - 中序遍历计数，先++后判断，剪枝优化
 - Lowest Common Ancestor (236) - 后序遍历递归，信息向上传递
 
 ## 🔧 编译与运行
