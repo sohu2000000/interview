@@ -43,7 +43,7 @@ struct TreeNode {
  * Note: The returned array must be malloced, assume caller calls free().
  */
 
-#define MAX_QUEUE_SIZE 1000
+#define MAX_QUEUE_SIZE 10000
 
 /* 全局队列（用于BFS层序遍历） */
 struct TreeNode *bfsQueue[MAX_QUEUE_SIZE];
