@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了37道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了39道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -4960,7 +4960,256 @@ for (i = 0; i < numRows; i++) {
 从边界出发 -> DFS标记 -> 剩余未标记的就是被围绕的
 ```
 
-### 11.2 岛屿数量（200）
+### 11.2 克隆图（133）
+
+**核心思想**：DFS + 哈希表
+
+**问题描述**：
+给定无向连通图中一个节点的引用，返回该图的深拷贝（克隆）。
+
+**图节点定义**：
+```c
+struct Node {
+    int val;
+    int numNeighbors;
+    struct Node** neighbors;  // 邻居数组
+};
+```
+
+**示例**：
+
+```
+输入: adjList = [[2,4],[1,3],[2,4],[1,3]]
+
+图结构：
+  1 --- 2
+  |     |
+  4 --- 3
+
+节点1的邻居：[2, 4]
+节点2的邻居：[1, 3]
+节点3的邻居：[2, 4]
+节点4的邻居：[1, 3]
+```
+
+**核心挑战**：图有环！
+
+```
+1 -> 2 -> 1（环）
+
+如果简单递归：
+克隆1 -> 克隆1的邻居2 -> 克隆2的邻居1 -> 克隆1的邻居2 -> ...
+无限递归！❌
+```
+
+**算法实现**：
+
+```c
+/* 哈希表：原节点 -> 克隆节点的映射 */
+CloneHashNode *cloneHashMap = NULL;
+
+struct Node *dfsClone(struct Node *node) {
+    struct Node *clonedNode;
+    
+    // 步骤1: 检查是否已克隆
+    clonedNode = findClonedNode(node);
+    if (clonedNode) {
+        return clonedNode;  // 已克隆，直接返回
+    }
+    
+    // 步骤2: 创建克隆节点
+    clonedNode = malloc(sizeof(struct Node));
+    clonedNode->val = node->val;
+    clonedNode->numNeighbors = node->numNeighbors;
+    clonedNode->neighbors = malloc(sizeof(struct Node*) * node->numNeighbors);
+    
+    // 步骤3: 立即加入哈希表（关键！）
+    addCloneMapping(node, clonedNode);
+    
+    // 步骤4: 递归克隆所有邻居
+    for (int i = 0; i < node->numNeighbors; i++) {
+        clonedNode->neighbors[i] = dfsClone(node->neighbors[i]);
+    }
+    
+    return clonedNode;
+}
+
+struct Node *cloneGraph(struct Node *s) {
+    if (s == NULL) return NULL;
+    
+    initCloneHashMap();
+    struct Node *clonedNode = dfsClone(s);
+    freeCloneHashMap();
+    
+    return clonedNode;
+}
+```
+
+**为什么要立即加入哈希表？**
+
+```
+图结构：1 <-> 2（互相连接）
+
+正确顺序（先加入哈希表）：
+1. 克隆节点1
+2. 加入哈希表：1 -> clone1
+3. 克隆节点1的邻居（节点2）
+   a. 克隆节点2
+   b. 加入哈希表：2 -> clone2
+   c. 克隆节点2的邻居（节点1）
+   d. 查哈希表，找到clone1
+   e. 直接返回clone1 ✓（避免无限递归）
+
+错误顺序（后加入哈希表）：
+1. 克隆节点1
+2. 克隆节点1的邻居（节点2）
+   a. 克隆节点2
+   b. 克隆节点2的邻居（节点1）
+   c. 查哈希表，找不到节点1
+   d. 再次克隆节点1
+   e. 无限递归！❌
+```
+
+**哈希表的键值对**：
+
+| 原节点地址 | 克隆节点地址 | 说明 |
+|-----------|------------|------|
+| 0x1000 (node1) | 0x2000 (clone1) | 节点1的克隆 |
+| 0x1100 (node2) | 0x2100 (clone2) | 节点2的克隆 |
+| 0x1200 (node3) | 0x2200 (clone3) | 节点3的克隆 |
+
+**HASH_ADD/HASH_FIND 参数详解**：
+
+**关键问题：为什么传 `&node` 而不是 `node`？**
+
+```c
+// node 是 struct Node* 类型（指针）
+// 我们想用指针的值（地址）作为键
+
+HASH_ADD(hh, cloneHashMap, originalNode, sizeof(struct Node*), hashNode);
+//                         ↑字段名      ↑指针的大小
+
+HASH_FIND(hh, cloneHashMap, &originalNode, sizeof(struct Node*), hashNode);
+//                          ↑要传地址     ↑指针的大小
+```
+
+**为什么？**
+- `HASH_FIND` 的第3个参数是 `keyptr`（指向键的指针）
+- 键的类型是 `struct Node*`（指针）
+- 所以要传 `&originalNode`（指向指针的指针，类型是 `struct Node**`）
+
+**类比**：
+```c
+// 如果键是 int
+int key = 42;
+HASH_FIND_INT(head, &key, found);  // 传 &key
+
+// 如果键是 struct Node*
+struct Node* key = node;
+HASH_FIND(hh, head, &key, sizeof(struct Node*), found);  // 传 &key
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: 哈希表只存原节点，不存克隆节点**
+```c
+// ❌ 错误：只存原节点
+typedef struct {
+    struct Node *node;  // 只有一个字段
+    UT_hash_handle hh;
+} HashNode;
+
+// ✅ 正确：存储映射关系
+typedef struct {
+    struct Node *originalNode;  // 原节点（key）
+    struct Node *clonedNode;    // 克隆节点（value）
+    UT_hash_handle hh;
+} CloneHashNode;
+```
+
+**🐛 Bug #2: 在克隆邻居后才加入哈希表**
+```c
+// ❌ 错误：先克隆邻居，后加入哈希表
+clonedNode = malloc(...);
+for (i = 0; i < numNeighbors; i++) {
+    clonedNode->neighbors[i] = dfsClone(node->neighbors[i]);
+}
+addCloneMapping(node, clonedNode);  // 太晚了！
+
+// ✅ 正确：先加入哈希表，后克隆邻居
+clonedNode = malloc(...);
+addCloneMapping(node, clonedNode);  // 立即加入
+for (i = 0; i < numNeighbors; i++) {
+    clonedNode->neighbors[i] = dfsClone(node->neighbors[i]);
+}
+```
+
+**🐛 Bug #3: HASH_FIND参数错误**
+```c
+// ❌ 错误：传 node（指针本身）
+HASH_FIND(hh, cloneHashMap, node, sizeof(struct Node*), hashNode);
+
+// ✅ 正确：传 &node（指向指针的指针）
+HASH_FIND(hh, cloneHashMap, &node, sizeof(struct Node*), hashNode);
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 说明 |
+|-----|-----------|------|
+| DFS遍历 | O(N) | N个节点 |
+| 克隆邻居 | O(E) | E条边 |
+| **总计** | **O(N+E)** | 节点数+边数 |
+
+| 空间 | 空间复杂度 | 说明 |
+|-----|-----------|------|
+| 哈希表 | O(N) | 存储N个节点的映射 |
+| 递归栈 | O(N) | 最坏情况 |
+| 克隆的图 | O(N+E) | N个节点+E条边 |
+| **总计** | **O(N+E)** | 线性空间 |
+
+**测试用例**：
+
+```c
+// 用例1：环形图
+输入：[[2,4],[1,3],[2,4],[1,3]]
+输出：克隆的图（不是原图的引用）
+
+// 用例2：单节点
+输入：[[]]
+输出：[[]]
+
+// 用例3：空图
+输入：[]
+输出：[]
+
+// 用例4：线性图
+输入：[[2],[3],[]]
+输出：[[2],[3],[]]
+```
+
+**关键要点**：
+- ✅ 哈希表存储原节点→克隆节点的映射
+- ✅ 先创建克隆节点并加入哈希表，再克隆邻居
+- ✅ HASH_FIND传 `&node`（指向指针的指针）
+- ✅ 键的大小是 `sizeof(struct Node*)`（指针的大小）
+- ✅ 处理环形图（查哈希表避免重复克隆）
+
+**记忆技巧**：
+
+```
+克隆图 = DFS + 哈希表
+
+哈希表作用：
+1. 记录已克隆的节点
+2. 映射原节点→克隆节点
+3. 防止环导致无限递归
+
+关键顺序：
+创建 -> 加入哈希表 -> 克隆邻居
+```
+
+### 11.3 岛屿数量（200）
 
 **核心思想**：DFS标记连通分量
 
@@ -5680,6 +5929,7 @@ for (i = 0; i < n-1; i++) {
 | BST第K小元素 | 中序遍历 + 计数 + 剪枝 | 230 |
 | 最近公共祖先 | 后序遍历 + 信息向上传递 | 236 |
 | 被围绕的区域 | 反向思维 + 从边界DFS | 130 |
+| 克隆图 | DFS + 哈希表 + 先克隆后递归 | 133 |
 | 岛屿数量 | DFS标记连通分量 | 200 |
 
 ---
