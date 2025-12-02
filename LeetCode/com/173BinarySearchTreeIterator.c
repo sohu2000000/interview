@@ -56,11 +56,11 @@ void pushStack(Stack *stack, struct TreeNode *node) {
 /* 出栈：注意先取值再递减（top--，先访问[top]再减） */
 struct TreeNode *popStack(Stack *stack) {
 	return stack->nodes[stack->top--];
-}
+ }
 
 /* 判断栈是否为空 */
 bool isStackEmpty(Stack *stack) {
-	return stack->top == -1;
+ 	return stack->top == -1;
 }
 
 /* BST迭代器数据结构 */
@@ -68,7 +68,7 @@ typedef struct {
 	Stack nodeStack;          /* 栈：存储遍历路径上的祖先节点 */
 	struct TreeNode *current; /* 当前待访问的节点（指向下一个要处理的子树） */
 } BSTIterator;
-
+ 
 /*
  * 创建BST迭代器
  * @param root: BST的根节点
@@ -140,12 +140,12 @@ void bSTIteratorFree(BSTIterator* obj) {
 	free(obj);
 }
  
-/**
- * Your BSTIterator struct will be instantiated and called as such:
- * BSTIterator* obj = bSTIteratorCreate(root);
- * int param_1 = bSTIteratorNext(obj);
- * bool param_2 = bSTIteratorHasNext(obj);
- * bSTIteratorFree(obj);
+ /**
+  * Your BSTIterator struct will be instantiated and called as such:
+  * BSTIterator* obj = bSTIteratorCreate(root);
+  * int param_1 = bSTIteratorNext(obj);
+  * bool param_2 = bSTIteratorHasNext(obj);
+  * bSTIteratorFree(obj);
  */
 
 /*

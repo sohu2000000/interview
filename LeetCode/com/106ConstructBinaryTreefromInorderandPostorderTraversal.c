@@ -76,7 +76,7 @@ void freeHashMap() {
  * @return: 构建的子树根节点
  */
 struct TreeNode *buildTreeRecursive(int *inorder, int *postorder, struct InorderIndexNode *hashMap,
-				    int inStart, int inEnd, int postStart, int postEnd) {
+			      int inStart, int inEnd, int postStart, int postEnd) {
 
 	int postorderRootIdx, inorderRootIdx;
 	int postLeftStart, postLeftEnd, inLeftStart, inLeftEnd, leftSize;
@@ -137,7 +137,7 @@ struct TreeNode *buildTreeRecursive(int *inorder, int *postorder, struct Inorder
 struct TreeNode* buildTree(int* inorder, int inorderSize, int* postorder, int postorderSize) {
 
 	struct TreeNode *root;
-
+	
 	/* 边界条件检查 */
 	if (NULL == inorder || NULL == postorder || inorderSize != postorderSize || inorderSize == 0)
 		return NULL;

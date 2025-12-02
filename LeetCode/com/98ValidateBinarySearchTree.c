@@ -82,7 +82,7 @@ bool validateBSTRange(struct TreeNode* root, long minValue, long maxValue) {
 	if (!validateBSTRange(root->right, root->val, maxValue))
 		return false;
 
-	return true;
+		return true;
 }
 
 /*

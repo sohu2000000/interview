@@ -113,15 +113,15 @@ void bfsLevelOrder(struct TreeNode* root, int* result, int* returnSize) {
 			/* 步骤3: 如果是当前层的最后一个节点（最右边），记录它的值 */
 			if (i == currentLevelSize - 1) {
 				result[(*returnSize)++] = currentNode->val;
-			}
+		}
 			
 			/* 步骤4: 将下一层的节点入队（先左后右） */
 			if (currentNode->left != NULL)
 				enqueueNode(currentNode->left);
 			if (currentNode->right != NULL)
 				enqueueNode(currentNode->right);
-		}
 	}
+}
 }
 
 /*

@@ -92,7 +92,7 @@ int** levelOrder(struct TreeNode* root, int* returnSize, int** returnColumnSizes
 
 	if (root == NULL)
 		return result;
-
+	
 	/* 重置队列 */
 	queueSize = 0;
 	frontIndex = 0;
@@ -117,7 +117,7 @@ int** levelOrder(struct TreeNode* root, int* returnSize, int** returnColumnSizes
 			/* 步骤4: 记录当前节点的值 */
 			result[currentLevel][i] = currentNode->val;
 			(*returnColumnSizes)[currentLevel]++;
-
+			
 			/* 步骤5: 将子节点入队 */
 			if (currentNode->left != NULL)
 				enqueueNode(currentNode->left);
