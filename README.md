@@ -95,6 +95,9 @@ interview/
 - [x] **146** - LRU Cache (LRU缓存)
 - [x] **380** - Insert Delete GetRandom O(1) (常数时间插入删除和获取随机元素)
 
+### 图论/DFS/BFS
+- [x] **200** - Number of Islands (岛屿数量)
+
 ## 💡 核心算法与技巧
 
 ### 1. 贪心算法 (Greedy)
@@ -154,6 +157,9 @@ interview/
 - Binary Tree Right Side View (199) - BFS层序遍历，记录每层最右节点
 - Kth Smallest in BST (230) - 中序遍历计数，先++后判断，剪枝优化
 - Lowest Common Ancestor (236) - 后序遍历递归，信息向上传递
+
+### 10. 图论/DFS/BFS
+- Number of Islands (200) - DFS标记连通分量，visited数组防重复
 
 ## 🔧 编译与运行
 

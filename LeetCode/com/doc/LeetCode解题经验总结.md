@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了34道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了35道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -15,9 +15,10 @@
 7. [数据结构设计](#7-数据结构设计)
 8. [数组技巧](#8-数组技巧)
 9. [链表操作](#9-链表操作)
-10. [二叉树构造](#10-二叉树构造)
-11. [C语言常见陷阱](#11-c语言常见陷阱)
-12. [面试技巧](#12-面试技巧)
+10. [二叉树](#10-二叉树)
+11. [图论/DFS/BFS](#11-图论dfsbfs)
+12. [数据结构设计](#12-数据结构设计)
+13. [C语言常见陷阱](#13-c语言常见陷阱)
 
 ---
 
@@ -4716,7 +4717,263 @@ for (int i = 0; i < n; i++) {
 
 ---
 
-## 11. C语言常见陷阱
+## 11. 图论/DFS/BFS
+
+### 11.1 岛屿数量（200）
+
+**核心思想**：DFS标记连通分量
+
+**问题描述**：
+给定一个由 '1'（陆地）和 '0'（水）组成的二维网格，计算岛屿的数量。岛屿由相邻的陆地连接而成（上下左右），并且四面被水包围。
+
+**示例**：
+
+```
+输入:
+[["1","1","1","1","0"],
+ ["1","1","0","1","0"],
+ ["1","1","0","0","0"],
+ ["0","0","0","0","0"]]
+ 
+网格可视化：
+1 1 1 1 0
+1 1 0 1 0
+1 1 0 0 0
+0 0 0 0 0
+
+输出: 1（这是一个连通的岛屿）
+```
+
+**算法实现**：
+
+```c
+int **visited = NULL;  // 全局visited数组
+
+void dfsMarkIsland(char **grid, int gridSize, int *gridColSize, 
+                   int row, int col) {
+    int numRows = gridSize;
+    int numCols = gridColSize[row];
+    
+    // 边界检查和条件判断
+    if (row < 0 || row >= numRows || 
+        col < 0 || col >= numCols || 
+        grid[row][col] == '0' || visited[row][col] == 1) {
+        return;
+    }
+    
+    // 标记当前位置为已访问
+    visited[row][col] = 1;
+    
+    // 递归访问四个方向
+    dfsMarkIsland(grid, gridSize, gridColSize, row - 1, col);  // 上
+    dfsMarkIsland(grid, gridSize, gridColSize, row + 1, col);  // 下
+    dfsMarkIsland(grid, gridSize, gridColSize, row, col - 1);  // 左
+    dfsMarkIsland(grid, gridSize, gridColSize, row, col + 1);  // 右
+}
+
+int numIslands(char** grid, int gridSize, int* gridColSize) {
+    int islandCount = 0;
+    
+    // 分配visited数组
+    visited = malloc(...);
+    
+    // 遍历整个网格
+    for (int i = 0; i < numRows; i++) {
+        for (int j = 0; j < numCols; j++) {
+            // 发现未访问的陆地
+            if (grid[i][j] == '1' && visited[i][j] == 0) {
+                islandCount++;  // 发现新岛屿
+                dfsMarkIsland(grid, gridSize, gridColSize, i, j);
+            }
+        }
+    }
+    
+    return islandCount;
+}
+```
+
+**算法步骤**：
+1. 遍历整个网格
+2. 遇到未访问的陆地'1'，岛屿数+1
+3. 从该陆地开始DFS，标记整个连通区域
+4. 继续遍历，已标记的陆地不再计数
+
+**DFS的四个方向**：
+```
+      上(row-1, col)
+         ↑
+左 ← (row,col) → 右
+(row,col-1)    (row,col+1)
+         ↓
+    下(row+1, col)
+```
+
+**关键变量说明**：
+
+| 变量名 | 作用 | 说明 |
+|--------|------|------|
+| `visited` | 访问标记数组 | 防止重复访问 |
+| `islandCount` | 岛屿数量 | DFS调用次数 |
+| `numRows` | 行数 | gridSize |
+| `numCols` | 列数 | gridColSize[i] |
+
+**易错点总结**：
+
+**🐛 Bug #1: 提前标记**
+```c
+// ❌ 错误：在检查条件前标记
+visited[row][col] = 1;
+if (row >= 0 && row < numRows && ...) {
+    // 处理
+}
+
+// ✅ 正确：先检查条件，再标记
+if (row >= 0 && row < numRows && ...) {
+    visited[row][col] = 1;
+    // 处理
+}
+```
+
+**🐛 Bug #2: colSize固定使用**
+```c
+// ❌ 错误：所有行用同一个colSize
+colSize = gridColSize[0];
+for (i = 0; i < numRows; i++) {
+    for (j = 0; j < colSize; j++) {  // 错误
+        ...
+    }
+}
+
+// ✅ 正确：每行重新获取列数
+for (i = 0; i < numRows; i++) {
+    colSize = gridColSize[i];  // 每行重新获取
+    for (j = 0; j < colSize; j++) {
+        ...
+    }
+}
+```
+
+**🐛 Bug #3: 忘记释放visited数组**
+```c
+// ❌ 错误：忘记释放，内存泄漏
+visited = malloc(...);
+// 使用visited
+return islandCount;
+
+// ✅ 正确：释放内存
+visited = malloc(...);
+// 使用visited
+for (i = 0; i < numRows; i++) {
+    free(visited[i]);
+}
+free(visited);
+return islandCount;
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 说明 |
+|-----|-----------|------|
+| 遍历网格 | O(m×n) | m行n列 |
+| DFS访问 | O(m×n) | 每个格子最多访问一次 |
+| **总计** | **O(m×n)** | 线性时间 |
+
+| 空间 | 空间复杂度 | 说明 |
+|-----|-----------|------|
+| visited数组 | O(m×n) | 记录访问状态 |
+| 递归栈 | O(m×n) | 最坏情况 |
+| **总计** | **O(m×n)** | 线性空间 |
+
+**优化方案**：
+
+**方法1：原地标记（节省空间）**
+```c
+// 不使用visited数组，直接修改grid
+void dfsMarkIsland(char **grid, ...) {
+    if (grid[row][col] == '0') return;
+    
+    grid[row][col] = '0';  // 标记为水
+    // 递归四个方向
+}
+```
+
+**方法2：BFS实现**
+```c
+// 使用队列代替递归
+int numIslands(char** grid, ...) {
+    int islandCount = 0;
+    Queue queue;
+    
+    for (i = 0; i < numRows; i++) {
+        for (j = 0; j < numCols; j++) {
+            if (grid[i][j] == '1') {
+                islandCount++;
+                // BFS标记整个岛屿
+                enqueue({i, j});
+                while (!isEmpty()) {
+                    (r, c) = dequeue();
+                    // 标记并入队四个方向
+                }
+            }
+        }
+    }
+    
+    return islandCount;
+}
+```
+
+**测试用例**：
+
+```c
+// 用例1：单个岛屿
+输入：[["1","1","1"],
+      ["0","1","0"],
+      ["1","1","1"]]
+输出：1
+
+// 用例2：多个岛屿
+输入：[["1","1","0","0","0"],
+      ["1","1","0","0","0"],
+      ["0","0","1","0","0"],
+      ["0","0","0","1","1"]]
+输出：3
+
+// 用例3：全是水
+输入：[["0","0","0"],
+      ["0","0","0"]]
+输出：0
+
+// 用例4：全是陆地
+输入：[["1","1"],
+      ["1","1"]]
+输出：1
+```
+
+**关键要点**：
+- ✅ DFS标记整个连通区域
+- ✅ 岛屿数 = DFS调用次数
+- ✅ visited数组防止重复访问
+- ✅ 每行重新获取列数（安全）
+- ✅ 记得释放visited数组
+
+**记忆技巧**：
+
+```
+岛屿数量 = 连通分量数量
+
+DFS流程：
+发现陆地 -> 计数+1 -> DFS标记整片 -> 继续寻找
+```
+
+**应用场景**：
+- 连通分量问题
+- 图的遍历
+- 矩阵中的区域问题
+- 泛洪填充算法
+
+---
+
+## 13. C语言常见陷阱
 
 ### 11.1 指针相关
 
@@ -5181,6 +5438,7 @@ for (i = 0; i < n-1; i++) {
 | 二叉树右视图 | BFS层序遍历 + 记录最右 | 199 |
 | BST第K小元素 | 中序遍历 + 计数 + 剪枝 | 230 |
 | 最近公共祖先 | 后序遍历 + 信息向上传递 | 236 |
+| 岛屿数量 | DFS标记连通分量 | 200 |
 
 ---
 
