@@ -96,6 +96,7 @@ interview/
 - [x] **380** - Insert Delete GetRandom O(1) (常数时间插入删除和获取随机元素)
 
 ### 图论/DFS/BFS
+- [x] **130** - Surrounded Regions (被围绕的区域)
 - [x] **200** - Number of Islands (岛屿数量)
 
 ## 💡 核心算法与技巧
@@ -159,6 +160,7 @@ interview/
 - Lowest Common Ancestor (236) - 后序遍历递归，信息向上传递
 
 ### 10. 图论/DFS/BFS
+- Surrounded Regions (130) - 反向思维，从边界DFS标记不被围绕的O
 - Number of Islands (200) - DFS标记连通分量，visited数组防重复
 
 ## 🔧 编译与运行
