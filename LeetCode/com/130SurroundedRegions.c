@@ -43,23 +43,30 @@ void dfsMarkBorderConnected(char** board, int boardSize, int* boardColSize, int 
 	int numCols, numRows;
 	
 	numRows = boardSize;
+
+	/* 关键：先检查row是否越界，再访问boardColSize[row] */
+	if (row < 0 || row >= numRows) {
+		return;
+	}
+
 	numCols = boardColSize[row];
 
-	/* 边界检查和条件判断 */
-	if (row >= 0 && row < numRows &&
-	    col >= 0 && col < numCols &&
-	    board[row][col] == 'O' && visited[row][col] == 0) {
-		
-		/* 标记为已访问和与边界连通 */
-		visited[row][col] = 1;
-		borderConnected[row][col] = 1;
-
-		/* 递归访问四个方向 */
-		dfsMarkBorderConnected(board, boardSize, boardColSize, row - 1, col);
-		dfsMarkBorderConnected(board, boardSize, boardColSize, row + 1, col);
-		dfsMarkBorderConnected(board, boardSize, boardColSize, row, col - 1);
-		dfsMarkBorderConnected(board, boardSize, boardColSize, row, col + 1);
+	/* 继续检查其他条件 */
+	if (col < 0 || col >= numCols ||
+	    board[row][col] != 'O' || 
+	    visited[row][col] == 1) {
+		return;
 	}
+
+	/* 标记为已访问和与边界连通 */
+	visited[row][col] = 1;
+	borderConnected[row][col] = 1;
+
+	/* 递归访问四个方向 */
+	dfsMarkBorderConnected(board, boardSize, boardColSize, row - 1, col);
+	dfsMarkBorderConnected(board, boardSize, boardColSize, row + 1, col);
+	dfsMarkBorderConnected(board, boardSize, boardColSize, row, col - 1);
+	dfsMarkBorderConnected(board, boardSize, boardColSize, row, col + 1);
 
 	return;
 }
@@ -119,8 +126,8 @@ void solve(char** board, int boardSize, int* boardColSize) {
 	}
 
 	/* 最后一列 */
-	numCols = boardColSize[0];
 	for (i = 1; i < numRows - 1; i++) {
+		numCols = boardColSize[i];  /* 关键：每行重新获取列数 */
 		dfsMarkBorderConnected(board, boardSize, boardColSize, i, numCols - 1);
 	}
 
