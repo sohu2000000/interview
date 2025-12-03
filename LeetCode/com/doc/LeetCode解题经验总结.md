@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了40道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了41道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -5461,7 +5461,253 @@ DFS流程：
 - 矩阵中的区域问题
 - 泛洪填充算法
 
-### 11.4 除法求值（399）
+### 11.4 课程表（207）
+
+**核心思想**：拓扑排序 + 三色标记法检测环
+
+**问题描述**：
+你需要选n门课程，在选某些课程之前需要先修课程。判断是否可能完成所有课程的学习。
+
+**示例**：
+
+```
+输入: numCourses = 2, prerequisites = [[1,0]]
+输出: true
+解释: 先学课程0，再学课程1
+
+输入: numCourses = 2, prerequisites = [[1,0],[0,1]]
+输出: false
+解释: 0→1→0 形成环，无法完成
+```
+
+**核心理解**：拓扑排序 = 环检测
+
+```
+有向无环图（DAG） → 可以拓扑排序 → 可以完成课程
+有向有环图 → 无法拓扑排序 → 无法完成课程
+
+本题本质：检测有向图中是否有环
+```
+
+**三色标记法（DFS环检测）**：
+
+```
+白色（UNVISITED）：未访问
+灰色（VISITING）：正在访问（在当前DFS路径上）
+黑色（VISITED）：已完成访问
+
+环检测规则：
+如果访问到灰色节点 → 回到当前路径 → 有环！
+```
+
+**算法实现**：
+
+```c
+typedef enum {
+    UNVISITED,  // 白色
+    VISITING,   // 灰色
+    VISITED,    // 黑色
+} VisitStatus;
+
+bool detectCycle(CourseGraph *graph, int courseId) {
+    VertexNode *vertex = findCourseNode(graph, courseId);
+    
+    // 情况1: 遇到灰色节点，有环
+    if (vertex->status == VISITING)
+        return false;
+    
+    // 情况2: 已访问过（黑色），无环
+    if (vertex->status == VISITED)
+        return true;
+    
+    // 情况3: 标记为灰色（正在访问）
+    vertex->status = VISITING;
+    
+    // 情况4: 递归检查所有邻居
+    EdgeNode *edge = vertex->edgeList;
+    while (edge) {
+        if (!detectCycle(graph, edge->adjacentCourse))
+            return false;  // 发现环
+        edge = edge->next;
+    }
+    
+    // 情况5: 标记为黑色（完成访问）
+    vertex->status = VISITED;
+    return true;
+}
+
+bool canFinish(int numCourses, int** prerequisites, ...) {
+    // 1. 构建课程依赖图
+    for (i = 0; i < prerequisitesSize; i++) {
+        addPrerequisite(graph, prerequisites[i][1], prerequisites[i][0]);
+    }
+    
+    // 2. 对每个未访问的课程DFS检测环
+    for (i = 0; i < graph->numVertices; i++) {
+        if (vertex->status == UNVISITED) {
+            if (!detectCycle(graph, vertex->courseId))
+                return false;  // 有环
+        }
+    }
+    
+    return true;  // 无环
+}
+```
+
+**详细走查**：
+
+```
+示例：0→1→2（链式图）
+
+初始状态：所有节点白色（UNVISITED）
+
+DFS(0):
+  0: 白色 → 灰色（VISITING）
+  检查邻居1:
+    DFS(1):
+      1: 白色 → 灰色（VISITING）
+      检查邻居2:
+        DFS(2):
+          2: 白色 → 灰色（VISITING）
+          无邻居
+          2: 灰色 → 黑色（VISITED）
+        返回true
+      1: 灰色 → 黑色（VISITED）
+    返回true
+  0: 灰色 → 黑色（VISITED）
+返回true
+
+最终：所有节点黑色，无VISITING残留
+```
+
+**为什么VISITING不会残留？**
+
+```
+关键：DFS返回前，节点从灰色变黑色
+
+vertex->status = VISITING;  // 进入时：灰色
+// 递归访问邻居...
+vertex->status = VISITED;   // 离开时：黑色
+
+唯一不变黑的情况：发现环提前返回
+但此时整个函数返回false，不会继续处理其他节点
+```
+
+**为什么不需要重置状态？**
+
+```
+场景：图有两个连通分量
+  0→1    2→3
+
+第1次DFS(0):
+  0,1都变成黑色（VISITED）
+
+第2次遍历到节点1:
+  status == VISITED（第175-176行）
+  直接return true，跳过
+
+第3次DFS(2):
+  2,3都变成黑色
+
+时间复杂度：O(V+E)
+- 每个节点最多访问一次
+- 每条边最多访问一次
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: 每次循环都重置状态**
+```c
+// ❌ 错误：O(V²)复杂度
+for (i = 0; i < numVertices; i++) {
+    resetStatus(graph);  // 每次O(V)
+    dfs(graph, i);       // 每次O(V+E)
+}
+
+// ✅ 正确：O(V+E)复杂度
+for (i = 0; i < numVertices; i++) {
+    if (vertex->status == UNVISITED) {
+        if (!detectCycle(graph, i))
+            return false;
+    }
+}
+```
+
+**🐛 Bug #2: 条件判断反了**
+```c
+// ❌ 错误：!=
+if (vertex->status != UNVISITED) {
+    dfs(...);
+}
+
+// ✅ 正确：==
+if (vertex->status == UNVISITED) {
+    dfs(...);
+}
+```
+
+**🐛 Bug #3: result初始化错误**
+```c
+// ❌ 错误
+bool result = false;
+
+// ✅ 正确：默认为true，只有发现环才false
+bool result = true;
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 说明 |
+|-----|-----------|------|
+| 构建图 | O(E) | E个先修关系 |
+| DFS环检测 | O(V+E) | 每个节点和边访问一次 |
+| **总计** | **O(V+E)** | 线性时间 |
+
+| 空间 | 空间复杂度 | 说明 |
+|-----|-----------|------|
+| 图存储 | O(V+E) | 顶点和边 |
+| 递归栈 | O(V) | DFS深度 |
+| **总计** | **O(V+E)** | 线性空间 |
+
+**测试用例**：
+
+```c
+// 用例1：无环
+输入：numCourses=2, prerequisites=[[1,0]]
+输出：true
+
+// 用例2：有环
+输入：numCourses=2, prerequisites=[[1,0],[0,1]]
+输出：false
+
+// 用例3：链式
+输入：numCourses=4, prerequisites=[[1,0],[2,1],[3,2]]
+输出：true
+
+// 用例4：无先修关系
+输入：numCourses=1, prerequisites=[]
+输出：true
+```
+
+**关键要点**：
+- ✅ 三色标记法检测环
+- ✅ 灰色节点表示在当前DFS路径上
+- ✅ 遇到灰色节点说明有环
+- ✅ 不需要重置状态（VISITED不会变回VISITING）
+- ✅ 时间复杂度O(V+E)
+
+**记忆技巧**：
+
+```
+三色标记：
+白色 - 未访问
+灰色 - 正在访问（在路径上）
+黑色 - 已完成
+
+遇到灰色 → 有环 → 无法完成
+```
+
+### 11.5 除法求值（399）
 
 **核心思想**：带权有向图 + DFS路径搜索
 
@@ -6100,6 +6346,7 @@ for (i = 0; i < n-1; i++) {
 | 被围绕的区域 | 反向思维 + 从边界DFS | 130 |
 | 克隆图 | DFS + 哈希表 + 先克隆后递归 | 133 |
 | 岛屿数量 | DFS标记连通分量 | 200 |
+| 课程表 | 拓扑排序 + 三色标记检测环 | 207 |
 | 除法求值 | 带权图 + DFS路径搜索 | 399 |
 
 ---
