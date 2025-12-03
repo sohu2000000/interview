@@ -1,6 +1,6 @@
 # LeetCode 解题经验与技巧总结
 
-本文档总结了39道LeetCode题目的核心算法思想、常见技巧和易错点。
+本文档总结了40道LeetCode题目的核心算法思想、常见技巧和易错点。
 
 ---
 
@@ -5461,6 +5461,175 @@ DFS流程：
 - 矩阵中的区域问题
 - 泛洪填充算法
 
+### 11.4 除法求值（399）
+
+**核心思想**：带权有向图 + DFS路径搜索
+
+**问题描述**：
+给定方程组和对应的值，以及若干查询，计算查询的结果。
+
+**示例**：
+
+```
+方程：a/b = 2.0, b/c = 3.0
+查询：
+- a/c = ? → (a/b) * (b/c) = 2.0 * 3.0 = 6.0
+- b/a = ? → 1 / (a/b) = 1 / 2.0 = 0.5
+- a/e = ? → e不存在 → -1.0
+- a/a = ? → 1.0
+```
+
+**问题建模**：
+
+```
+变量 → 图的顶点
+除法关系 → 图的边（带权重）
+
+a/b = 2.0 表示：
+- 边 a → b，权重 = 2.0
+- 边 b → a，权重 = 0.5（倒数）
+
+图结构：
+  a --2.0--> b --3.0--> c
+  a <-0.5--- b <-0.33-- c
+```
+
+**算法实现**：
+
+```c
+/* 图结构 */
+typedef struct {
+    VertexNode vertices[MAX_VERTICES];  // 顶点数组
+    int visited[MAX_VERTICES];          // DFS访问标记
+    int numVertices;                    // 顶点数量
+    int numEdges;                       // 边数量
+} Graph;
+
+/* DFS搜索路径并累积权重 */
+double dfsSearch(Graph *graph, VertexNode *current, 
+                double accumulatedWeight, char *target) {
+    // 1. 找到目标，返回累积权重
+    if (strcmp(current->variableName, target) == 0)
+        return accumulatedWeight;
+    
+    // 2. 标记为已访问
+    graph->visited[currentIndex] = 1;
+    
+    // 3. 遍历所有邻居
+    EdgeNode *edge = current->edgeList;
+    while (edge != NULL) {
+        if (graph->visited[edge->adjacentVertex] == 0) {
+            // 4. 递归DFS，累积权重
+            double result = dfsSearch(graph, neighbor, 
+                                     accumulatedWeight * edge->weight, 
+                                     target);
+            if (result != -1.0)
+                return result;
+        }
+        edge = edge->next;
+    }
+    
+    // 5. 所有路径都找不到
+    return -1.0;
+}
+```
+
+**关键步骤**：
+
+1. **构建图**：
+   - 为每个变量创建顶点
+   - 为每个方程创建双向边
+   - a/b = 2.0 → a→b (权重2.0)，b→a (权重0.5)
+
+2. **处理查询**：
+   - 特殊情况：变量不存在 → -1.0
+   - 特殊情况：相同变量 a/a → 1.0
+   - 一般情况：DFS搜索路径，累积权重
+
+**详细走查**：
+
+```
+方程：a/b = 2.0, b/c = 3.0
+查询：a/c = ?
+
+构建图：
+  a → b (2.0)
+  b → a (0.5)
+  b → c (3.0)
+  c → b (0.33)
+
+DFS从a到c：
+1. 从a开始，accumulatedWeight = 1.0
+2. 访问邻居b，累积权重 = 1.0 * 2.0 = 2.0
+3. 从b开始，标记visited[b]=1
+4. 访问邻居c，累积权重 = 2.0 * 3.0 = 6.0
+5. 到达c，返回6.0 ✓
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: getVertexIndex返回值错误**
+```c
+// ❌ 错误：循环后i不是-1
+int i = -1;
+for (i = 0; i < numVertices; i++) { ... }
+return i;  // 返回numVertices（错误）
+
+// ✅ 正确：直接返回-1
+for (i = 0; i < numVertices; i++) { ... }
+return -1;
+```
+
+**🐛 Bug #2: 覆盖参数weight**
+```c
+// ❌ 错误：覆盖参数
+weight = dfsSearch(..., weight * edge->weight, ...);
+
+// ✅ 正确：使用新变量
+double result = dfsSearch(..., weight * edge->weight, ...);
+```
+
+**🐛 Bug #3: 添加反向边时索引错误**
+```c
+// ❌ 错误：反向边添加到错误的顶点
+edge->adjacentVertex = i;
+edge->next = graph->vertices[j].edgeList;
+graph->vertices[i].edgeList = edge;  // 错误
+
+// ✅ 正确：添加到顶点j
+graph->vertices[j].edgeList = edge;
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 说明 |
+|-----|-----------|------|
+| 构建图 | O(E) | E个方程 |
+| 每次查询DFS | O(V+E) | V个顶点，E条边 |
+| **总计** | **O(E+Q×(V+E))** | Q个查询 |
+
+| 空间 | 空间复杂度 | 说明 |
+|-----|-----------|------|
+| 图存储 | O(V+E) | 顶点和边 |
+| 递归栈 | O(V) | DFS深度 |
+| **总计** | **O(V+E)** | 线性空间 |
+
+**关键要点**：
+- ✅ 除法关系建模为带权有向图
+- ✅ 双向边：a/b=2.0 → a→b(2.0)，b→a(0.5)
+- ✅ DFS搜索路径并累积权重
+- ✅ 每次查询前重置visited
+- ✅ 特殊情况处理：不存在、相同变量
+
+**记忆技巧**：
+
+```
+除法求值 = 图的路径权重累积
+
+建图：方程 → 双向边
+查询：DFS → 累积权重
+```
+
 ---
 
 ## 13. C语言常见陷阱
@@ -5931,6 +6100,7 @@ for (i = 0; i < n-1; i++) {
 | 被围绕的区域 | 反向思维 + 从边界DFS | 130 |
 | 克隆图 | DFS + 哈希表 + 先克隆后递归 | 133 |
 | 岛屿数量 | DFS标记连通分量 | 200 |
+| 除法求值 | 带权图 + DFS路径搜索 | 399 |
 
 ---
 

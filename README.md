@@ -99,6 +99,7 @@ interview/
 - [x] **130** - Surrounded Regions (被围绕的区域)
 - [x] **133** - Clone Graph (克隆图)
 - [x] **200** - Number of Islands (岛屿数量)
+- [x] **399** - Evaluate Division (除法求值)
 
 ## 💡 核心算法与技巧
 
@@ -164,6 +165,7 @@ interview/
 - Surrounded Regions (130) - 反向思维，从边界DFS标记不被围绕的O
 - Clone Graph (133) - DFS + 哈希表，先克隆再递归邻居防环
 - Number of Islands (200) - DFS标记连通分量，visited数组防重复
+- Evaluate Division (399) - 带权有向图+DFS路径搜索，累积边权重
 
 ## 🔧 编译与运行
 
