@@ -100,6 +100,7 @@ interview/
 - [x] **133** - Clone Graph (克隆图)
 - [x] **200** - Number of Islands (岛屿数量)
 - [x] **207** - Course Schedule (课程表)
+- [x] **210** - Course Schedule II (课程表 II)
 - [x] **399** - Evaluate Division (除法求值)
 
 ## 💡 核心算法与技巧
@@ -167,6 +168,7 @@ interview/
 - Clone Graph (133) - DFS + 哈希表，先克隆再递归邻居防环
 - Number of Islands (200) - DFS标记连通分量，visited数组防重复
 - Course Schedule (207) - 拓扑排序，三色标记法检测环，O(V+E)
+- Course Schedule II (210) - DFS后序遍历+栈，反序输出得拓扑排序
 - Evaluate Division (399) - 带权有向图+DFS路径搜索，累积边权重
 
 ## 🔧 编译与运行
