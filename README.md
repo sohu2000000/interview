@@ -102,6 +102,7 @@ interview/
 - [x] **207** - Course Schedule (课程表)
 - [x] **210** - Course Schedule II (课程表 II)
 - [x] **399** - Evaluate Division (除法求值)
+- [x] **909** - Snakes and Ladders (蛇梯棋)
 
 ## 💡 核心算法与技巧
 
@@ -170,6 +171,7 @@ interview/
 - Course Schedule (207) - 拓扑排序，三色标记法检测环，O(V+E)
 - Course Schedule II (210) - DFS后序遍历+栈，反序输出得拓扑排序
 - Evaluate Division (399) - 带权有向图+DFS路径搜索，累积边权重
+- Snakes and Ladders (909) - BFS最短路径，之字形编号建图
 
 ## 🔧 编译与运行
 

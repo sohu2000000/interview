@@ -201,7 +201,7 @@ bool detectCycle(CourseGraph *graph, int courseId) {
 	bool hasNoCycle = false;
 
 	vertex = findCourseNode(graph, courseId);
-	
+
 	/* 情况1: 遇到灰色节点，有环 */
 	if (vertex->status == VISITING)
 		return false;

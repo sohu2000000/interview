@@ -228,7 +228,7 @@ double dfsSearch(Graph *graph, VertexNode *currentVertex, double accumulatedWeig
 	/* 空指针检查 */
 	if (currentVertex == NULL || currentVertex->variableName == NULL || targetVariable == NULL)
 		return -1.0;
-
+	
 	/* 步骤1: 找到目标，返回累积权重 */
 	if (0 == strcmp(currentVertex->variableName, targetVariable))
 		return accumulatedWeight;

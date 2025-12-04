@@ -89,7 +89,7 @@ void solve(char** board, int boardSize, int* boardColSize) {
 	int i, j, numRows, numCols;
 
 	numRows = boardSize;
-	
+
 	/* 分配visited数组 */
 	visited = (int **)malloc(numRows * sizeof(int *));
 	for (i = 0; i < boardSize; i++) {
