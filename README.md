@@ -93,6 +93,7 @@ interview/
 
 ### 数据结构设计
 - [x] **146** - LRU Cache (LRU缓存)
+- [x] **208** - Implement Trie (Prefix Tree) (实现Trie前缀树)
 - [x] **380** - Insert Delete GetRandom O(1) (常数时间插入删除和获取随机元素)
 
 ### 图论/DFS/BFS
@@ -141,6 +142,7 @@ interview/
 
 ### 7. 数据结构设计
 - LRU Cache - 双向链表 + 哈希表，O(1)所有操作
+- Trie Tree (208) - 前缀树，哈希表存储子节点，O(L)插入查找
 - RandomizedSet - 动态数组 + 哈希表 + 交换删除
 - Copy Random List - 交织法（O(1)空间）
 
