@@ -265,15 +265,15 @@ int bfsShortestPath(BoardGraph *graph, int startSquare, int targetSquare) {
 			/* 遍历所有可到达的格子 */
 			square = findSquare(graph, currentSquare);
 			edge = square->edgeList;
-			while (edge != NULL) {
+		while (edge != NULL) {
 				adjacentSquare = findSquare(graph, edge->targetSquare);
 				if (adjacentSquare->status == UNVISITED) {
 					adjacentSquare->status = VISITED;
 					enqueueSquare(bfsQueue, edge->targetSquare);
-				}
-				edge = edge->next;
 			}
+			edge = edge->next;
 		}
+	}
 		steps++;  /* 每层结束，步数+1 */
 	}
 
@@ -354,8 +354,8 @@ int snakesAndLadders(int** board, int boardSize, int* boardColSize) {
 			}
 			
 			addMove(boardGraph, squareNum, destinationSquare);
+			}
 		}
-	}
 
 	/* 步骤3: BFS搜索最短路径 */
 	minSteps = bfsShortestPath(boardGraph, 1, finalSquare);
