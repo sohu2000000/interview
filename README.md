@@ -91,6 +91,9 @@ interview/
 - [x] **230** - Kth Smallest Element in a BST (二叉搜索树中第K小的元素)
 - [x] **236** - Lowest Common Ancestor of a Binary Tree (二叉树的最近公共祖先)
 
+### 回溯算法
+- [x] **17** - Letter Combinations of a Phone Number (电话号码的字母组合)
+
 ### 数据结构设计
 - [x] **146** - LRU Cache (LRU缓存)
 - [x] **208** - Implement Trie (Prefix Tree) (实现Trie前缀树)
@@ -141,21 +144,24 @@ interview/
 - Product Except Self - 左右累积乘积
 - Rotate Array - 三次反转
 
-### 7. 数据结构设计
+### 7. 回溯算法
+- Letter Combinations (17) - DFS回溯，选择→递归→回溯，O(4^N)
+
+### 8. 数据结构设计
 - LRU Cache - 双向链表 + 哈希表，O(1)所有操作
 - Trie Tree (208) - 前缀树，哈希表存储子节点，O(L)插入查找
 - Word Dictionary (211) - Trie + DFS递归，支持'.'通配符搜索
 - RandomizedSet - 动态数组 + 哈希表 + 交换删除
 - Copy Random List - 交织法（O(1)空间）
 
-### 8. 矩阵操作
+### 9. 矩阵操作
 - Valid Sudoku - 三个哈希表标记行/列/方块
 - Rotate Image - 转置 + 反转每行 = 顺时针90度
 - Spiral Matrix - 四边界螺旋遍历，注意单行/单列
 - Set Matrix Zeroes - 用首行首列作标记，O(1)空间
 - Game of Life - 状态编码（2位表示前后状态），原地更新
 
-### 9. 二叉树
+### 10. 二叉树
 - Validate BST (98) - 范围约束递归传递，用long避免边界问题
 - Level Order Traversal (102) - BFS层序遍历标准模板，返回二维数组
 - Zigzag Level Order (103) - BFS + 方向标记，逆序存储偶数层
@@ -169,7 +175,7 @@ interview/
 - Kth Smallest in BST (230) - 中序遍历计数，先++后判断，剪枝优化
 - Lowest Common Ancestor (236) - 后序遍历递归，信息向上传递
 
-### 10. 图论/DFS/BFS
+### 11. 图论/DFS/BFS
 - Surrounded Regions (130) - 反向思维，从边界DFS标记不被围绕的O
 - Clone Graph (133) - DFS + 哈希表，先克隆再递归邻居防环
 - Number of Islands (200) - DFS标记连通分量，visited数组防重复
