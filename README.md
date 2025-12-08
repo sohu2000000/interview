@@ -93,6 +93,7 @@ interview/
 
 ### 回溯算法
 - [x] **17** - Letter Combinations of a Phone Number (电话号码的字母组合)
+- [x] **77** - Combinations (组合)
 
 ### 数据结构设计
 - [x] **146** - LRU Cache (LRU缓存)
@@ -146,6 +147,7 @@ interview/
 
 ### 7. 回溯算法
 - Letter Combinations (17) - DFS回溯，选择→递归→回溯，O(4^N)
+- Combinations (77) - DFS回溯+剪枝，剩余数<还需数提前返回
 
 ### 8. 数据结构设计
 - LRU Cache - 双向链表 + 哈希表，O(1)所有操作

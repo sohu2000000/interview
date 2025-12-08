@@ -111,7 +111,7 @@ GeneNode *dequeueGene(GeneQueue *queue) {
 	queue->front++;
 	queue->size--;
 	return geneNode;
-}
+	}
 
 /* 获取队列大小 */
 int getQueueSize(GeneQueue *queue) {

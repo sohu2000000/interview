@@ -181,8 +181,8 @@ bool dfsSearchWithWildcard(TrieNode *node, char *word, int wordLength, int curre
 			return false;
 		
 		return dfsSearchWithWildcard(childNode, word, wordLength, currentIndex + 1);
-	}
-	
+}
+
 	return false;
 }
 
