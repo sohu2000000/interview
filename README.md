@@ -97,6 +97,7 @@ interview/
 - [x] **39** - Combination Sum (组合总和)
 - [x] **46** - Permutations (全排列)
 - [x] **77** - Combinations (组合)
+- [x] **79** - Word Search (单词搜索)
 
 ### 数据结构设计
 - [x] **146** - LRU Cache (LRU缓存)
@@ -154,6 +155,7 @@ interview/
 - Combination Sum (39) - DFS回溯+允许重复，递归传i（不是i+1）
 - Permutations (46) - DFS回溯+visited标记，O(n!×n)
 - Combinations (77) - DFS回溯+剪枝，剩余数<还需数提前返回
+- Word Search (79) - DFS回溯+四方向搜索，visited标记路径
 
 ### 8. 数据结构设计
 - LRU Cache - 双向链表 + 哈希表，O(1)所有操作
