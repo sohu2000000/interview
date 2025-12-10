@@ -93,6 +93,7 @@ interview/
 
 ### 回溯算法
 - [x] **17** - Letter Combinations of a Phone Number (电话号码的字母组合)
+- [x] **22** - Generate Parentheses (括号生成)
 - [x] **39** - Combination Sum (组合总和)
 - [x] **46** - Permutations (全排列)
 - [x] **77** - Combinations (组合)
@@ -149,6 +150,7 @@ interview/
 
 ### 7. 回溯算法
 - Letter Combinations (17) - DFS回溯，选择→递归→回溯，O(4^N)
+- Generate Parentheses (22) - DFS回溯+括号规则，right<left保证有效
 - Combination Sum (39) - DFS回溯+允许重复，递归传i（不是i+1）
 - Permutations (46) - DFS回溯+visited标记，O(n!×n)
 - Combinations (77) - DFS回溯+剪枝，剩余数<还需数提前返回
