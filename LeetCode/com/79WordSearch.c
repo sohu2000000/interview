@@ -64,11 +64,11 @@ bool dfsSearchWord(char **board, int numRows, int *numCols,
 	    currentCol < 0 || currentCol >= numCols[currentRow] || 
 	    isVisited[currentRow][currentCol] == VISITED)
 		return false;
-	
+
 	/* 字符匹配检查 */
 	if (targetWord[currentIndex] != board[currentRow][currentCol])
 		return false;
-
+	
 	/* 标记为已访问 */
 	isVisited[currentRow][currentCol] = VISITED;
 

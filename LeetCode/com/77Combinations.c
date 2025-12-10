@@ -72,13 +72,13 @@ void dfsBacktrackCombinations(int n, int k, int startNum,
 		/* 选择：将当前数字加入组合 */
 		currentCombination[*combinationSize] = currentNum;
 		(*combinationSize)++;
-		
+
 		/* 递归：处理下一个位置（从currentNum+1开始） */
 		dfsBacktrackCombinations(n, k, currentNum + 1, currentCombination, combinationSize, allCombinations, totalCount);
 
 		/* 回溯：撤销选择 */
 		(*combinationSize)--;
-	}
+}
 }
 
 /*

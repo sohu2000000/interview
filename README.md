@@ -72,6 +72,7 @@ interview/
 - [x] **2** - Add Two Numbers (两数相加)
 - [x] **19** - Remove Nth Node From End of List (删除链表的倒数第N个节点)
 - [x] **61** - Rotate List (旋转链表)
+- [x] **148** - Sort List (排序链表)
 - [x] **82** - Remove Duplicates from Sorted List II (删除排序链表中的重复元素II)
 - [x] **86** - Partition List (分隔链表)
 - [x] **92** - Reverse Linked List II (反转链表II)
@@ -157,21 +158,24 @@ interview/
 - Combinations (77) - DFS回溯+剪枝，剩余数<还需数提前返回
 - Word Search (79) - DFS回溯+四方向搜索，visited标记路径
 
-### 8. 数据结构设计
+### 8. 链表操作
+- Sort List (148) - 归并排序，快慢指针找中点，O(nlogn)
+
+### 9. 数据结构设计
 - LRU Cache - 双向链表 + 哈希表，O(1)所有操作
 - Trie Tree (208) - 前缀树，哈希表存储子节点，O(L)插入查找
 - Word Dictionary (211) - Trie + DFS递归，支持'.'通配符搜索
 - RandomizedSet - 动态数组 + 哈希表 + 交换删除
 - Copy Random List - 交织法（O(1)空间）
 
-### 9. 矩阵操作
+### 10. 矩阵操作
 - Valid Sudoku - 三个哈希表标记行/列/方块
 - Rotate Image - 转置 + 反转每行 = 顺时针90度
 - Spiral Matrix - 四边界螺旋遍历，注意单行/单列
 - Set Matrix Zeroes - 用首行首列作标记，O(1)空间
 - Game of Life - 状态编码（2位表示前后状态），原地更新
 
-### 10. 二叉树
+### 11. 二叉树
 - Validate BST (98) - 范围约束递归传递，用long避免边界问题
 - Level Order Traversal (102) - BFS层序遍历标准模板，返回二维数组
 - Zigzag Level Order (103) - BFS + 方向标记，逆序存储偶数层
@@ -185,7 +189,7 @@ interview/
 - Kth Smallest in BST (230) - 中序遍历计数，先++后判断，剪枝优化
 - Lowest Common Ancestor (236) - 后序遍历递归，信息向上传递
 
-### 11. 图论/DFS/BFS
+### 12. 图论/DFS/BFS
 - Surrounded Regions (130) - 反向思维，从边界DFS标记不被围绕的O
 - Clone Graph (133) - DFS + 哈希表，先克隆再递归邻居防环
 - Number of Islands (200) - DFS标记连通分量，visited数组防重复
