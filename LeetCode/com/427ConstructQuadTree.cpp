@@ -64,7 +64,7 @@ public:
 */
 
 class Solution {
-public:
+	public:
 	/*
 	 * 检查区域是否为叶子节点（所有值相同）
 	 * @param grid: 网格
@@ -78,12 +78,12 @@ public:
 		for (int i = startRow; i < startRow + regionSize; i++) {
 			for (int j = startCol; j < startCol + regionSize; j++) {
 				if (grid[i][j] != targetValue) {
-					return false;
+						return false;
+					}
 				}
 			}
+			return true;
 		}
-		return true;
-	}
 
 	/*
 	 * 递归构建四叉树
@@ -106,15 +106,15 @@ public:
 
 		/* 终止条件 */
 		if (regionSize == 0) {
-			return NULL;
-		}
+				return NULL;
+			}
 
 		/* 检查是否所有值相同 */
 		bool isLeaf = isUniformRegion(grid, startRow, startCol, regionSize);
-		if (isLeaf) {
+			if (isLeaf) {
 			/* 叶子节点：所有值相同 */
 			return new Node(grid[startRow][startCol], true, topLeftChild, topRightChild, bottomLeftChild, bottomRightChild);
-		}
+			}
 
 		/* 非叶子节点：分成4个子区域 */
 		int subRegionSize = regionSize / 2;
@@ -128,7 +128,7 @@ public:
 		bottomRightChild = buildQuadTreeRecursive(grid, middleRow, middleCol, subRegionSize);
 
 		return new Node(false, false, topLeftChild, topRightChild, bottomLeftChild, bottomRightChild);
-	}
+		}
 
 	/*
 	 * 主函数：构建四叉树
@@ -138,9 +138,9 @@ public:
 	 * 时间复杂度: O(n² × logn)
 	 * 空间复杂度: O(logn)，递归栈
 	 */
-	Node* construct(vector<vector<int>>& grid) {
+		Node* construct(vector<vector<int>>& grid) {
 		return buildQuadTreeRecursive(grid, 0, 0, grid.size());
-	}
+		}
 };
 
 /*

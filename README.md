@@ -105,6 +105,7 @@ interview/
 
 ### 动态规划
 - [x] **53** - Maximum Subarray (最大子数组和)
+- [x] **918** - Maximum Sum Circular Subarray (环形子数组的最大和)
 
 ### 数据结构设计
 - [x] **146** - LRU Cache (LRU缓存)
@@ -169,6 +170,7 @@ interview/
 
 ### 9. 动态规划
 - Maximum Subarray (53) - Kadane算法，currentSum<0时重新开始
+- Circular Subarray (918) - Kadane变种，totalSum-minSum处理环形
 
 ### 10. 链表操作
 - Sort List (148) - 归并排序，快慢指针找中点，O(nlogn)
