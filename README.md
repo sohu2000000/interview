@@ -46,6 +46,9 @@ interview/
 - [x] **12** - Integer to Roman (整数转罗马数字)
 - [x] **151** - Reverse Words in a String (反转字符串中的单词)
 
+### 二分查找
+- [x] **74** - Search a 2D Matrix (搜索二维矩阵)
+
 ### 哈希表
 - [x] **49** - Group Anagrams (字母异位词分组)
 - [x] **128** - Longest Consecutive Sequence (最长连续序列)
@@ -153,11 +156,14 @@ interview/
 - Evaluate RPN - 栈计算后缀表达式，注意负数判断
 - Min Stack - 双栈同步，minStack存储每层最小值
 
-### 6. 数组技巧
+### 6. 二分查找
+- Search 2D Matrix (74) - 二维转一维，row=mid/cols, col=mid%cols
+
+### 7. 数组技巧
 - Product Except Self - 左右累积乘积
 - Rotate Array - 三次反转
 
-### 7. 回溯算法
+### 8. 回溯算法
 - Letter Combinations (17) - DFS回溯，选择→递归→回溯，O(4^N)
 - Generate Parentheses (22) - DFS回溯+括号规则，right<left保证有效
 - Combination Sum (39) - DFS回溯+允许重复，递归传i（不是i+1）
@@ -165,31 +171,31 @@ interview/
 - Combinations (77) - DFS回溯+剪枝，剩余数<还需数提前返回
 - Word Search (79) - DFS回溯+四方向搜索，visited标记路径
 
-### 8. 分治算法
+### 9. 分治算法
 - Construct Quad Tree (427) - 分治递归，检查区域→分割→递归
 
-### 9. 动态规划
+### 10. 动态规划
 - Maximum Subarray (53) - Kadane算法，currentSum<0时重新开始
 - Circular Subarray (918) - Kadane变种，totalSum-minSum处理环形
 
-### 10. 链表操作
+### 11. 链表操作
 - Sort List (148) - 归并排序，快慢指针找中点，O(nlogn)
 
-### 11. 数据结构设计
+### 12. 数据结构设计
 - LRU Cache - 双向链表 + 哈希表，O(1)所有操作
 - Trie Tree (208) - 前缀树，哈希表存储子节点，O(L)插入查找
 - Word Dictionary (211) - Trie + DFS递归，支持'.'通配符搜索
 - RandomizedSet - 动态数组 + 哈希表 + 交换删除
 - Copy Random List - 交织法（O(1)空间）
 
-### 12. 矩阵操作
+### 13. 矩阵操作
 - Valid Sudoku - 三个哈希表标记行/列/方块
 - Rotate Image - 转置 + 反转每行 = 顺时针90度
 - Spiral Matrix - 四边界螺旋遍历，注意单行/单列
 - Set Matrix Zeroes - 用首行首列作标记，O(1)空间
 - Game of Life - 状态编码（2位表示前后状态），原地更新
 
-### 13. 二叉树
+### 14. 二叉树
 - Validate BST (98) - 范围约束递归传递，用long避免边界问题
 - Level Order Traversal (102) - BFS层序遍历标准模板，返回二维数组
 - Zigzag Level Order (103) - BFS + 方向标记，逆序存储偶数层
@@ -203,7 +209,7 @@ interview/
 - Kth Smallest in BST (230) - 中序遍历计数，先++后判断，剪枝优化
 - Lowest Common Ancestor (236) - 后序遍历递归，信息向上传递
 
-### 14. 图论/DFS/BFS
+### 15. 图论/DFS/BFS
 - Surrounded Regions (130) - 反向思维，从边界DFS标记不被围绕的O
 - Clone Graph (133) - DFS + 哈希表，先克隆再递归邻居防环
 - Number of Islands (200) - DFS标记连通分量，visited数组防重复
