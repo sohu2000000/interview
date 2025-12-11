@@ -103,6 +103,9 @@ interview/
 ### 分治算法
 - [x] **427** - Construct Quad Tree (建立四叉树)
 
+### 动态规划
+- [x] **53** - Maximum Subarray (最大子数组和)
+
 ### 数据结构设计
 - [x] **146** - LRU Cache (LRU缓存)
 - [x] **208** - Implement Trie (Prefix Tree) (实现Trie前缀树)
@@ -164,24 +167,27 @@ interview/
 ### 8. 分治算法
 - Construct Quad Tree (427) - 分治递归，检查区域→分割→递归
 
-### 9. 链表操作
+### 9. 动态规划
+- Maximum Subarray (53) - Kadane算法，currentSum<0时重新开始
+
+### 10. 链表操作
 - Sort List (148) - 归并排序，快慢指针找中点，O(nlogn)
 
-### 10. 数据结构设计
+### 11. 数据结构设计
 - LRU Cache - 双向链表 + 哈希表，O(1)所有操作
 - Trie Tree (208) - 前缀树，哈希表存储子节点，O(L)插入查找
 - Word Dictionary (211) - Trie + DFS递归，支持'.'通配符搜索
 - RandomizedSet - 动态数组 + 哈希表 + 交换删除
 - Copy Random List - 交织法（O(1)空间）
 
-### 11. 矩阵操作
+### 12. 矩阵操作
 - Valid Sudoku - 三个哈希表标记行/列/方块
 - Rotate Image - 转置 + 反转每行 = 顺时针90度
 - Spiral Matrix - 四边界螺旋遍历，注意单行/单列
 - Set Matrix Zeroes - 用首行首列作标记，O(1)空间
 - Game of Life - 状态编码（2位表示前后状态），原地更新
 
-### 12. 二叉树
+### 13. 二叉树
 - Validate BST (98) - 范围约束递归传递，用long避免边界问题
 - Level Order Traversal (102) - BFS层序遍历标准模板，返回二维数组
 - Zigzag Level Order (103) - BFS + 方向标记，逆序存储偶数层
@@ -195,7 +201,7 @@ interview/
 - Kth Smallest in BST (230) - 中序遍历计数，先++后判断，剪枝优化
 - Lowest Common Ancestor (236) - 后序遍历递归，信息向上传递
 
-### 13. 图论/DFS/BFS
+### 14. 图论/DFS/BFS
 - Surrounded Regions (130) - 反向思维，从边界DFS标记不被围绕的O
 - Clone Graph (133) - DFS + 哈希表，先克隆再递归邻居防环
 - Number of Islands (200) - DFS标记连通分量，visited数组防重复
