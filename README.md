@@ -48,6 +48,7 @@ interview/
 
 ### 二分查找
 - [x] **74** - Search a 2D Matrix (搜索二维矩阵)
+- [x] **162** - Find Peak Element (寻找峰值)
 
 ### 哈希表
 - [x] **49** - Group Anagrams (字母异位词分组)
@@ -158,6 +159,7 @@ interview/
 
 ### 6. 二分查找
 - Search 2D Matrix (74) - 二维转一维，row=mid/cols, col=mid%cols
+- Find Peak Element (162) - 沿上坡方向，nums[mid]>nums[mid+1]向左
 
 ### 7. 数组技巧
 - Product Except Self - 左右累积乘积
