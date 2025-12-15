@@ -47,6 +47,7 @@ interview/
 - [x] **151** - Reverse Words in a String (反转字符串中的单词)
 
 ### 二分查找
+- [x] **33** - Search in Rotated Sorted Array (搜索旋转排序数组)
 - [x] **74** - Search a 2D Matrix (搜索二维矩阵)
 - [x] **162** - Find Peak Element (寻找峰值)
 
@@ -158,6 +159,7 @@ interview/
 - Min Stack - 双栈同步，minStack存储每层最小值
 
 ### 6. 二分查找
+- Rotated Sorted Array (33) - 判断哪半有序，target在有序范围内决定方向
 - Search 2D Matrix (74) - 二维转一维，row=mid/cols, col=mid%cols
 - Find Peak Element (162) - 沿上坡方向，nums[mid]>nums[mid+1]向左
 
