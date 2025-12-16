@@ -50,6 +50,7 @@ interview/
 - [x] **33** - Search in Rotated Sorted Array (搜索旋转排序数组)
 - [x] **34** - Find First and Last Position of Element in Sorted Array (在排序数组中查找元素的第一个和最后一个位置)
 - [x] **74** - Search a 2D Matrix (搜索二维矩阵)
+- [x] **153** - Find Minimum in Rotated Sorted Array (寻找旋转排序数组中的最小值)
 - [x] **162** - Find Peak Element (寻找峰值)
 
 ### 哈希表
@@ -166,6 +167,7 @@ interview/
 - Rotated Sorted Array (33) - 判断哪半有序，target在有序范围内决定方向
 - Find First and Last Position (34) - 两次二分查找，找到后继续向左/右搜索边界
 - Search 2D Matrix (74) - 二维转一维，row=mid/cols, col=mid%cols
+- Find Minimum in Rotated Array (153) - 比较mid与right，判断最小值在哪半边
 - Find Peak Element (162) - 沿上坡方向，nums[mid]>nums[mid+1]向左
 
 ### 7. 数组技巧
