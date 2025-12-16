@@ -25,7 +25,7 @@ struct ListNode* partition(struct ListNode* head, int x) {
 	struct ListNode *greaterDummy = (struct ListNode*)malloc(sizeof(struct ListNode));
 	lessDummy->next = NULL;
 	greaterDummy->next = NULL;
-	
+
 	// 两个尾指针
 	struct ListNode *lessTail = lessDummy;
 	struct ListNode *greaterTail = greaterDummy;
@@ -50,7 +50,7 @@ struct ListNode* partition(struct ListNode* head, int x) {
 	
 	// 连接两个链表：less链表 + greater链表
 	lessTail->next = greaterDummy->next;
-	
+
 	// 保存结果并释放哑节点
 	struct ListNode *result = lessDummy->next;
 	free(lessDummy);
