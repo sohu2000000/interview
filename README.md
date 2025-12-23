@@ -116,6 +116,7 @@ interview/
 
 ### 堆/优先队列
 - [x] **215** - Kth Largest Element in an Array (数组中的第K个最大元素)
+- [x] **373** - Find K Pairs with Smallest Sums (查找和最小的K对数字)
 
 ### 数据结构设计
 - [x] **146** - LRU Cache (LRU缓存)
@@ -235,6 +236,7 @@ interview/
 
 ### 16. 堆/优先队列
 - Kth Largest Element (215) - 最小堆维护k个最大元素，堆顶是第k大
+- Find K Pairs Smallest Sums (373) - 最小堆+BFS扩展，visited防重复，优化内存k×k
 
 ### 17. 贪心/边界问题
 - Count Buildings Surrounded (3531) - 边界标记法，记录每行每列的最大最小值，判断是否在边界
