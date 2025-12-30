@@ -113,6 +113,7 @@ interview/
 
 ### 动态规划
 - [x] **53** - Maximum Subarray (最大子数组和)
+- [x] **70** - Climbing Stairs (爬楼梯)
 - [x] **918** - Maximum Sum Circular Subarray (环形子数组的最大和)
 
 ### 堆/优先队列
@@ -192,6 +193,7 @@ interview/
 
 ### 10. 动态规划
 - Maximum Subarray (53) - Kadane算法，currentSum<0时重新开始
+- Climbing Stairs (70) - 斐波那契数列，dp[i]=dp[i-1]+dp[i-2]
 - Circular Subarray (918) - Kadane变种，totalSum-minSum处理环形
 
 ### 11. 链表操作

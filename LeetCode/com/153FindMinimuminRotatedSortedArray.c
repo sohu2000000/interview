@@ -21,7 +21,7 @@
  */
 int findMin(int* nums, int numsSize) {
 	int left, right, mid;
-
+	
 	left = 0;
 	right = numsSize - 1;
 	

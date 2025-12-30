@@ -173,7 +173,7 @@ int findKthLargest(int* nums, int numsSize, int k) {
 			// Element larger than heap minimum: replace
 			heapPop(minHeap);
 			heapPush(minHeap, nums[i]);
-		}
+	}
 	}
 
 	// The root of min heap is the kth largest element

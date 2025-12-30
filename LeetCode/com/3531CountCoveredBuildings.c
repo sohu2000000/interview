@@ -46,7 +46,7 @@ int countFullyCoveredBuildings(int gridSize, int **buildings, int buildingsSize,
                                int *rowMaxCols, int *rowMinCols,
                                int *colMaxRows, int *colMinRows) {
 	int i, currentRow, currentCol, coveredCount = 0;
-	
+
 	for (i = 0; i < buildingsSize; i++) {
 		currentCol = buildings[i][0];  // x coordinate
 		currentRow = buildings[i][1];  // y coordinate
