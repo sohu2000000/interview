@@ -44,6 +44,7 @@ interview/
 ### 字符串
 - [x] **6** - Zigzag Conversion (Z字形变换)
 - [x] **12** - Integer to Roman (整数转罗马数字)
+- [x] **67** - Add Binary (二进制求和)
 - [x] **151** - Reverse Words in a String (反转字符串中的单词)
 
 ### 二分查找
