@@ -116,6 +116,7 @@ interview/
 - [x] **70** - Climbing Stairs (爬楼梯)
 - [x] **139** - Word Break (单词拆分)
 - [x] **198** - House Robber (打家劫舍)
+- [x] **300** - Longest Increasing Subsequence (最长递增子序列)
 - [x] **322** - Coin Change (零钱兑换)
 - [x] **918** - Maximum Sum Circular Subarray (环形子数组的最大和)
 
@@ -199,6 +200,7 @@ interview/
 - Climbing Stairs (70) - 斐波那契数列，dp[i]=dp[i-1]+dp[i-2]
 - Word Break (139) - 完全背包变种，dp[i]表示前i字符可分割，枚举单词匹配
 - House Robber (198) - 记忆化递归，dp[i]=max(dp[i-1], dp[i-2]+nums[i])
+- Longest Increasing Subsequence (300) - dp[i]表示以i结尾的LIS长度，O(n²)或O(nlogn)
 - Coin Change (322) - 完全背包，dp[i]=min(dp[i], dp[i-coin]+1)，求最少硬币数
 - Circular Subarray (918) - Kadane变种，totalSum-minSum处理环形
 

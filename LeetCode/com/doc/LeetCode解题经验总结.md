@@ -2134,6 +2134,313 @@ dp[i] = min(不用, 用一个+剩余)
 - 硬币问题
 - 组合优化
 
+### 11.5 最长递增子序列（300）
+
+**核心思想**：动态规划 + dp[i]表示以i结尾的LIS长度
+
+**问题描述**：
+给定一个整数数组 `nums`，返回最长严格递增子序列的长度。子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。
+
+**示例**：
+
+```
+输入: nums = [10,9,2,5,3,7,101,18]
+输出: 4
+解释: 最长递增子序列是 [2,5,7,101] 或 [2,3,7,101]，长度为4
+
+输入: nums = [0,1,0,3,2,3]
+输出: 4
+解释: 最长递增子序列是 [0,1,2,3]
+
+输入: nums = [7,7,7,7,7,7,7]
+输出: 1
+```
+
+**核心理解**：
+
+```
+状态定义：
+dp[i] = 以 nums[i] 结尾的最长递增子序列的长度
+
+关键：必须包含 nums[i]
+
+例如 nums = [10,9,2,5,3,7]:
+dp[0] = 1  (子序列: [10])
+dp[1] = 1  (子序列: [9])
+dp[2] = 1  (子序列: [2])
+dp[3] = 2  (子序列: [2,5])
+dp[4] = 2  (子序列: [2,3])
+dp[5] = 3  (子序列: [2,5,7] 或 [2,3,7])
+
+最终答案 = max(dp) = 3
+```
+
+**状态转移方程**：
+
+```
+dp[i] = max(dp[j] + 1) for all j < i where nums[j] < nums[i]
+
+解释：
+对于位置 i，检查所有前面的位置 j：
+- 如果 nums[j] < nums[i]（可以接上）
+- 那么可以在 dp[j] 的基础上加上 nums[i]
+- dp[i] = max(dp[i], dp[j] + 1)
+```
+
+**算法实现（O(n²)解法）**：
+
+```c
+int lengthOfLIS(int* nums, int numsSize) {
+	int i, j, previousNum, maxLength;
+	int *dp;
+
+	if (nums == NULL || numsSize == 0)
+		return 0;
+
+	// Initialize: each element alone is LIS of length 1
+	dp = (int *)malloc(numsSize * sizeof(int));
+	for (i = 0; i < numsSize; i++)
+		dp[i] = 1;
+	
+	// For each position i
+	for (i = 0; i < numsSize; i++) {
+		// Try extending from each previous position j
+		for (j = 0; j < i; j++) {
+			previousNum = nums[j];
+			
+			// Can only extend if strictly increasing
+			if (previousNum >= nums[i])
+				continue;
+			
+			// Extend LIS ending at j
+			dp[i] = MAX(dp[i], dp[j] + 1);
+		}
+	}
+
+	// Find maximum length among all ending positions
+	maxLength = dp[0];
+	for (i = 1; i < numsSize; i++)
+		maxLength = MAX(maxLength, dp[i]);
+	
+	free(dp);
+	return maxLength;
+}
+```
+
+**详细走查**：输入 `nums = [10,9,2,5,3,7]`
+
+```
+初始化:
+dp = [1, 1, 1, 1, 1, 1]
+
+i=0 (10):
+  没有j<0，dp[0] = 1
+
+i=1 (9):
+  j=0: nums[0]=10 >= 9，跳过
+  dp[1] = 1
+
+i=2 (2):
+  j=0: nums[0]=10 >= 2，跳过
+  j=1: nums[1]=9 >= 2，跳过
+  dp[2] = 1
+
+i=3 (5):
+  j=0: 10 >= 5，跳过
+  j=1: 9 >= 5，跳过
+  j=2: 2 < 5 ✓ → dp[3] = max(1, dp[2]+1) = 2
+  dp[3] = 2  (LIS: [2,5])
+
+i=4 (3):
+  j=0: 10 >= 3，跳过
+  j=1: 9 >= 3，跳过
+  j=2: 2 < 3 ✓ → dp[4] = max(1, dp[2]+1) = 2
+  j=3: 5 >= 3，跳过
+  dp[4] = 2  (LIS: [2,3])
+
+i=5 (7):
+  j=0: 10 >= 7，跳过
+  j=1: 9 >= 7，跳过
+  j=2: 2 < 7 ✓ → dp[5] = max(1, dp[2]+1) = 2
+  j=3: 5 < 7 ✓ → dp[5] = max(2, dp[3]+1) = 3
+  j=4: 3 < 7 ✓ → dp[5] = max(3, dp[4]+1) = 3
+  dp[5] = 3  (LIS: [2,5,7] 或 [2,3,7])
+
+最终 dp = [1, 1, 1, 2, 2, 3]
+maxLength = 3 ✓
+```
+
+**为什么答案是 max(dp[i])？**
+
+```
+dp[i] 表示以 nums[i] 结尾的 LIS 长度
+
+不同的结尾位置可能有不同的 LIS 长度：
+nums = [1, 3, 2]
+dp[0] = 1  (LIS: [1])
+dp[1] = 2  (LIS: [1,3])
+dp[2] = 2  (LIS: [1,2])
+
+最长的可能在任何位置结尾，所以要取最大值
+```
+
+**O(n log n) 优化解法（进阶）**：
+
+```c
+// 使用二分查找 + 贪心
+// tails[i] = 长度为i+1的递增子序列的最小末尾元素
+int lengthOfLIS_optimized(int* nums, int numsSize) {
+    int *tails, len, left, right, mid, i;
+    
+    tails = (int *)malloc(numsSize * sizeof(int));
+    len = 0;
+    
+    for (i = 0; i < numsSize; i++) {
+        left = 0;
+        right = len;
+        
+        // 二分查找插入位置
+        while (left < right) {
+            mid = left + (right - left) / 2;
+            if (tails[mid] < nums[i])
+                left = mid + 1;
+            else
+                right = mid;
+        }
+        
+        tails[left] = nums[i];
+        if (left == len) len++;
+    }
+    
+    free(tails);
+    return len;
+}
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: dp数组大小错误**
+```c
+// ❌ 错误：分配 numsSize+1
+dp = malloc((numsSize + 1) * sizeof(int));
+
+// ✅ 正确：只需 numsSize
+dp = malloc(numsSize * sizeof(int));
+```
+
+**🐛 Bug #2: 初始化为0**
+```c
+// ❌ 错误：初始化为0
+for (i = 0; i < numsSize; i++)
+    dp[i] = 0;
+
+// ✅ 正确：初始化为1（每个元素本身长度为1）
+for (i = 0; i < numsSize; i++)
+    dp[i] = 1;
+```
+
+**🐛 Bug #3: 条件判断错误**
+```c
+// ❌ 错误：允许相等（不是严格递增）
+if (nums[j] <= nums[i])
+    dp[i] = max(dp[i], dp[j] + 1);
+
+// ✅ 正确：严格小于
+if (nums[j] < nums[i])
+    dp[i] = max(dp[i], dp[j] + 1);
+```
+
+**🐛 Bug #4: 直接返回 dp[numsSize-1]**
+```c
+// ❌ 错误：最后一个位置不一定是最长的
+return dp[numsSize - 1];
+
+// ✅ 正确：返回所有dp值的最大值
+maxLength = dp[0];
+for (i = 1; i < numsSize; i++)
+    maxLength = MAX(maxLength, dp[i]);
+return maxLength;
+```
+
+**🐛 Bug #5: 循环范围错误**
+```c
+// ❌ 错误：求最大值时 i<=numsSize
+for (i = 1; i <= numsSize; i++)  // 越界
+
+// ✅ 正确：i < numsSize
+for (i = 1; i < numsSize; i++)
+```
+
+**复杂度分析**：
+
+| 方法 | 时间复杂度 | 空间复杂度 | 说明 |
+|------|-----------|-----------|------|
+| DP | O(n²) | O(n) | 双层循环 |
+| 二分+贪心 | O(n log n) | O(n) | 优化解法 |
+
+**测试用例**：
+
+```c
+// 用例1：基本情况
+输入：nums=[10,9,2,5,3,7,101,18]
+输出：4
+
+// 用例2：全递增
+输入：nums=[1,2,3,4,5]
+输出：5
+
+// 用例3：全递减
+输入：nums=[5,4,3,2,1]
+输出：1
+
+// 用例4：有重复
+输入：nums=[7,7,7,7]
+输出：1
+
+// 用例5：单个元素
+输入：nums=[1]
+输出：1
+```
+
+**动态规划三要素**：
+
+1. **状态定义**：
+   - `dp[i]` = 以 nums[i] 结尾的最长递增子序列长度
+
+2. **状态转移方程**：
+   - `dp[i] = max(dp[j] + 1)` for all `j < i` where `nums[j] < nums[i]`
+
+3. **初始状态**：
+   - `dp[i] = 1` (每个元素本身是长度为1的子序列)
+
+**关键要点**：
+- ✅ dp[i] 表示**以 i 结尾**的 LIS 长度（必须包含 nums[i]）
+- ✅ 最终答案是 max(dp[i])，不是 dp[n-1]
+- ✅ 内层循环：检查所有 j < i
+- ✅ 条件：nums[j] < nums[i]（严格递增）
+- ✅ O(n²) 时间，可优化到 O(n log n)
+
+**记忆技巧**：
+
+```
+最长递增子序列 = 以i结尾的LIS
+
+dp[i] = 以i结尾的最长长度
+检查前面所有j < i
+如果 nums[j] < nums[i]，可接上
+dp[i] = max(dp[j] + 1)
+
+答案 = max(所有dp值)
+
+口诀：以i结尾，看前j，严格增，取最大
+```
+
+**应用场景**：
+- 子序列问题
+- 动态规划经典题
+- 二分优化
+- 贪心 + DP
+
 ---
 
 ## 12. 链表操作
@@ -9484,6 +9791,7 @@ for (i = 0; i < n-1; i++) {
 | 爬楼梯 | 动态规划 + 斐波那契 + dp[i]=dp[i-1]+dp[i-2] | 70 |
 | 单词拆分 | 动态规划 + 字符串匹配 + 完全背包 | 139 |
 | 打家劫舍 | 动态规划 + 记忆化递归 + 相邻不能选 | 198 |
+| 最长递增子序列 | 动态规划 + dp[i]以i结尾LIS + O(n²)或O(nlogn) | 300 |
 | 零钱兑换 | 完全背包 + 求最小值 + dp[i]=min(dp[i],dp[i-coin]+1) | 322 |
 | 环形子数组最大和 | Kadane变种 + totalSum-minSum | 918 |
 | 二进制求和 | 从右到左逐位相加 + 反转 + 去前导0 | 67 |
