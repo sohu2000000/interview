@@ -1854,6 +1854,286 @@ dp[i] ↔ s[0...i-1]
 - 动态规划 + 字符串匹配
 - 单词匹配问题
 
+### 11.4 零钱兑换（322）
+
+**核心思想**：动态规划 + 完全背包 + 求最小值
+
+**问题描述**：
+给定不同面额的硬币 `coins` 和一个总金额 `amount`。计算可以凑成总金额所需的**最少的硬币个数**。如果没有任何一种硬币组合能组成总金额，返回 `-1`。你可以认为每种硬币的数量是无限的。
+
+**示例**：
+
+```
+输入: coins = [1,2,5], amount = 11
+输出: 3
+解释: 11 = 5 + 5 + 1（3个硬币）
+
+输入: coins = [2], amount = 3
+输出: -1
+解释: 无法凑成金额3
+
+输入: coins = [1], amount = 0
+输出: 0
+```
+
+**核心理解**：
+
+```
+完全背包问题：
+- 物品：硬币（可以无限使用）
+- 背包：总金额
+- 目标：最少物品数
+
+状态定义：
+dp[i] = 凑成金额 i 所需的最少硬币数
+
+状态转移：
+dp[i] = min(dp[i], dp[i-coin] + 1)
+        ↑           ↑
+    不用coin     用一个coin
+
+对于每个金额 i，尝试使用每种硬币：
+- 如果用面值为 coin 的硬币
+- 需要先凑出 i-coin 的金额
+- 再加上这一个硬币
+```
+
+**算法实现**：
+
+```c
+#define INF_MAX 0x7fffffff
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
+int coinChange(int* coins, int coinsSize, int amount) {
+	int i, j, currentCoin, result;
+	int *dp;
+
+	// Allocate dp array
+	dp = (int *)malloc((amount + 1) * sizeof(int));
+	
+	// Initialize: all amounts impossible (INF_MAX)
+	for (i = 0; i <= amount; i++) 
+		dp[i] = INF_MAX;
+
+	// Base case: 0 coins to make amount 0
+	dp[0] = 0;
+
+	// For each amount from 1 to target
+	for (i = 1; i <= amount; i++) {
+		// Try each coin
+		for (j = 0; j < coinsSize; j++) {
+			currentCoin = coins[j];
+			
+			// Skip if coin > amount
+			if (i - currentCoin < 0)
+				continue;
+			
+			// Skip if i-currentCoin is unreachable
+			if (dp[i - currentCoin] == INF_MAX)
+				continue;
+			
+			// Update: min of (don't use coin, use coin)
+			dp[i] = MIN(dp[i], dp[i - currentCoin] + 1);
+		}
+	}
+
+	result = (dp[amount] == INF_MAX) ? -1 : dp[amount];
+	free(dp);
+	return result;
+}
+```
+
+**详细走查**：输入 `coins = [1,2,5], amount = 11`
+
+```
+初始化:
+dp[0] = 0
+dp[1..11] = INF_MAX
+
+i=1:
+  试 coin=1: dp[1] = MIN(INF, dp[0]+1) = 1
+  试 coin=2: 1-2<0，跳过
+  试 coin=5: 1-5<0，跳过
+  dp[1] = 1
+
+i=2:
+  试 coin=1: dp[2] = MIN(INF, dp[1]+1) = 2
+  试 coin=2: dp[2] = MIN(2, dp[0]+1) = 1
+  dp[2] = 1
+
+i=3:
+  试 coin=1: dp[3] = MIN(INF, dp[2]+1) = 2
+  试 coin=2: dp[3] = MIN(2, dp[1]+1) = 2
+  dp[3] = 2
+
+...
+
+i=11:
+  试 coin=1: dp[11] = MIN(INF, dp[10]+1) = ...
+  试 coin=2: dp[11] = MIN(..., dp[9]+1) = ...
+  试 coin=5: dp[11] = MIN(..., dp[6]+1) = 3
+  dp[11] = 3
+
+返回: 3 ✓（5+5+1）
+```
+
+**为什么是完全背包？**
+
+```
+完全背包特点：
+- 物品可以无限次使用
+- 这题中，每种硬币可以用无限次
+
+与0-1背包区别：
+- 0-1背包：每个物品只能用一次
+- 完全背包：每个物品可以用无限次
+
+循环顺序：
+完全背包：先遍历金额，再遍历硬币
+for amount:
+    for coin:
+        dp[amount] = min(..., dp[amount-coin] + 1)
+```
+
+**为什么需要 INF_MAX？**
+
+```
+表示"不可能凑出"这个金额
+
+例如 coins=[2], amount=3:
+dp[0] = 0
+dp[1] = INF_MAX（无法用面值2凑出1）
+dp[2] = dp[0] + 1 = 1
+dp[3] = dp[1] + 1 = INF + 1 = INF（无法凑出）
+
+最后返回 -1
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: 使用 memset 初始化 INF_MAX**
+```c
+// ❌ 错误：memset按字节设置，不是按int
+memset(dp, INF_MAX, (amount+1) * sizeof(int));
+// 结果：每个int变成0xffffffff（-1），不是INF_MAX
+
+// ✅ 正确：用循环初始化
+for (i = 0; i <= amount; i++)
+    dp[i] = INF_MAX;
+```
+
+**🐛 Bug #2: 循环范围错误**
+```c
+// ❌ 错误：只循环到 amount-1
+for (i = 1; i < amount; i++)
+
+// ✅ 正确：循环到 amount（包含）
+for (i = 1; i <= amount; i++)
+```
+
+**🐛 Bug #3: 从0开始循环**
+```c
+// ❌ 错误：i=0时会更新dp[0]
+for (i = 0; i <= amount; i++) {
+    dp[i] = ...  // 覆盖dp[0]=0
+}
+
+// ✅ 正确：从1开始
+for (i = 1; i <= amount; i++)
+```
+
+**🐛 Bug #4: 忘记检查 dp[i-coin] 是否为 INF**
+```c
+// ❌ 错误：直接使用 dp[i-coin]
+dp[i] = MIN(dp[i], dp[i-coin] + 1);
+// 如果dp[i-coin]=INF，会得到INF+1（溢出风险）
+
+// ✅ 正确：先检查
+if (dp[i - coin] == INF_MAX) continue;
+dp[i] = MIN(dp[i], dp[i-coin] + 1);
+```
+
+**🐛 Bug #5: 忘记释放内存**
+```c
+// ❌ 错误：忘记free
+return dp[amount];
+
+// ✅ 正确：先保存，再free
+result = dp[amount];
+free(dp);
+return result;
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 说明 |
+|-----|-----------|------|
+| 初始化 | O(amount) | 初始化dp数组 |
+| 双层循环 | O(amount × coinsSize) | 填充dp |
+| **总计** | **O(amount × coinsSize)** | |
+
+| 空间 | 空间复杂度 | 说明 |
+|-----|-----------|------|
+| dp数组 | O(amount) | 大小为amount+1 |
+| **总计** | **O(amount)** | 线性空间 |
+
+**测试用例**：
+
+```c
+// 用例1：正常情况
+输入：coins=[1,2,5], amount=11
+输出：3
+
+// 用例2：无法凑出
+输入：coins=[2], amount=3
+输出：-1
+
+// 用例3：amount=0
+输入：coins=[1], amount=0
+输出：0
+
+// 用例4：只需一个硬币
+输入：coins=[1,2,5], amount=5
+输出：1
+
+// 用例5：大金额
+输入：coins=[1,2,5], amount=100
+输出：20
+```
+
+**完全背包vs 0-1背包**：
+
+| 特性 | 0-1背包 | 完全背包 |
+|------|--------|---------|
+| 物品使用 | 每个最多1次 | 无限次 |
+| 循环顺序 | 从大到小 | 从小到大 |
+| 本题 | ❌ | ✅ |
+
+**关键要点**：
+- ✅ 完全背包问题（硬币可无限使用）
+- ✅ 求最小值（最少硬币数）
+- ✅ 状态转移：dp[i] = min(dp[i], dp[i-coin]+1)
+- ✅ INF_MAX 表示不可达状态
+- ✅ 循环初始化避免 memset 陷阱
+
+**记忆技巧**：
+
+```
+零钱兑换 = 完全背包求最小
+
+dp[i] = 凑i元最少硬币数
+遍历金额，尝试每种硬币
+dp[i] = min(不用, 用一个+剩余)
+
+口诀：凑金额，试硬币，取最小
+```
+
+**应用场景**：
+- 完全背包问题
+- 求最小值DP
+- 硬币问题
+- 组合优化
+
 ---
 
 ## 12. 链表操作
@@ -9204,6 +9484,7 @@ for (i = 0; i < n-1; i++) {
 | 爬楼梯 | 动态规划 + 斐波那契 + dp[i]=dp[i-1]+dp[i-2] | 70 |
 | 单词拆分 | 动态规划 + 字符串匹配 + 完全背包 | 139 |
 | 打家劫舍 | 动态规划 + 记忆化递归 + 相邻不能选 | 198 |
+| 零钱兑换 | 完全背包 + 求最小值 + dp[i]=min(dp[i],dp[i-coin]+1) | 322 |
 | 环形子数组最大和 | Kadane变种 + totalSum-minSum | 918 |
 | 二进制求和 | 从右到左逐位相加 + 反转 + 去前导0 | 67 |
 | 搜索二维矩阵 | 二分查找 + 一维化索引转换 | 74 |
