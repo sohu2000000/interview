@@ -114,6 +114,7 @@ interview/
 ### 动态规划
 - [x] **53** - Maximum Subarray (最大子数组和)
 - [x] **70** - Climbing Stairs (爬楼梯)
+- [x] **120** - Triangle (三角形最小路径和)
 - [x] **139** - Word Break (单词拆分)
 - [x] **198** - House Robber (打家劫舍)
 - [x] **300** - Longest Increasing Subsequence (最长递增子序列)
@@ -198,6 +199,7 @@ interview/
 ### 10. 动态规划
 - Maximum Subarray (53) - Kadane算法，currentSum<0时重新开始
 - Climbing Stairs (70) - 斐波那契数列，dp[i]=dp[i-1]+dp[i-2]
+- Triangle (120) - 二维DP，dp[i][j]=min(上左,上右)+当前，分三种情况
 - Word Break (139) - 完全背包变种，dp[i]表示前i字符可分割，枚举单词匹配
 - House Robber (198) - 记忆化递归，dp[i]=max(dp[i-1], dp[i-2]+nums[i])
 - Longest Increasing Subsequence (300) - dp[i]表示以i结尾的LIS长度，O(n²)或O(nlogn)

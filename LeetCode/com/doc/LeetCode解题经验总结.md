@@ -1209,7 +1209,313 @@ dp[i] = dp[i-1] + dp[i-2]
 - 路径计数问题
 - 递推关系
 
-### 11.2 打家劫舍（198）
+### 11.2 三角形最小路径和（120）
+
+**核心思想**：二维动态规划 + 路径选择 + 边界处理
+
+**问题描述**：
+给定一个三角形 `triangle`，找出自顶向下的最小路径和。每一步只能移动到下一行中相邻的结点上。相邻的结点指的是下标与上一层结点下标相同或者等于上一层结点下标 + 1 的两个结点。
+
+**示例**：
+
+```
+输入: triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]
+     2
+    3 4
+   6 5 7
+  4 1 8 3
+
+输出: 11
+解释: 最小路径和为 2+3+5+1 = 11
+```
+
+**核心理解**：
+
+```
+状态定义：
+dp[i][j] = 从顶部到达 (i,j) 位置的最小路径和
+
+关键：相邻节点的定义
+对于 (i,j)，可以从以下位置到达：
+- (i-1, j-1)：左上方
+- (i-1, j)：正上方
+
+但要注意边界：
+- 第一列 (j=0)：只能从 (i-1,0) 下来
+- 最后一列 (j=last)：只能从 (i-1,j-1) 下来
+- 中间列：从 (i-1,j-1) 或 (i-1,j) 选最小
+```
+
+**算法实现**：
+
+```c
+int minimumTotal(int** triangle, int triangleSize, int* triangleColSize) {
+	int i, j, minPathSum, colSize;
+	int **dp;
+
+	// Allocate 2D dp array
+	dp = (int **)malloc(triangleSize * sizeof(int *));
+	for (i = 0; i < triangleSize; i++) {
+		colSize = triangleColSize[i];
+		dp[i] = (int *)malloc(colSize * sizeof(int));
+		for (j = 0; j < colSize; j++)
+			dp[i][j] = INF_MAX;
+	}
+
+	// Base case
+	dp[0][0] = triangle[0][0];
+
+	// Fill dp array row by row
+	for (i = 1; i < triangleSize; i++) {
+		colSize = triangleColSize[i];
+		
+		for (j = 0; j < colSize; j++) {
+			// First column: only from top
+			if (j == 0)
+				dp[i][j] = dp[i-1][j] + triangle[i][j];
+			
+			// Last column: only from top-left
+			else if (j == colSize - 1)
+				dp[i][j] = dp[i-1][j-1] + triangle[i][j];
+			
+			// Middle: choose minimum path
+			else
+				dp[i][j] = MIN(dp[i-1][j-1] + triangle[i][j],
+				              dp[i-1][j] + triangle[i][j]);
+		}
+	}
+
+	// Find minimum in last row
+	minPathSum = INF_MAX;
+	colSize = triangleColSize[triangleSize - 1];
+	for (j = 0; j < colSize; j++)
+		minPathSum = MIN(minPathSum, dp[triangleSize - 1][j]);
+	
+	// Free memory
+	for (i = 0; i < triangleSize; i++)
+		free(dp[i]);
+	free(dp);
+
+	return minPathSum;
+}
+```
+
+**详细走查**：输入 `triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]`
+
+```
+     2         dp[0][0]=2
+    3 4        
+   6 5 7       
+  4 1 8 3      
+
+i=1:
+  j=0: dp[1][0] = dp[0][0] + 3 = 5
+  j=1: dp[1][1] = dp[0][0] + 4 = 6
+  
+       2(2)
+      3(5) 4(6)
+
+i=2:
+  j=0: dp[2][0] = dp[1][0] + 6 = 11 (第一列)
+  j=1: dp[2][1] = min(dp[1][0]+5, dp[1][1]+5) 
+                = min(10, 11) = 10
+  j=2: dp[2][2] = dp[1][1] + 7 = 13 (最后一列)
+  
+       2(2)
+      3(5) 4(6)
+    6(11) 5(10) 7(13)
+
+i=3:
+  j=0: dp[3][0] = dp[2][0] + 4 = 15
+  j=1: dp[3][1] = min(dp[2][0]+1, dp[2][1]+1)
+                = min(12, 11) = 11 ✓ 最小！
+  j=2: dp[3][2] = min(dp[2][1]+8, dp[2][2]+8)
+                = min(18, 21) = 18
+  j=3: dp[3][3] = dp[2][2] + 3 = 16
+  
+最后一行：[15, 11, 18, 16]
+最小值 = 11 ✓
+
+路径: 2→3→5→1 = 11
+```
+
+**为什么要分三种情况？**
+
+```
+三角形的结构：
+     0
+    0 1
+   0 1 2
+  0 1 2 3
+
+移动规则：从 (i,j) 可以到 (i+1,j) 或 (i+1,j+1)
+反过来：到达 (i,j) 可以从 (i-1,j-1) 或 (i-1,j)
+
+边界：
+- 第一列 (j=0)：没有左上方，只能从正上方
+- 最后一列 (j=i)：没有正上方，只能从左上方
+- 中间列：两个方向都可以，选最小
+```
+
+**空间优化（O(n)空间）**：
+
+```c
+// 只需要一维数组（滚动数组）
+int minimumTotal_optimized(int** triangle, int triangleSize, 
+                          int* triangleColSize) {
+	int *dp, *prev;
+	int i, j, colSize, minPathSum;
+	
+	// 只需要当前行和上一行
+	dp = (int *)malloc(triangleSize * sizeof(int));
+	dp[0] = triangle[0][0];
+	
+	for (i = 1; i < triangleSize; i++) {
+		colSize = triangleColSize[i];
+		
+		// 从右到左更新（避免覆盖）
+		for (j = colSize - 1; j >= 0; j--) {
+			if (j == 0)
+				dp[j] = dp[j] + triangle[i][j];
+			else if (j == colSize - 1)
+				dp[j] = dp[j-1] + triangle[i][j];
+			else
+				dp[j] = MIN(dp[j-1], dp[j]) + triangle[i][j];
+		}
+	}
+	
+	// 找最小值
+	minPathSum = dp[0];
+	for (j = 1; j < triangleColSize[triangleSize-1]; j++)
+		minPathSum = MIN(minPathSum, dp[j]);
+	
+	free(dp);
+	return minPathSum;
+}
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: 循环从 i=0 开始**
+```c
+// ❌ 错误：i=0时访问 dp[i-1] 越界
+for (i = 0; i < triangleSize; i++) {
+    dp[i][j] = dp[i-1][...] + ...;  // i=0时越界
+}
+
+// ✅ 正确：从 i=1 开始
+for (i = 1; i < triangleSize; i++)
+```
+
+**🐛 Bug #2: 忘记分情况处理边界**
+```c
+// ❌ 错误：统一处理，会越界
+dp[i][j] = MIN(dp[i-1][j-1], dp[i-1][j]) + triangle[i][j];
+// j=0时，dp[i-1][-1] 越界
+// j=last时，dp[i-1][last] 可能越界
+
+// ✅ 正确：分三种情况
+if (j == 0) ...          // 第一列
+else if (j == last) ...  // 最后一列
+else ...                 // 中间
+```
+
+**🐛 Bug #3: 直接返回 dp[triangleSize-1][0]**
+```c
+// ❌ 错误：最后一行的第一个不一定是最小的
+return dp[triangleSize - 1][0];
+
+// ✅ 正确：找最后一行的最小值
+minPathSum = INF_MAX;
+for (j = 0; j < lastRowSize; j++)
+    minPathSum = MIN(minPathSum, dp[lastRow][j]);
+```
+
+**🐛 Bug #4: 忘记释放二维数组**
+```c
+// ❌ 错误：只释放外层
+free(dp);
+
+// ✅ 正确：先释放每一行，再释放外层
+for (i = 0; i < triangleSize; i++)
+    free(dp[i]);
+free(dp);
+```
+
+**🐛 Bug #5: 初始化为0**
+```c
+// ❌ 错误：初始化为0，求最小值时会出错
+dp[i][j] = 0;
+
+// ✅ 正确：初始化为INF_MAX
+dp[i][j] = INF_MAX;
+```
+
+**复杂度分析**：
+
+| 方法 | 时间复杂度 | 空间复杂度 | 说明 |
+|------|-----------|-----------|------|
+| 二维DP | O(n²) | O(n²) | n为行数 |
+| 空间优化 | O(n²) | O(n) | 滚动数组 |
+
+**测试用例**：
+
+```c
+// 用例1：基本情况
+输入：triangle=[[2],[3,4],[6,5,7],[4,1,8,3]]
+输出：11
+
+// 用例2：单行
+输入：triangle=[[1]]
+输出：1
+
+// 用例3：两行
+输入：triangle=[[1],[2,3]]
+输出：3
+
+// 用例4：负数
+输入：triangle=[[-10]]
+输出：-10
+
+// 用例5：所有负数
+输入：triangle=[[-1],[-2,-3]]
+输出：-4
+```
+
+**关键要点**：
+- ✅ 二维DP：dp[i][j] 表示到达 (i,j) 的最小路径和
+- ✅ 从 i=1 开始循环（dp[0][0] 已初始化）
+- ✅ 三种情况：第一列、最后一列、中间列
+- ✅ 答案是最后一行的最小值
+- ✅ 可以优化空间到 O(n)
+
+**记忆技巧**：
+
+```
+三角形路径 = 二维DP + 边界
+
+dp[i][j] = 到达(i,j)的最小和
+来源：左上或正上，选最小
+
+边界三种：
+- 第一列：只能从上
+- 最后列：只能从左上
+- 中间：两者选小
+
+答案 = 最后一行最小值
+
+口诀：分三情况，上或左上，末行最小
+```
+
+**应用场景**：
+- 二维动态规划
+- 路径问题
+- 最小路径和
+- 三角形/金字塔结构
+
+---
+
+### 11.3 打家劫舍（198）
 
 **核心思想**：动态规划 + 记忆化递归 + 相邻约束
 
@@ -1536,7 +1842,7 @@ dp[i] = max(dp[i-1], dp[i-2] + nums[i])
 - 记忆化递归
 - 最优子结构
 
-### 11.3 单词拆分（139）
+### 11.4 单词拆分（139）
 
 **核心思想**：动态规划 + 字符串匹配 + 完全背包变种
 
@@ -1854,7 +2160,7 @@ dp[i] ↔ s[0...i-1]
 - 动态规划 + 字符串匹配
 - 单词匹配问题
 
-### 11.4 零钱兑换（322）
+### 11.5 零钱兑换（322）
 
 **核心思想**：动态规划 + 完全背包 + 求最小值
 
@@ -2134,7 +2440,7 @@ dp[i] = min(不用, 用一个+剩余)
 - 硬币问题
 - 组合优化
 
-### 11.5 最长递增子序列（300）
+### 11.6 最长递增子序列（300）
 
 **核心思想**：动态规划 + dp[i]表示以i结尾的LIS长度
 
@@ -9789,6 +10095,7 @@ for (i = 0; i < n-1; i++) {
 | 建立四叉树 | 分治递归 + 区域检查 | 427 |
 | 最大子数组和 | Kadane算法 + 动态规划 | 53 |
 | 爬楼梯 | 动态规划 + 斐波那契 + dp[i]=dp[i-1]+dp[i-2] | 70 |
+| 三角形最小路径和 | 二维DP + 三种边界 + 最后一行求最小 | 120 |
 | 单词拆分 | 动态规划 + 字符串匹配 + 完全背包 | 139 |
 | 打家劫舍 | 动态规划 + 记忆化递归 + 相邻不能选 | 198 |
 | 最长递增子序列 | 动态规划 + dp[i]以i结尾LIS + O(n²)或O(nlogn) | 300 |
