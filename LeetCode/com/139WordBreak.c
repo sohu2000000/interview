@@ -35,7 +35,7 @@ bool wordBreak(char* s, char** wordDict, int wordDictSize) {
 	bool result;
 
 	strLen = strlen(s);
-	
+
 	// Allocate and initialize dp array
 	dp = (int *)malloc((strLen + 1) * sizeof(int));
 	memset(dp, 0, (strLen + 1) * sizeof(int));

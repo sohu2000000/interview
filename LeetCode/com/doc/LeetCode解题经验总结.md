@@ -1060,7 +1060,264 @@ ALIVE_TO_ALIVE = 5
 
 ---
 
-### 11.1 爬楼梯（70）
+### 11.1 最长回文子串（5）
+
+**核心思想**：二维动态规划 + 按长度遍历 + 回文判断
+
+**问题描述**：
+给定一个字符串 `s`，找到 `s` 中最长的回文子串。
+
+**示例**：
+
+```
+输入: s = "babad"
+输出: "bab" 或 "aba"
+
+输入: s = "cbbd"
+输出: "bb"
+```
+
+**核心理解**：
+
+```
+状态定义：
+dp[i][j] = s[i...j]（从i到j的子串）是否为回文
+
+回文判断规则：
+1. 长度为1：任何单字符都是回文
+   dp[i][i] = true
+
+2. 长度为2：两个字符相同就是回文
+   dp[i][i+1] = (s[i] == s[i+1])
+
+3. 长度≥3：首尾相同 且 去掉首尾后仍是回文
+   dp[i][j] = (s[i] == s[j]) && dp[i+1][j-1]
+
+关键：必须按长度从小到大遍历
+原因：计算dp[i][j]需要dp[i+1][j-1]（更短的子串）
+```
+
+**算法实现**：
+
+```c
+char* longestPalindrome(char* s) {
+	int i, j, str_len, sub_len;
+	info_t max_info;
+	bool **dp;
+
+	str_len = strlen(s);
+	if (str_len == 1) return s;
+	
+	// 分配dp表
+	dp = (bool **)malloc(str_len * sizeof(bool *));
+	for (i = 0; i < str_len; i++) {
+		dp[i] = (bool *)malloc(str_len * sizeof(bool));
+	}
+
+	// 初始化最长回文信息
+	max_info = {0, 0, 1};
+
+	// 按长度遍历所有子串
+	for (sub_len = 1; sub_len <= str_len; sub_len++) {
+		// 遍历所有起始位置
+		for (i = 0; i <= str_len - sub_len; i++) {
+			j = i + sub_len - 1;  // 结束位置
+			
+			// 判断s[i...j]是否回文
+			if (sub_len == 1)
+				dp[i][j] = true;
+			else if (sub_len == 2 && s[i] == s[j])
+				dp[i][j] = true;
+			else if (s[i] == s[j] && dp[i+1][j-1])
+				dp[i][j] = true;
+			else
+				dp[i][j] = false;
+			
+			// 更新最长回文
+			if (dp[i][j] && sub_len > max_info.length) {
+				max_info.start = i;
+				max_info.end = j;
+				max_info.length = sub_len;
+			}
+		}
+	}
+
+	// 提取结果
+	result = (char *)malloc((max_info.length + 1) * sizeof(char));
+	memcpy(result, s + max_info.start, max_info.length);
+	result[max_info.length] = '\0';
+
+	// 释放dp表
+	for (i = 0; i < str_len; i++)
+		free(dp[i]);
+	free(dp);
+
+	return result;
+}
+```
+
+**详细走查**：输入 `s = "babad"`
+
+```
+str_len = 5
+
+sub_len=1: 检查所有长度1
+  i=0, j=0: "b" → dp[0][0]=true
+  i=1, j=1: "a" → dp[1][1]=true
+  ...
+  max_info = {0, 0, 1}
+
+sub_len=2: 检查所有长度2
+  i=0, j=1: "ba" → s[0]!=s[1] → dp[0][1]=false
+  i=1, j=2: "ab" → s[1]!=s[2] → dp[1][2]=false
+  ...
+  max_info不变
+
+sub_len=3: 检查所有长度3
+  i=0, j=2: "bab"
+    s[0]='b' == s[2]='b' ✓
+    dp[1][1]=true ✓
+    dp[0][2] = true
+    max_info = {0, 2, 3}
+  
+  i=1, j=3: "aba"
+    s[1]='a' == s[3]='a' ✓
+    dp[2][2]=true ✓
+    dp[1][3] = true
+    max_info不变（长度相同）
+
+sub_len=4,5: 没有回文
+
+最终: max_info = {0, 2, 3}
+返回: "bab" ✓
+```
+
+**为什么按长度遍历？**
+
+```
+依赖关系：
+dp[i][j] 依赖 dp[i+1][j-1]
+
+如果按位置遍历（i从小到大，j从小到大）：
+计算dp[0][4]时，需要dp[1][3]
+但dp[1][3]可能还没计算！
+
+如果按长度遍历（sub_len从小到大）：
+计算长度4时，长度2的已经全部计算完毕
+保证依赖关系正确！
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: 循环范围错误**
+```c
+// ❌ 错误：sub_len < str_len
+for (sub_len = 1; sub_len < str_len; sub_len++)
+// 不会检查长度为str_len的子串
+
+// ✅ 正确：sub_len <= str_len
+for (sub_len = 1; sub_len <= str_len; sub_len++)
+```
+
+**🐛 Bug #2: 内层循环范围错误**
+```c
+// ❌ 错误：i < str_len - sub_len
+for (i = 0; i < str_len - sub_len; i++)
+// sub_len=str_len时，i<0，不会进入
+
+// ✅ 正确：i <= str_len - sub_len
+for (i = 0; i <= str_len - sub_len; i++)
+```
+
+**🐛 Bug #3: 只在特定情况更新max_info**
+```c
+// ❌ 错误：只在else if中更新
+else if (s[i] == s[j] && dp[i+1][j-1]) {
+    dp[i][j] = true;
+    max_info = ...;  // 长度1和2不会更新
+}
+
+// ✅ 正确：统一在外面更新
+if (dp[i][j] && sub_len > max_info.length) {
+    max_info = ...;
+}
+```
+
+**🐛 Bug #4: 按位置而非长度遍历**
+```c
+// ❌ 错误：依赖关系无法保证
+for (i = 0; i < n; i++)
+    for (j = i; j < n; j++)
+        if (s[i] == s[j])
+            dp[i][j] = dp[i+1][j-1];  // i+1可能还没算
+
+// ✅ 正确：按长度遍历
+for (sub_len = 1; sub_len <= n; sub_len++)
+    for (i = 0; ...)
+```
+
+**复杂度分析**：
+
+| 方法 | 时间复杂度 | 空间复杂度 |
+|------|-----------|-----------|
+| 二维DP | O(n²) | O(n²) |
+| 中心扩展 | O(n²) | O(1) |
+| Manacher算法 | O(n) | O(n) |
+
+**测试用例**：
+
+```c
+// 用例1：多个回文
+输入：s="babad"
+输出："bab"或"aba"
+
+// 用例2：长度2
+输入：s="bb"
+输出："bb"
+
+// 用例3：单字符
+输入：s="a"
+输出："a"
+
+// 用例4：无回文
+输入：s="abc"
+输出："a"
+
+// 用例5：整个字符串
+输入：s="racecar"
+输出："racecar"
+```
+
+**关键要点**：
+- ✅ dp[i][j] 表示 s[i...j] 是否回文
+- ✅ 按长度从小到大遍历（保证依赖）
+- ✅ 三种判断：长度1、长度2、长度≥3
+- ✅ 循环范围：sub_len <= str_len, i <= str_len - sub_len
+- ✅ 可以用中心扩展法优化空间到O(1)
+
+**记忆技巧**：
+
+```
+最长回文子串 = 二维DP按长度
+
+dp[i][j] = s[i...j]是否回文
+按长度1,2,3...遍历
+长度1：必回文
+长度2：首尾同
+长度≥3：首尾同且内部回文
+
+口诀：按长遍历，首尾内部
+```
+
+**应用场景**：
+- 回文问题
+- 二维动态规划
+- 子串问题
+- 字符串DP
+
+---
+
+### 11.2 爬楼梯（70）
 
 **核心思想**：动态规划 + 斐波那契数列
 
@@ -10714,6 +10971,7 @@ for (i = 0; i < n-1; i++) {
 | 排序链表 | 归并排序 + 快慢指针找中点 | 148 |
 | 建立四叉树 | 分治递归 + 区域检查 | 427 |
 | 最大子数组和 | Kadane算法 + 动态规划 | 53 |
+| 最长回文子串 | 二维DP + dp[i][j]表示s[i..j]是否回文 + 按长度遍历 | 5 |
 | 爬楼梯 | 动态规划 + 斐波那契 + dp[i]=dp[i-1]+dp[i-2] | 70 |
 | 不同路径II | 二维DP + 障碍物 + dp=上+左 + 障碍处为0 | 63 |
 | 最小路径和 | 二维DP + 网格 + 只能右或下 + 右下角是答案 | 64 |

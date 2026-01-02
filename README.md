@@ -42,6 +42,7 @@ interview/
 - [x] **209** - Minimum Size Subarray Sum (长度最小的子数组)
 
 ### 字符串
+- [x] **5** - Longest Palindromic Substring (最长回文子串)
 - [x] **6** - Zigzag Conversion (Z字形变换)
 - [x] **12** - Integer to Roman (整数转罗马数字)
 - [x] **67** - Add Binary (二进制求和)
