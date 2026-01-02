@@ -1581,9 +1581,255 @@ dp[i][j] = 到(i,j)最小和
 - 最小路径和
 - 机器人路径
 
+### 11.3 不同路径 II（63）
+
+**核心思想**：二维动态规划 + 障碍物处理 + 路径计数
+
+**问题描述**：
+一个机器人位于一个 `m×n` 网格的左上角。机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角。现在考虑网格中有障碍物。那么从左上角到右下角将会有多少条不同的路径？网格中的障碍物和空位置分别用 1 和 0 来表示。
+
+**示例**：
+
+```
+输入: obstacleGrid = [[0,0,0],
+                      [0,1,0],
+                      [0,0,0]]
+输出: 2
+解释: 
+3×3网格的正中间有一个障碍物
+从左上角到右下角一共有2条不同的路径：
+1. 右 → 右 → 下 → 下
+2. 下 → 下 → 右 → 右
+```
+
+**核心理解**：
+
+```
+状态定义：
+dp[i][j] = 到达位置(i,j)的不同路径数
+
+障碍物处理：
+- 如果 obstacleGrid[i][j] == 1（有障碍物）
+  → dp[i][j] = 0（无法到达）
+- 否则，按正常规则计算
+
+关键：
+- 起点或终点有障碍物 → 直接返回0
+- 路径中有障碍物 → 该位置路径数为0
+```
+
+**算法实现**：
+
+```c
+int uniquePathsWithObstacles(int** obstacleGrid, int obstacleGridSize, 
+                             int* obstacleGridColSize) {
+	int i, j, colSize, numPaths;
+	int **dp;
+
+	// Early termination: check start and end
+	if (obstacleGrid[0][0] == 1)
+		return 0;
+	
+	colSize = obstacleGridColSize[obstacleGridSize - 1];
+	if (obstacleGrid[obstacleGridSize - 1][colSize - 1] == 1)
+		return 0;
+
+	// Allocate and initialize dp array
+	dp = (int **)malloc(obstacleGridSize * sizeof(int *));
+	for (i = 0; i < obstacleGridSize; i++) {
+		colSize = obstacleGridColSize[i];
+		dp[i] = (int *)malloc(colSize * sizeof(int));
+		for (j = 0; j < colSize; j++)
+			dp[i][j] = 0;
+	}
+
+	// Base case
+	dp[0][0] = 1;
+
+	// Fill dp array
+	for (i = 0; i < obstacleGridSize; i++) {
+		colSize = obstacleGridColSize[i];
+		
+		for (j = 0; j < colSize; j++) {
+			if (i == 0 && j == 0) continue;
+			
+			// If obstacle, no paths
+			if (obstacleGrid[i][j] == 1)
+				dp[i][j] = 0;
+			else {
+				// First row: only from left
+				if (i == 0)
+					dp[i][j] = dp[i][j-1];
+				
+				// First column: only from top
+				else if (j == 0)
+					dp[i][j] = dp[i-1][j];
+				
+				// Other: sum paths from top and left
+				else
+					dp[i][j] = dp[i-1][j] + dp[i][j-1];
+			}
+		}
+	}
+
+	// Answer at bottom right
+	colSize = obstacleGridColSize[obstacleGridSize - 1];
+	numPaths = dp[obstacleGridSize - 1][colSize - 1];
+
+	// Free memory
+	for (i = 0; i < obstacleGridSize; i++)
+		free(dp[i]);
+	free(dp);
+
+	return numPaths;
+}
+```
+
+**详细走查**：输入 `obstacleGrid = [[0,0,0],[0,1,0],[0,0,0]]`
+
+```
+网格:
+0  0  0
+0  1  0
+0  0  0
+
+检查: 起点(0,0)=0 ✓，终点(2,2)=0 ✓
+
+初始化: dp[0][0] = 1
+
+i=0 (第一行):
+  j=1: 无障碍，dp[0][1] = dp[0][0] = 1
+  j=2: 无障碍，dp[0][2] = dp[0][1] = 1
+
+i=1:
+  j=0: 无障碍，dp[1][0] = dp[0][0] = 1
+  j=1: 有障碍！dp[1][1] = 0
+  j=2: 无障碍，dp[1][2] = dp[0][2] + dp[1][1] = 1 + 0 = 1
+
+i=2:
+  j=0: 无障碍，dp[2][0] = dp[1][0] = 1
+  j=1: 无障碍，dp[2][1] = dp[1][1] + dp[2][0] = 0 + 1 = 1
+  j=2: 无障碍，dp[2][2] = dp[1][2] + dp[2][1] = 1 + 1 = 2
+
+DP表:
+1  1  1
+1  0  1
+1  1  2
+
+返回 dp[2][2] = 2 ✓
+```
+
+**与普通路径问题的区别**：
+
+| 特性 | Unique Paths (62) | Unique Paths II (63) |
+|------|------------------|---------------------|
+| 障碍物 | 无 | 有 |
+| 转移方程 | dp[i][j] = dp[i-1][j] + dp[i][j-1] | 有障碍时dp[i][j]=0 |
+| 提前检查 | 不需要 | 检查起点和终点 |
+
+**易错点总结**：
+
+**🐛 Bug #1: 打字错误 dp[i][i]**
+```c
+// ❌ 错误：第一行写成 dp[i][i]
+dp[i][i] = dp[i][i-1];
+
+// ✅ 正确：应该是 dp[i][j]
+dp[i][j] = dp[i][j-1];
+```
+
+**🐛 Bug #2: 忘记检查起点和终点**
+```c
+// ❌ 错误：起点或终点有障碍物时仍然计算
+// 会返回错误结果
+
+// ✅ 正确：提前检查
+if (obstacleGrid[0][0] == 1) return 0;
+if (obstacleGrid[m-1][n-1] == 1) return 0;
+```
+
+**🐛 Bug #3: 障碍物处理不当**
+```c
+// ❌ 错误：有障碍物时仍然累加路径
+if (obstacleGrid[i][j] == 1)
+    continue;  // 跳过但不清零
+
+// ✅ 正确：显式设为0
+if (obstacleGrid[i][j] == 1)
+    dp[i][j] = 0;
+```
+
+**🐛 Bug #4: 第一行/列障碍物后续处理错误**
+```c
+// 问题：如果第一行某处有障碍物
+// 该障碍物右边的所有位置都应该是0（无法到达）
+
+// 当前实现已正确：
+// 如果dp[0][k]=0（因为左边有障碍）
+// 则dp[0][k+1]=dp[0][k]=0（传递下去）
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 空间复杂度 |
+|-----|-----------|-----------|
+| 二维DP | O(m×n) | O(m×n) |
+| 空间优化 | O(m×n) | O(n) |
+
+**测试用例**：
+
+```c
+// 用例1：中间有障碍
+输入：[[0,0,0],[0,1,0],[0,0,0]]
+输出：2
+
+// 用例2：起点有障碍
+输入：[[1,0],[0,0]]
+输出：0
+
+// 用例3：终点有障碍
+输入：[[0,0],[0,1]]
+输出：0
+
+// 用例4：第一行有障碍
+输入：[[0,1],[0,0]]
+输出：1
+
+// 用例5：无障碍
+输入：[[0,0],[0,0]]
+输出：2
+```
+
+**关键要点**：
+- ✅ 障碍物处理：obstacle=1 → dp=0
+- ✅ 提前检查起点和终点
+- ✅ dp[i][j] = dp[i-1][j] + dp[i][j-1]（无障碍时）
+- ✅ 答案在右下角
+- ✅ 障碍物会阻断路径传递
+
+**记忆技巧**：
+
+```
+不同路径II = 路径计数 + 障碍物
+
+dp[i][j] = 到(i,j)的路径数
+有障碍 → dp=0
+无障碍 → dp=上+左
+
+提前检查起点终点
+
+口诀：障碍为零，无障上左加
+```
+
+**应用场景**：
+- 带约束的路径计数
+- 障碍物处理
+- 网格DP
+- 机器人路径规划
+
 ---
 
-### 11.3 三角形最小路径和（120）
+### 11.4 三角形最小路径和（120）
 
 **核心思想**：二维动态规划 + 路径选择 + 边界处理
 
@@ -10469,6 +10715,7 @@ for (i = 0; i < n-1; i++) {
 | 建立四叉树 | 分治递归 + 区域检查 | 427 |
 | 最大子数组和 | Kadane算法 + 动态规划 | 53 |
 | 爬楼梯 | 动态规划 + 斐波那契 + dp[i]=dp[i-1]+dp[i-2] | 70 |
+| 不同路径II | 二维DP + 障碍物 + dp=上+左 + 障碍处为0 | 63 |
 | 最小路径和 | 二维DP + 网格 + 只能右或下 + 右下角是答案 | 64 |
 | 三角形最小路径和 | 二维DP + 三种边界 + 最后一行求最小 | 120 |
 | 单词拆分 | 动态规划 + 字符串匹配 + 完全背包 | 139 |
