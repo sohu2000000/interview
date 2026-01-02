@@ -117,6 +117,7 @@ interview/
 - [x] **63** - Unique Paths II (不同路径 II)
 - [x] **64** - Minimum Path Sum (最小路径和)
 - [x] **70** - Climbing Stairs (爬楼梯)
+- [x] **97** - Interleaving String (交错字符串)
 - [x] **120** - Triangle (三角形最小路径和)
 - [x] **139** - Word Break (单词拆分)
 - [x] **198** - House Robber (打家劫舍)
@@ -204,6 +205,7 @@ interview/
 - Unique Paths II (63) - 二维DP，带障碍物，dp[i][j]=dp[上]+dp[左]，障碍处为0
 - Minimum Path Sum (64) - 二维DP，dp[i][j]=min(左,上)+当前，只能向右或向下
 - Climbing Stairs (70) - 斐波那契数列，dp[i]=dp[i-1]+dp[i-2]
+- Interleaving String (97) - 二维DP，dp[i][j]表示s1前i和s2前j能否交错成s3前i+j
 - Triangle (120) - 二维DP，dp[i][j]=min(上左,上右)+当前，分三种情况
 - Word Break (139) - 完全背包变种，dp[i]表示前i字符可分割，枚举单词匹配
 - House Robber (198) - 记忆化递归，dp[i]=max(dp[i-1], dp[i-2]+nums[i])

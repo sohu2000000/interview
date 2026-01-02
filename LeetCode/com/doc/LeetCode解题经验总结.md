@@ -3317,7 +3317,266 @@ dp[i] = min(不用, 用一个+剩余)
 - 硬币问题
 - 组合优化
 
-### 11.6 最长递增子序列（300）
+### 11.6 交错字符串（97）
+
+**核心思想**：二维动态规划 + 字符串交错匹配 + else if边界处理
+
+**问题描述**：
+给定三个字符串 `s1`、`s2`、`s3`，请判断 `s3` 是否由 `s1` 和 `s2` **交错**组成。交错是指将 `s1` 和 `s2` 交替合并，同时保持每个字符串内部字符的相对顺序不变。
+
+**示例**：
+
+```
+输入: s1="aabcc", s2="dbbca", s3="aadbbcbcac"
+输出: true
+解释: 
+s3可以由s1和s2交错组成：
+a a d b b c b c a c
+↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑ ↑
+s1 s1 s2 s2 s2 s1 s2 s1 s2 s1
+
+输入: s1="aabcc", s2="dbbca", s3="aadbbbaccc"
+输出: false
+```
+
+**核心理解**：
+
+```
+状态定义：
+dp[i][j] = s1 的前 i 个字符和 s2 的前 j 个字符
+          能否交错组成 s3 的前 i+j 个字符
+
+关键：
+- dp[i][j] 对应 s3[0...i+j-1]
+- s1 用了 i 个字符：s1[0...i-1]
+- s2 用了 j 个字符：s2[0...j-1]
+- s3 已匹配：s3[0...i+j-1]
+
+索引关系：
+- s1 的第 i 个字符：s1[i-1]
+- s2 的第 j 个字符：s2[j-1]
+- s3 的第 i+j 个字符：s3[i+j-1]
+```
+
+**算法实现**：
+
+```c
+bool isInterleave(char* s1, char* s2, char* s3) {
+	int s1Len, s2Len, s3Len, i, j;
+	bool **dp, result;
+
+	// Check lengths match
+	s1Len = strlen(s1);
+	s2Len = strlen(s2);
+	s3Len = strlen(s3);
+	
+	if (s1Len + s2Len != s3Len)
+		return false;
+	
+	// Allocate dp table
+	dp = (bool **)malloc((s1Len + 1) * sizeof(bool *));
+	for (i = 0; i <= s1Len; i++) {
+		dp[i] = (bool *)malloc((s2Len + 1) * sizeof(bool));
+		for (j = 0; j <= s2Len; j++)
+			dp[i][j] = false;
+	}
+
+	// Base case
+	dp[0][0] = true;
+	
+	// Fill dp table
+	for (i = 0; i <= s1Len; i++) {
+		for (j = 0; j <= s2Len; j++) {
+			if (i == 0 && j == 0) continue;
+			
+			// First row: only use s2
+			else if (i == 0) {
+				if (s2[j-1] == s3[i+j-1])
+					dp[i][j] = dp[i][j-1];
+			}
+			// First column: only use s1
+			else if (j == 0) {
+				if (s1[i-1] == s3[i+j-1])
+					dp[i][j] = dp[i-1][j];
+			}
+			// Can use either s1 or s2
+			else {
+				if (s1[i-1] == s3[i+j-1] && dp[i-1][j])
+					dp[i][j] = true;
+				else if (s2[j-1] == s3[i+j-1] && dp[i][j-1])
+					dp[i][j] = true;
+			}
+		}
+	}
+	
+	result = dp[s1Len][s2Len];
+	// free dp...
+	return result;
+}
+```
+
+**关键：必须用 else if (i==0)，不能用 else if (i==0 && 字符匹配)**
+
+```
+❌ 错误写法：
+else if (i == 0 && s2[j-1] == s3[i+j-1])
+    ...
+else {
+    s1[i-1]  // 如果 i==0 但字符不匹配，会到这里，越界！
+}
+
+✓ 正确写法：
+else if (i == 0) {  // 捕获所有 i==0 的情况
+    if (s2[j-1] == s3[i+j-1])
+        ...
+}
+else {
+    s1[i-1]  // 只有 i>0 才会到这里，安全！
+}
+```
+
+**详细走查**：输入 `s1="aa", s2="bb", s3="aabb"`
+
+```
+dp[0][0] = true
+
+i=0, j=1: 只用s2
+  s2[0]='b' vs s3[0]='a' ✗
+  dp[0][1] = false
+
+i=0, j=2: 只用s2
+  s2[1]='b' vs s3[1]='a' ✗
+  dp[0][2] = false
+
+i=1, j=0: 只用s1
+  s1[0]='a' vs s3[0]='a' ✓
+  dp[1][0] = dp[0][0] = true
+
+i=1, j=1:
+  s1[0]='a' vs s3[1]='a' ✓ && dp[0][1]=false ✗
+  s2[0]='b' vs s3[1]='a' ✗
+  dp[1][1] = false
+
+i=2, j=0: 只用s1
+  s1[1]='a' vs s3[1]='a' ✓
+  dp[2][0] = dp[1][0] = true
+
+i=2, j=1:
+  s1[1]='a' vs s3[2]='b' ✗
+  s2[0]='b' vs s3[2]='b' ✓ && dp[2][0]=true ✓
+  dp[2][1] = true
+
+i=2, j=2:
+  s1[1]='a' vs s3[3]='b' ✗
+  s2[1]='b' vs s3[3]='b' ✓ && dp[2][1]=true ✓
+  dp[2][2] = true
+
+返回 true ✓
+路径: s1[0] s1[1] s2[0] s2[1] = "aabb"
+```
+
+**易错点总结**：
+
+**🐛 Bug #1: else if 条件过多导致越界**
+```c
+// ❌ 错误：字符不匹配时会掉到else
+else if (i == 0 && s2[j-1] == s3[i+j-1])
+    ...
+else {
+    s1[i-1]  // i==0时越界
+}
+
+// ✅ 正确：无条件捕获位置
+else if (i == 0) {
+    if (s2[j-1] == s3[i+j-1])
+        ...
+}
+```
+
+**🐛 Bug #2: 忘记检查长度**
+```c
+// ❌ 错误：不检查长度
+// 会尝试匹配不可能的情况
+
+// ✅ 正确：提前检查
+if (s1Len + s2Len != s3Len)
+    return false;
+```
+
+**🐛 Bug #3: 状态设置错误**
+```c
+// ❌ 错误：直接设为true
+else if (i == 0) {
+    if (s2[j-1] == s3[i+j-1])
+        dp[i][j] = true;  // 忽略前面状态
+}
+
+// ✅ 正确：继承前面状态
+else if (i == 0) {
+    if (s2[j-1] == s3[i+j-1])
+        dp[i][j] = dp[i][j-1];  // 必须前面可达
+}
+```
+
+**复杂度分析**：
+
+| 操作 | 时间复杂度 | 空间复杂度 |
+|-----|-----------|-----------|
+| 填充dp表 | O(m×n) | O(m×n) |
+
+**测试用例**：
+
+```c
+// 用例1：可以交错
+输入：s1="aabcc", s2="dbbca", s3="aadbbcbcac"
+输出：true
+
+// 用例2：不能交错
+输入：s1="aabcc", s2="dbbca", s3="aadbbbaccc"
+输出：false
+
+// 用例3：长度不匹配
+输入：s1="a", s2="b", s3="abc"
+输出：false
+
+// 用例4：空字符串
+输入：s1="", s2="", s3=""
+输出：true
+
+// 用例5：简单情况
+输入：s1="aa", s2="bb", s3="aabb"
+输出：true
+```
+
+**关键要点**：
+- ✅ dp[i][j] 表示 s1前i个和s2前j个能否交错成s3前i+j个
+- ✅ 必须用 `else if (i==0)` 而不是 `else if (i==0 && char_match)`
+- ✅ 状态继承：dp[i][j] = dp[前一个状态]
+- ✅ 三种情况互斥：第一行、第一列、其他
+
+**记忆技巧**：
+
+```
+交错字符串 = 二维DP + 位置优先
+
+dp[i][j] = s1前i和s2前j能否交错成s3前i+j
+第一行：只用s2，继承左边
+第一列：只用s1，继承上边
+其他：可用s1或s2，检查上或左
+
+关键：else if只检查位置，不检查字符
+原因：避免字符不匹配时掉到else导致越界
+
+口诀：位置优先，字符其次，状态继承
+```
+
+**应用场景**：
+- 字符串交错问题
+- 二维动态规划
+- 路径匹配
+- 序列合并问题
+
+### 11.7 最长递增子序列（300）
 
 **核心思想**：动态规划 + dp[i]表示以i结尾的LIS长度
 
@@ -10975,6 +11234,7 @@ for (i = 0; i < n-1; i++) {
 | 爬楼梯 | 动态规划 + 斐波那契 + dp[i]=dp[i-1]+dp[i-2] | 70 |
 | 不同路径II | 二维DP + 障碍物 + dp=上+左 + 障碍处为0 | 63 |
 | 最小路径和 | 二维DP + 网格 + 只能右或下 + 右下角是答案 | 64 |
+| 交错字符串 | 二维DP + dp[i][j]s1前i和s2前j交错 + else if位置优先 | 97 |
 | 三角形最小路径和 | 二维DP + 三种边界 + 最后一行求最小 | 120 |
 | 单词拆分 | 动态规划 + 字符串匹配 + 完全背包 | 139 |
 | 打家劫舍 | 动态规划 + 记忆化递归 + 相邻不能选 | 198 |
